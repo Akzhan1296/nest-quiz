@@ -118,7 +118,8 @@ export class UsersRepository {
         WHERE "ConfirmCode" = $1`,
       [confirmCode, isConfirmed]
     );
-    return result[1];
+  // result = [[], 1 | 0]
+    return !!result[1];
   }
 }
 

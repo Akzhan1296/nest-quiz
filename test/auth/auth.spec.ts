@@ -9,7 +9,7 @@ import { AuthRegistrationInputModal } from "../../src/features/roles/public/auth
 import { AppModule } from "../../src/app.module";
 import { HttpExceptionFilter } from "../../src/exception.filter";
 import { useContainer } from "class-validator";
-describe("Registration flow", () => {
+describe("Auth", () => {
   const registrationUser: AuthRegistrationInputModal = {
     login: `login${new Date().getHours()}${new Date().getMilliseconds()}`.slice(0,10),
     password: "password",
@@ -51,37 +51,45 @@ describe("Registration flow", () => {
     await app.init();
   });
 
-  it("Should registrate user successfully", () => {
-    return request(app.getHttpServer())
-      .post("/auth/registration")
-      .send(registrationUser as AuthRegistrationInputModal)
-      .expect(204);
-  });
+  describe('Registration flow',() => {
+    it("Should registrate user successfully", () => {
+      return request(app.getHttpServer())
+        .post("/auth/registration")
+        .send(registrationUser as AuthRegistrationInputModal)
+        .expect(204);
+    });
 
-  it("Should return 400, class validator errors", async () => {
-    return request(app.getHttpServer())
-      .post("/auth/registration")
-      .send({
-        login: "",
-        email: "123",
-        password: "1235678",
-      } as AuthRegistrationInputModal)
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.errorsMessages).toHaveLength(2);
-        expect(body.errorsMessages).toEqual([
-          {
-            field: "login",
-            message: "login must be longer than or equal to 3 characters",
-          },
-          {
-            field: "email",
-            message:
-              "email must match /^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$/ regular expression",
-          },
-        ]);
-      });
-  });
+    it("Should return 400, class validator errors", async () => {
+      return request(app.getHttpServer())
+        .post("/auth/registration")
+        .send({
+          login: "",
+          email: "123",
+          password: "1235678",
+        } as AuthRegistrationInputModal)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.errorsMessages).toHaveLength(2);
+          expect(body.errorsMessages).toEqual([
+            {
+              field: "login",
+              message: "login must be longer than or equal to 3 characters",
+            },
+            {
+              field: "email",
+              message:
+                "email must match /^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$/ regular expression",
+            },
+          ]);
+        });
+    });
+  })
+
+  describe('Registration confirmation flow', () => {
+    it('Should confirm registration successfully', () => {
+
+    })
+  })
 
   afterAll(async () => {
     await app.close();

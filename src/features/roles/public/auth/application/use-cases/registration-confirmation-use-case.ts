@@ -1,7 +1,9 @@
-import { BadRequestException, NotFoundException } from "@nestjs/common";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { UsersRepository } from "../../../../../infrstructura/users/users.repository";
-import { RegistrationConfirmationDTO, RegistrationConfirmationResultDTO } from "../auth.dto";
+import {
+  RegistrationConfirmationDTO,
+  RegistrationConfirmationResultDTO,
+} from "../auth.dto";
 
 export class RegistrationConfirmationCommand {
   constructor(public confirmCode: RegistrationConfirmationDTO) {}
@@ -12,7 +14,9 @@ export class RegistrationConfirmationUseCase
 {
   constructor(private readonly usersRepository: UsersRepository) {}
 
-  async execute(command: RegistrationConfirmationCommand): Promise<RegistrationConfirmationResultDTO> {
+  async execute(
+    command: RegistrationConfirmationCommand
+  ): Promise<RegistrationConfirmationResultDTO> {
     const { code } = command.confirmCode;
 
     const result: RegistrationConfirmationResultDTO = {
@@ -27,8 +31,8 @@ export class RegistrationConfirmationUseCase
       await this.usersRepository.findUserByConfirmCode(code);
 
     // check is user found
-    if(userByConfirmCode) {
-      result.isUserByConfirmCodeFound = true
+    if (userByConfirmCode) {
+      result.isUserByConfirmCodeFound = true;
     } else {
       return result;
     }
@@ -40,10 +44,7 @@ export class RegistrationConfirmationUseCase
     }
 
     // check is confirmed
-    if (
-      userByConfirmCode &&
-      userByConfirmCode.emailExpDate < new Date()
-    ) {
+    if (userByConfirmCode && userByConfirmCode.emailExpDate < new Date()) {
       result.isConfirmDateExpired = true;
       return result;
     }
@@ -54,12 +55,10 @@ export class RegistrationConfirmationUseCase
           confirmCode: userByConfirmCode.confirmCode,
           isConfirmed: true,
         });
-      result.isRegistrationConfirmed =
-        isRegistrationConfirmed as unknown as boolean;
+      result.isRegistrationConfirmed = isRegistrationConfirmed;
     } catch (err) {
       throw new Error(err);
     }
     return result;
-
   }
 }

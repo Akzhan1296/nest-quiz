@@ -84,7 +84,11 @@ describe("AuthController", () => {
 
   describe("Registration confirmation flow", () => {
     it("Should confirm email", () => {});
-    it("Should return 400 error is confirmation email is not correct or it was already used", () => {});
+    it("Should return 400 error if confirmation code is already confirmed", () => {});
+    it("Should return 400 error if confirmation date is expired", () => {});
+    it("Should return 404 error if user by confirmationcode is not found", () => {});
+
+
   });
 
   afterEach(async () => {
