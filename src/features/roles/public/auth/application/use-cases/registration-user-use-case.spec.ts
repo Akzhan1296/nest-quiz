@@ -8,6 +8,12 @@ import { RegistrationUserUseCase } from "./registration-user-use-case";
 import { CreateUserCommand } from "../../../../sa/users/application/use-cases/create-user-use-case";
 
 
+const userViewMock = {
+  id: '123',
+  login: 'login',
+  password: 'password',
+  email: 'email@email.com'
+}
 
 describe("Registration use-case", () => {
   let commandBus: CommandBus;
@@ -68,7 +74,7 @@ describe("Registration use-case", () => {
       email: `test${new Date().getHours()}${new Date().getMilliseconds()}@test.ru`,
     };
 
-    jest.spyOn(usersRepository, 'findUserByLogin').mockImplementation(async () => true);
+    jest.spyOn(usersRepository, 'findUserByLogin').mockImplementation(async () => userViewMock);
 
     const result = await registrationUserUseCase.execute({
       registrationUser: registrateUserDTO,
@@ -91,7 +97,7 @@ describe("Registration use-case", () => {
       password: "password",
       email: `test${new Date().getHours()}${new Date().getMilliseconds()}@test.ru`,
     };
-    jest.spyOn(usersRepository, 'findUserByEmail').mockImplementation(async () => true);
+    jest.spyOn(usersRepository, 'findUserByEmail').mockImplementation(async () => userViewMock);
 
     const result = await registrationUserUseCase.execute({
       registrationUser: registrateUserDTO,

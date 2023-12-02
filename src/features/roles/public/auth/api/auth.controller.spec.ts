@@ -36,48 +36,55 @@ describe("AuthController", () => {
     expect(commandBus).toBeDefined();
   });
 
-  it("Should registrate a user", async () => {
-    const mockExecute = jest.fn().mockReturnValue({
-      isLoginAlreadyExist: false,
-      isEmailAlreadyExist: false,
-      isUserRegistered: true,
+  describe("Registration user flow", () => {
+    it("Should registrate a user", async () => {
+      const mockExecute = jest.fn().mockReturnValue({
+        isLoginAlreadyExist: false,
+        isEmailAlreadyExist: false,
+        isUserRegistered: true,
+      });
+      jest.spyOn(commandBus, "execute").mockImplementation(mockExecute);
+
+      // act
+      let result = await authController.registration(registrationUserMock);
+
+      // results
+      expect(result).toBeTruthy();
+      expect(mockExecute).toHaveBeenCalledWith(
+        new RegistrationUserCommand(registrationUserMock)
+      );
     });
-    jest.spyOn(commandBus, "execute").mockImplementation(mockExecute);
 
-    // act
-    let result = await authController.registration(registrationUserMock);
+    it("Should return 400 error if isLoginAlreadyExist", async () => {
+      const mockExecute = jest.fn().mockReturnValue({
+        isLoginAlreadyExist: true,
+        isEmailAlreadyExist: false,
+        isUserRegistered: true,
+      });
+      jest.spyOn(commandBus, "execute").mockImplementation(mockExecute);
 
-    // results
-    expect(result).toBeTruthy();
-    expect(mockExecute).toHaveBeenCalledWith(
-      new RegistrationUserCommand(registrationUserMock)
-    );
+      await expect(
+        authController.registration(registrationUserMock)
+      ).rejects.toEqual(new BadRequestException("Login is already exist"));
+    });
+
+    it("Should return 400 error if isEmailAlreadyExist", async () => {
+      const mockExecute = jest.fn().mockReturnValue({
+        isLoginAlreadyExist: false,
+        isEmailAlreadyExist: true,
+        isUserRegistered: true,
+      });
+      jest.spyOn(commandBus, "execute").mockImplementation(mockExecute);
+
+      await expect(
+        authController.registration(registrationUserMock)
+      ).rejects.toEqual(new BadRequestException("Email is already exist"));
+    });
   });
-  
-  it("Should return 400 error if isLoginAlreadyExist (Registration user flow)", async () => {
-    const mockExecute = jest.fn().mockReturnValue({
-      isLoginAlreadyExist: true,
-      isEmailAlreadyExist: false,
-      isUserRegistered: true,
-    });
-    jest.spyOn(commandBus, "execute").mockImplementation(mockExecute);
 
-    await expect(authController.registration(registrationUserMock)).rejects.toEqual(
-      new BadRequestException("Login is already exist")
-    );
-  });
-
-  it("Should return 400 error if isEmailAlreadyExist (Registration user flow)", async () => {
-    const mockExecute = jest.fn().mockReturnValue({
-      isLoginAlreadyExist: false,
-      isEmailAlreadyExist: true,
-      isUserRegistered: true,
-    });
-    jest.spyOn(commandBus, "execute").mockImplementation(mockExecute);
-
-    await expect(authController.registration(registrationUserMock)).rejects.toEqual(
-      new BadRequestException("Email is already exist")
-    );
+  describe("Registration confirmation flow", () => {
+    it("Should confirm email", () => {});
+    it("Should return 400 error is confirmation email is not correct or it was already used", () => {});
   });
 
   afterEach(async () => {

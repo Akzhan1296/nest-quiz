@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
+import { add } from "date-fns";
 import { CommandBus, CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 
 import { AuthService } from "../auth.service";
@@ -14,7 +15,6 @@ export class RegistrationUserCommand {
   constructor(public registrationUser: RegistrationUserDTO) {}
 }
 @CommandHandler(RegistrationUserCommand)
-
 export class RegistrationUserUseCase
   implements ICommandHandler<RegistrationUserCommand>
 {
@@ -30,7 +30,7 @@ export class RegistrationUserUseCase
     let userId = null;
     let confirmCode = null;
 
-    const result = {
+    const result: RegistrationUserResultDTO = {
       isLoginAlreadyExist: false,
       isEmailAlreadyExist: false,
       isUserRegistered: false,
@@ -48,7 +48,8 @@ export class RegistrationUserUseCase
     }
 
     // check email
-    const isEmailAlreadyExist = await this.usersRepository.findUserByEmail(email);
+    const isEmailAlreadyExist =
+      await this.usersRepository.findUserByEmail(email);
     if (isEmailAlreadyExist) {
       result.isEmailAlreadyExist = true;
       return result;
@@ -70,15 +71,20 @@ export class RegistrationUserUseCase
     if (result.isUserCreated) {
       confirmCode = uuidv4();
       try {
-        result.isUserRegistered = await this.usersRepository.registrationUser({
+        let registrationId = await this.usersRepository.registrationUser({
           userId,
           confirmCode,
           isConfirmed: false,
-          emailExpDate: new Date(),
+          emailExpDate: add(new Date(), {
+            minutes: 1,
+          }),
           createdAt: new Date(),
         });
+
+        result.isUserRegistered = !!registrationId;
       } catch (err) {
         throw new Error(err);
+        // add remove user logic
       }
     }
 
@@ -92,7 +98,6 @@ export class RegistrationUserUseCase
           letterText: "Confirm code",
           codeText: "Code",
         });
-        result.isUserRegistered = true;
       } catch (err) {
         throw new Error(err);
       }
@@ -100,6 +105,3 @@ export class RegistrationUserUseCase
     return result;
   }
 }
-
-
-

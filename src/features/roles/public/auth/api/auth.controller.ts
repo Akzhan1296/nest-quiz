@@ -4,6 +4,7 @@ import {
   Get,
   HttpCode,
   Ip,
+  NotFoundException,
   Post,
   Req,
   Res,
@@ -21,6 +22,11 @@ import {
   NewPasswordInputModal,
 } from "./auth.models";
 import { RegistrationUserCommand } from "../application/use-cases/registration-user-use-case";
+import { RegistrationConfirmationCommand } from "../application/use-cases/registration-confirmation-use-case";
+import {
+  RegistrationConfirmationDTO,
+  RegistrationConfirmationResultDTO,
+} from "../application/auth.dto";
 
 @Controller("auth")
 export class AuthController {
@@ -92,18 +98,6 @@ export class AuthController {
   //   //   .send();
   // }
 
-  // @Post("registration-confirmation")
-  // // @UseGuards(BlockIpGuard)
-  // @HttpCode(204)
-  // async registrationConfirmation(
-  //   @Body() inputModel: AuthRegistrationConfirmInputModal
-  // ): Promise<boolean> {
-  //   return true;
-  //   // return this.commandBus.execute(
-  //   //   new RegistrationConfirmationCommand(inputModel)
-  //   // );
-  // }
-
   @Post("registration")
   // @UseGuards(BlockIpGuard)
   @HttpCode(204)
@@ -121,8 +115,6 @@ export class AuthController {
         })
       );
 
-      console.log(isLoginAlreadyExist)
-
     if (isLoginAlreadyExist) {
       throw new BadRequestException({
         message: "Login is already exist",
@@ -138,6 +130,39 @@ export class AuthController {
     }
 
     return isUserRegistered;
+  }
+
+  @Post("registration-confirmation")
+  // @UseGuards(BlockIpGuard)
+  @HttpCode(204)
+  async registrationConfirmation(
+    @Body() inputModel: AuthRegistrationConfirmInputModal
+  ): Promise<boolean> {
+    const {
+      isUserByConfirmCodeFound,
+      isEmailAlreadyConfirmed,
+      isConfirmDateExpired,
+      isRegistrationConfirmed,
+    } = await this.commandBus.execute<
+      unknown,
+      RegistrationConfirmationResultDTO
+    >(new RegistrationConfirmationCommand({ code: inputModel.code }));
+
+    if (!isUserByConfirmCodeFound) {
+      throw new NotFoundException("user by this confirm code not found");
+    }
+
+    if (isEmailAlreadyConfirmed) {
+      throw new BadRequestException({
+        message: "Email is already confirmed",
+        field: "code",
+      });
+    }
+
+    if (isConfirmDateExpired) {
+      throw new BadRequestException("Date is already expired");
+    }
+    return isRegistrationConfirmed;
   }
 
   // @Post("registration-email-resending")
