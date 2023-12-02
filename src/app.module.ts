@@ -1,9 +1,27 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersModule } from './users/users.module';
+
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+
+//controllers
+import { AuthController } from './features/roles/public/auth/api/auth.controller';
+
+//useCases
+import { RegistrationUserUseCase } from './features/roles/public/auth/application/use-cases/registration-user-use-case';
+import { CreateUserUseCase } from './features/roles/sa/users/application/use-cases/create-user-use-case';
+import { UsersRepository } from './features/infrstructura/users/users.repository';
+import { AuthService } from './features/roles/public/auth/application/auth.service';
+import { CqrsModule } from '@nestjs/cqrs';
+
+
+//repository
+const userUseCases = [CreateUserUseCase];
+const authUseCases = [RegistrationUserUseCase];
 
 @Module({
   imports: [
+    CqrsModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: '127.0.0.1',
@@ -14,7 +32,15 @@ import { UsersModule } from './users/users.module';
       autoLoadEntities: false,
       synchronize: false,
     }),
-    UsersModule,
   ],
+  controllers: [    AppController,
+    AuthController],
+  providers: [
+    AppService,
+    AuthService,
+    UsersRepository,
+    ...userUseCases,
+    ...authUseCases,
+  ]
 })
 export class AppModule {}
