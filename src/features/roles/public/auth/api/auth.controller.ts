@@ -149,7 +149,7 @@ export class AuthController {
     >(new RegistrationConfirmationCommand({ code: inputModel.code }));
 
     if (!isUserByConfirmCodeFound) {
-      throw new NotFoundException("user by this confirm code not found");
+      throw new NotFoundException("User by this confirm code not found");
     }
 
     if (isEmailAlreadyConfirmed) {
