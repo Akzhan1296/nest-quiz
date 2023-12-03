@@ -27,6 +27,7 @@ import {
   RegistrationConfirmationDTO,
   RegistrationConfirmationResultDTO,
 } from "../application/auth.dto";
+import { EmailResendingCommand } from "../application/use-cases/registration-email-resendings-use-case";
 
 @Controller("auth")
 export class AuthController {
@@ -165,14 +166,14 @@ export class AuthController {
     return isRegistrationConfirmed;
   }
 
-  // @Post("registration-email-resending")
-  // // @UseGuards(BlockIpGuard)
-  // @HttpCode(204)
-  // async registrationEmailResending(
-  //   @Body() inputModel: AuthEmailResendingInputModal
-  // ): Promise<void> {
-  //   // return this.commandBus.execute(new EmailResendingCommand(inputModel.email));
-  // }
+  @Post("registration-email-resending")
+  // @UseGuards(BlockIpGuard)
+  @HttpCode(204)
+  async registrationEmailResending(
+    @Body() inputModel: AuthEmailResendingInputModal
+  ): Promise<void> {
+    return this.commandBus.execute(new EmailResendingCommand(inputModel.email));
+  }
 
   // @Get("me")
   // // @UseGuards(AuthGuard)

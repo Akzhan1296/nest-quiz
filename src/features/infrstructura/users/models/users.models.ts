@@ -5,7 +5,7 @@ export type CreateUserEntryDTO = {
 };
 
 export type RegistrationEntryDTO = {
-  userId: {Id: string};
+  userId: { Id: string };
   confirmCode: string;
   isConfirmed: boolean;
   emailExpDate: Date;
@@ -13,9 +13,15 @@ export type RegistrationEntryDTO = {
 };
 
 export type ConfirmRegistrationEntryDTO = {
-  confirmCode: string,
-  isConfirmed: boolean
-}
+  confirmCode: string;
+  isConfirmed: boolean;
+};
+
+export type NewConfirmCodeEntryDTO = {
+  emailExpDate: Date;
+  confirmCode: string;
+  registrationId: string;
+};
 
 export type RegistrationViewDTO = {
   createdAt: Date;
@@ -23,11 +29,22 @@ export type RegistrationViewDTO = {
   isConfirmed: boolean;
   confirmCode: string;
   registrationId: string;
-}
+};
 
 export type UserViewDTO = {
   id: string;
   login: string;
   password: string;
   email: string;
+};
+
+export type RegistrationWithUserViewDTO = {
+  registrationId: string,
+  confirmCode: string,
+  isConfirmed: boolean,
+  emailExpDate: Date,
+  createdAt: Date,
+  userId: string,
+  email: string
 }
+

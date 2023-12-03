@@ -43,7 +43,7 @@ export class RegistrationConfirmationUseCase
       return result;
     }
 
-    // check is confirmed
+    // check is isConfirmDateExpired
     if (userByConfirmCode && userByConfirmCode.emailExpDate < new Date()) {
       result.isConfirmDateExpired = true;
       return result;
