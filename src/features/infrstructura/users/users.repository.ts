@@ -1,14 +1,19 @@
 import { InjectDataSource } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
+import { v4 as uuidv4 } from "uuid";
 import {
+  ConfirmRegistrationEntryDTO,
   CreateUserEntryDTO,
   RegistrationEntryDTO,
+  RegistrationViewDTO,
+  UserViewDTO,
 } from "./models/users.models";
 
 export class UsersRepository {
   constructor(@InjectDataSource() protected dataSource: DataSource) {}
 
-  async findUserByEmail(email: string): Promise<boolean> {
+  async findUserByEmail(email: string): Promise<UserViewDTO | null> {
+    // Users table
     let result = await this.dataSource.query(
       `
     SELECT "Id", "Login", "Password", "Email"
@@ -17,11 +22,17 @@ export class UsersRepository {
       [email]
     );
 
-    if (result.length > 0) return true;
-    return false;
+    if (result.length === 0) return null;
+    return {
+      id: result[0].Id,
+      login: result[0].Login,
+      password: result[0].Password,
+      email: result[0].Email,
+    };
   }
 
-  async findUserByLogin(login: string): Promise<boolean> {
+  async findUserByLogin(login: string): Promise<UserViewDTO | null> {
+    // Users table
     let result = await this.dataSource.query(
       `
     SELECT "Id", "Login", "Password", "Email"
@@ -30,8 +41,35 @@ export class UsersRepository {
       [login]
     );
 
-    if (result.length > 0) return true;
-    return false;
+    if (result.length === 0) return null;
+    return {
+      id: result[0].Id,
+      login: result[0].Login,
+      password: result[0].Password,
+      email: result[0].Email,
+    };
+  }
+
+  async findUserByConfirmCode(
+    code: string
+  ): Promise<RegistrationViewDTO | null> {
+    // registration table
+    let result = await this.dataSource.query(
+      ` SELECT "Id", "ConfirmCode", "IsConfirmed", "EmailExpDate", "CreatedAt", "UserId"
+	      FROM public."Registration"
+	      WHERE "ConfirmCode" like $1`,
+      [code]
+    );
+
+    if (result.length === 0) return null;
+
+    return {
+      createdAt: result[0].CreatedAt,
+      emailExpDate: result[0].EmailExpDate,
+      isConfirmed: result[0].IsConfirmed,
+      confirmCode: result[0].ConfirmCode,
+      registrationId: result[0].Id,
+    };
   }
 
   async createUser(creationUser: CreateUserEntryDTO): Promise<{ Id: string }> {
@@ -58,12 +96,30 @@ export class UsersRepository {
       userId: { Id },
     } = registrationUser;
 
-    return this.dataSource.query(
+    const result = await  this.dataSource.query(
       `INSERT INTO public."Registration"(
       "ConfirmCode", "IsConfirmed", "EmailExpDate", "CreatedAt", "UserId")
-	    VALUES ($1, $2, $3, $4, $5);`,
+	    VALUES ($1, $2, $3, $4, $5)
+      RETURNING "Id"`,
       [confirmCode, isConfirmed, emailExpDate, createdAt, Id]
     );
+
+    return result[0];
+  }
+
+  async confirmRegistration(
+    registrationConfirmation: ConfirmRegistrationEntryDTO
+  ): Promise<boolean> {
+    const { confirmCode, isConfirmed } = registrationConfirmation;
+
+    let result = await this.dataSource.query(
+      `UPDATE public."Registration"
+        SET "IsConfirmed"= $2
+        WHERE "ConfirmCode" = $1`,
+      [confirmCode, isConfirmed]
+    );
+  // result = [[], 1 | 0]
+    return !!result[1];
   }
 }
 
