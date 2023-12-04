@@ -76,7 +76,7 @@ export class RegistrationUserUseCase
           confirmCode,
           isConfirmed: false,
           emailExpDate: add(new Date(), {
-            minutes: 1,
+            minutes: 10,
           }),
           createdAt: new Date(),
         });

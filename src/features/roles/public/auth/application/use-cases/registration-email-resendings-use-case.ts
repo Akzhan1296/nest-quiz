@@ -4,6 +4,7 @@ import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { AuthService } from "../auth.service";
 import { UsersRepository } from "../../../../../infrstructura/users/users.repository";
 import { v4 as uuidv4 } from "uuid";
+import { RegistrationEmailResendingResultDTO } from "../auth.dto";
 
 export class EmailResendingCommand {
   constructor(public email: string) {}
@@ -17,7 +18,7 @@ export class EmailResendingUseCase
     private readonly authService: AuthService
   ) {}
 
-  async execute(command: EmailResendingCommand) {
+  async execute(command: EmailResendingCommand): Promise<RegistrationEmailResendingResultDTO> {
     const { email } = command;
 
     const result = {
@@ -42,6 +43,7 @@ export class EmailResendingUseCase
       result.isEmailAlreadyConfirmed = true;
       return result;
     }
+  
 
     const confirmCode = uuidv4();
     // update confirm data
@@ -50,7 +52,7 @@ export class EmailResendingUseCase
         {
           confirmCode,
           emailExpDate: add(new Date(), {
-            minutes: 3,
+            minutes: 10,
           }),
           registrationId: userByEmail.registrationId,
         }
@@ -60,7 +62,7 @@ export class EmailResendingUseCase
       throw new Error(err);
     }
 
-    // send new confirm code is confirm data was updated 
+    // send new confirm code is confirm data was updated
     if (result.isConfirmDataUpdated) {
       try {
         await this.authService.sendEmail({
@@ -75,7 +77,6 @@ export class EmailResendingUseCase
         throw new Error(err);
       }
     }
-
     return result;
   }
 }

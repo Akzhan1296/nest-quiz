@@ -29,3 +29,10 @@ export type RegistrationConfirmationResultDTO = {
 export type RegistrationConfirmationDTO = {
   code: string;
 };
+
+export type RegistrationEmailResendingResultDTO = {
+  isUserFound: boolean,
+  isEmailResent: boolean,
+  isEmailAlreadyConfirmed: boolean,
+  isConfirmDataUpdated: boolean,
+}

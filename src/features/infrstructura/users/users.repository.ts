@@ -126,7 +126,7 @@ export class UsersRepository {
 
   async findUserRegistrationDataByEmail(
     email: string
-  ): Promise<RegistrationWithUserViewDTO> {
+  ): Promise<RegistrationWithUserViewDTO | null> {
     const result = await this.dataSource.query(
       ` SELECT r.*, u."Email"
 	      FROM public."Registration" r
