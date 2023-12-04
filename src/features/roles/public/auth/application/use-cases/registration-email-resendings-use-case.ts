@@ -30,8 +30,6 @@ export class EmailResendingUseCase
     const userByEmail =
       await this.usersRepository.findUserRegistrationDataByEmail(email);
 
-    console.log('handle use case')
-
     // check user
     if (userByEmail) {
       result.isUserFound = true;
