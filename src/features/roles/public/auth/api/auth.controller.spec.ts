@@ -6,40 +6,32 @@ import { AuthRegistrationInputModal } from "./auth.models";
 import { RegistrationUserCommand } from "../application/use-cases/registration-user-use-case";
 import { BadRequestException } from "@nestjs/common";
 import { RegistrationConfirmationCommand } from "../application/use-cases/registration-confirmation-use-case";
-import { UsersRepository } from "../../../../infrstructura/users/users.repository";
-import { add } from "date-fns";
+import { EmailResendingCommand } from "../application/use-cases/registration-email-resendings-use-case";
 
 const registrationUserMock: AuthRegistrationInputModal = {
-  login: `login${new Date().getHours()}${new Date().getMilliseconds()}`.slice(
-    0,
-    10
-  ),
+  login: "login",
   password: "password",
-  email: `test${new Date().getHours()}${new Date().getMilliseconds()}@test.ru`,
+  email: "test@test.com",
 };
 
 describe("AuthController", () => {
   let authController: AuthController;
   let commandBus: CommandBus;
   let app: TestingModule;
-  let usersRepository: UsersRepository;
 
   beforeEach(async () => {
     app = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
-
     await app.init();
 
     authController = app.get<AuthController>(AuthController);
     commandBus = app.get<CommandBus>(CommandBus);
-    usersRepository = app.get<UsersRepository>(UsersRepository);
   });
 
   it("Should be defined", () => {
     expect(authController).toBeDefined();
     expect(commandBus).toBeDefined();
-    expect(usersRepository).toBeDefined();
   });
 
   describe("Registration user flow", () => {
@@ -117,21 +109,7 @@ describe("AuthController", () => {
         isRegistrationConfirmed: false,
       });
 
-      const userByConfirmCodeMock = {
-        createdAt: new Date(),
-        emailExpDate: add(new Date(), {
-          minutes: 1,
-        }),
-        isConfirmed: true,
-        confirmCode: "a8904469-3781-49a1-a5d7-56007c27ee77",
-        registrationId: "123",
-      } as const;
-
       jest.spyOn(commandBus, "execute").mockImplementation(mockExecute);
-
-      jest
-        .spyOn(usersRepository, "findUserByConfirmCode")
-        .mockImplementation(async () => userByConfirmCodeMock);
 
       //expect
       await expect(
@@ -140,7 +118,7 @@ describe("AuthController", () => {
         })
       ).rejects.toEqual(new BadRequestException("Email is already confirmed"));
     });
-    it("Should return 400 error if confirmation date is expired", async() => {
+    it("Should return 400 error if confirmation date is expired", async () => {
       const mockExecute = jest.fn().mockReturnValue({
         isUserByConfirmCodeFound: true,
         isEmailAlreadyConfirmed: false,
@@ -148,21 +126,7 @@ describe("AuthController", () => {
         isRegistrationConfirmed: false,
       });
 
-      const userByConfirmCodeMock = {
-        createdAt: new Date(),
-        emailExpDate: add(new Date(), {
-          minutes: -1,
-        }),
-        isConfirmed: true,
-        confirmCode: "a8904469-3781-49a1-a5d7-56007c27ee77",
-        registrationId: "123",
-      } as const;
-
       jest.spyOn(commandBus, "execute").mockImplementation(mockExecute);
-
-      jest
-        .spyOn(usersRepository, "findUserByConfirmCode")
-        .mockImplementation(async () => userByConfirmCodeMock);
 
       //expect
       await expect(
@@ -171,7 +135,7 @@ describe("AuthController", () => {
         })
       ).rejects.toEqual(new BadRequestException("Date is already expired"));
     });
-    it("Should return 404 error if user by confirmationcode is not found", async() => {
+    it("Should return 404 error if user by confirmationcode is not found", async () => {
       const mockExecute = jest.fn().mockReturnValue({
         isUserByConfirmCodeFound: false,
         isEmailAlreadyConfirmed: false,
@@ -181,16 +145,66 @@ describe("AuthController", () => {
 
       jest.spyOn(commandBus, "execute").mockImplementation(mockExecute);
 
-      jest
-        .spyOn(usersRepository, "findUserByConfirmCode")
-        .mockImplementation(async () => null);
-
       //expect
       await expect(
         authController.registrationConfirmation({
           code: "45dff467-ccdd-49df-9e9d-c6b407538122",
         })
-      ).rejects.toEqual(new BadRequestException("User by this confirm code not found"));
+      ).rejects.toEqual(
+        new BadRequestException("User by this confirm code not found")
+      );
+    });
+  });
+
+  describe("Email code resending", () => {
+    it("Should resend confirm code successfully", async () => {
+      const mockExecute = jest.fn().mockReturnValue({
+        isUserFound: true,
+        isEmailResent: true,
+        isEmailAlreadyConfirmed: false,
+        isConfirmDataUpdated: true,
+      });
+
+      jest.spyOn(commandBus, "execute").mockImplementation(mockExecute);
+
+      // act
+      let result = await authController.registrationEmailResending({
+        email: "test@test.com",
+      });
+
+      // results
+      expect(result).toBeTruthy();
+      expect(mockExecute).toHaveBeenCalledWith(
+        new EmailResendingCommand("test@test.com")
+      );
+    });
+    it("Should return 404 error, if user by email not found", async () => {
+      const mockExecute = jest.fn().mockReturnValue({
+        isUserFound: false,
+        isEmailResent: false,
+        isEmailAlreadyConfirmed: false,
+        isConfirmDataUpdated: false,
+      });
+
+      jest.spyOn(commandBus, "execute").mockImplementation(mockExecute);
+      await expect(
+        authController.registrationEmailResending({ email: "test@test.com" })
+      ).rejects.toEqual(
+        new BadRequestException("User by this confirm code not found")
+      );
+    });
+    it("Should return 400 error, if email is already confirmed", async () => {
+      const mockExecute = jest.fn().mockReturnValue({
+        isUserFound: true,
+        isEmailResent: false,
+        isEmailAlreadyConfirmed: true,
+        isConfirmDataUpdated: false,
+      });
+
+      jest.spyOn(commandBus, "execute").mockImplementation(mockExecute);
+      await expect(
+        authController.registrationEmailResending({ email: "test@test.com" })
+      ).rejects.toEqual(new BadRequestException("Email is already confirmed"));
     });
   });
 

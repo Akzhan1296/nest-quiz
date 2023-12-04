@@ -1,11 +1,10 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { AppModule } from "../../../../../../app.module";
 import { UsersRepository } from "../../../../../infrstructura/users/users.repository";
-import { RegistrationConfirmationUseCase } from "./registration-confirmation-use-case";
 import { add } from "date-fns";
 import { EmailResendingUseCase } from "./registration-email-resendings-use-case";
 
-const userByConfirmCodeMock = {
+const userByEmailMock = {
   createdAt: new Date(),
   emailExpDate: add(new Date(), {
     minutes: 1,
@@ -41,7 +40,7 @@ describe("Registration email resending use-case", () => {
   it("Should resend code", async () => {
     jest
       .spyOn(usersRepository, "findUserRegistrationDataByEmail")
-      .mockImplementation(async () => userByConfirmCodeMock);
+      .mockImplementation(async () => userByEmailMock);
 
     jest
       .spyOn(usersRepository, "setNewConfirmCode")
@@ -58,12 +57,11 @@ describe("Registration email resending use-case", () => {
       isConfirmDataUpdated: true,
     });
   });
-
   it("Should return isEmailAlreadyConfirmed: true, if email already confirmed", async () => {
     jest
       .spyOn(usersRepository, "findUserRegistrationDataByEmail")
       .mockImplementation(async () => ({
-        ...userByConfirmCodeMock,
+        ...userByEmailMock,
         isConfirmed: true,
       }));
 
@@ -78,7 +76,6 @@ describe("Registration email resending use-case", () => {
       isConfirmDataUpdated: false,
     });
   });
-
   it("Should return isUserFound: false, if user by email not found", async () => {
     jest
       .spyOn(usersRepository, "findUserRegistrationDataByEmail")

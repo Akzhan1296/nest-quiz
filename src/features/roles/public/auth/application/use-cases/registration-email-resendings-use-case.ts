@@ -1,4 +1,3 @@
-import { BadRequestException } from "@nestjs/common";
 import { add } from "date-fns";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { AuthService } from "../auth.service";
@@ -30,6 +29,8 @@ export class EmailResendingUseCase
 
     const userByEmail =
       await this.usersRepository.findUserRegistrationDataByEmail(email);
+
+    console.log('handle use case')
 
     // check user
     if (userByEmail) {
