@@ -14,11 +14,12 @@ import { UsersRepository } from './features/infrstructura/users/users.repository
 import { AuthService } from './features/roles/public/auth/application/auth.service';
 import { CqrsModule } from '@nestjs/cqrs';
 import { RegistrationConfirmationUseCase } from './features/roles/public/auth/application/use-cases/registration-confirmation-use-case';
+import { EmailResendingUseCase } from './features/roles/public/auth/application/use-cases/registration-email-resendings-use-case';
 
 
 //repository
 const userUseCases = [CreateUserUseCase];
-const authUseCases = [RegistrationUserUseCase, RegistrationConfirmationUseCase];
+const authUseCases = [RegistrationUserUseCase, RegistrationConfirmationUseCase, EmailResendingUseCase];
 
 @Module({
   imports: [

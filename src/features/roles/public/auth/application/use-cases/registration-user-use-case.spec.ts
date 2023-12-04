@@ -5,13 +5,18 @@ import { AuthService } from "../auth.service";
 import { UsersRepository } from "../../../../../infrstructura/users/users.repository";
 import { RegistrationUserUseCase } from "./registration-user-use-case";
 
-
 const userViewMock = {
-  id: '123',
-  login: 'login',
-  password: 'password',
-  email: 'email@email.com'
-}
+  id: "123",
+  login: "login",
+  password: "password",
+  email: "email@email.com",
+};
+
+const registrateUserInputMock = {
+  login: "login",
+  password: "password",
+  email: "email@email.com",
+};
 
 describe("Registration use-case", () => {
   let commandBus: CommandBus;
@@ -38,75 +43,69 @@ describe("Registration use-case", () => {
     expect(commandBus).toBeDefined();
     expect(authService).toBeDefined();
     expect(usersRepository).toBeDefined();
+    expect(registrationUserUseCase).toBeDefined();
   });
   it("Should registrate a user", async () => {
+    jest
+      .spyOn(usersRepository, "findUserByLogin")
+      .mockImplementation(async () => null);
 
-    const registrateUserDTO = {
-      login: `login${new Date().getHours()}${new Date().getMilliseconds()}`.slice(
-        0,
-        10
-      ),
-      password: "password",
-      email: `test${new Date().getHours()}${new Date().getMilliseconds()}@test.ru`,
-    };
-    
+    jest
+      .spyOn(usersRepository, "findUserByEmail")
+      .mockImplementation(async () => null);
+
     const result = await registrationUserUseCase.execute({
-      registrationUser: registrateUserDTO,
+      registrationUser: registrateUserInputMock,
     });
 
     expect(result).toEqual({
       isLoginAlreadyExist: false,
       isEmailAlreadyExist: false,
       isUserRegistered: true,
-      isUserCreated: true
-    })
+      isUserCreated: true,
+    });
   });
 
-  it("Should not registrate a user isLoginAlreadyExist", async () => {
-    const registrateUserDTO = {
-      login: `login${new Date().getHours()}${new Date().getMilliseconds()}`.slice(
-        0,
-        10
-      ),
-      password: "password",
-      email: `test${new Date().getHours()}${new Date().getMilliseconds()}@test.ru`,
-    };
+  it("Should not registrate a user if isLoginAlreadyExist", async () => {
+    jest
+      .spyOn(usersRepository, "findUserByLogin")
+      .mockImplementation(async () => userViewMock);
 
-    jest.spyOn(usersRepository, 'findUserByLogin').mockImplementation(async () => userViewMock);
+    jest
+      .spyOn(usersRepository, "findUserByEmail")
+      .mockImplementation(async () => null);
 
     const result = await registrationUserUseCase.execute({
-      registrationUser: registrateUserDTO,
+      registrationUser: registrateUserInputMock,
     });
 
     expect(result).toEqual({
       isLoginAlreadyExist: true,
       isEmailAlreadyExist: false,
       isUserRegistered: false,
-      isUserCreated: false
-    })
+      isUserCreated: false,
+    });
   });
 
-  it("Should not registrate a user isEmailAlreadyExist", async () => {    
-    const registrateUserDTO = {
-      login: `login${new Date().getHours()}${new Date().getMilliseconds()}`.slice(
-        0,
-        10
-      ),
-      password: "password",
-      email: `test${new Date().getHours()}${new Date().getMilliseconds()}@test.ru`,
-    };
-    jest.spyOn(usersRepository, 'findUserByEmail').mockImplementation(async () => userViewMock);
+  it("Should not registrate a user if isEmailAlreadyExist", async () => {
+    jest
+      .spyOn(usersRepository, "findUserByLogin")
+      .mockImplementation(async () => null);
+
+    jest
+      .spyOn(usersRepository, "findUserByEmail")
+      .mockImplementation(async () => userViewMock);
 
     const result = await registrationUserUseCase.execute({
-      registrationUser: registrateUserDTO,
+      registrationUser: registrateUserInputMock,
     });
 
     expect(result).toEqual({
       isLoginAlreadyExist: false,
       isEmailAlreadyExist: true,
       isUserRegistered: false,
-      isUserCreated: false
-    })
+      isUserCreated: false,
+    });
   });
 
   afterEach(async () => {

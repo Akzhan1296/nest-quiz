@@ -26,7 +26,9 @@ import { RegistrationConfirmationCommand } from "../application/use-cases/regist
 import {
   RegistrationConfirmationDTO,
   RegistrationConfirmationResultDTO,
+  RegistrationEmailResendingResultDTO,
 } from "../application/auth.dto";
+import { EmailResendingCommand } from "../application/use-cases/registration-email-resendings-use-case";
 
 @Controller("auth")
 export class AuthController {
@@ -165,14 +167,28 @@ export class AuthController {
     return isRegistrationConfirmed;
   }
 
-  // @Post("registration-email-resending")
-  // // @UseGuards(BlockIpGuard)
-  // @HttpCode(204)
-  // async registrationEmailResending(
-  //   @Body() inputModel: AuthEmailResendingInputModal
-  // ): Promise<void> {
-  //   // return this.commandBus.execute(new EmailResendingCommand(inputModel.email));
-  // }
+  @Post("registration-email-resending")
+  // @UseGuards(BlockIpGuard)
+  @HttpCode(204)
+  async registrationEmailResending(
+    @Body() inputModel: AuthEmailResendingInputModal
+  ): Promise<boolean> {
+    const { isUserFound, isEmailResent, isEmailAlreadyConfirmed } =
+      await this.commandBus.execute<unknown, RegistrationEmailResendingResultDTO>(new EmailResendingCommand(inputModel.email));
+
+    if (!isUserFound) {
+      throw new NotFoundException("User by this confirm code not found");
+    }
+
+    if (isEmailAlreadyConfirmed) {
+      throw new BadRequestException({
+        message: "Email is already confirmed",
+        field: "code",
+      });
+    }
+
+    return isEmailResent;
+  }
 
   // @Get("me")
   // // @UseGuards(AuthGuard)

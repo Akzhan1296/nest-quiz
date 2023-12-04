@@ -5,21 +5,51 @@ import {
   ValidationPipe,
 } from "@nestjs/common";
 import * as request from "supertest";
-import { AuthRegistrationConfirmInputModal, AuthRegistrationInputModal } from "../../src/features/roles/public/auth/api/auth.models";
+import {
+  AuthEmailResendingInputModal,
+  AuthRegistrationConfirmInputModal,
+  AuthRegistrationInputModal,
+} from "../../src/features/roles/public/auth/api/auth.models";
 import { AppModule } from "../../src/app.module";
 import { HttpExceptionFilter } from "../../src/exception.filter";
 import { useContainer } from "class-validator";
 import { add } from "date-fns";
 import { UsersRepository } from "../../src/features/infrstructura/users/users.repository";
+import { v4 as uuidv4 } from "uuid";
 
+
+const registrationUser: AuthRegistrationInputModal = {
+  login: `login${new Date().getHours()}${new Date().getMilliseconds()}`.slice(
+    0,
+    10
+  ),
+  password: "password",
+  email: `test${new Date().getHours()}${new Date().getMilliseconds()}@test.ru`,
+} as const;
+
+const userByEmailMock = {
+  createdAt: new Date(),
+  emailExpDate: add(new Date(), {
+    minutes: 1,
+  }),
+  isConfirmed: false,
+  confirmCode: "a8904469-3781-49a1-a5d7-56007c27ee77",
+  registrationId: uuidv4(),
+  userId: uuidv4(),
+  email: "test@test.com",
+} as const;
+
+const userByConfirmCodeMock = {
+  createdAt: new Date(),
+  emailExpDate: add(new Date(), {
+    minutes: 1,
+  }),
+  isConfirmed: false,
+  confirmCode: uuidv4(),
+  registrationId: uuidv4(),
+} as const;
 
 describe("Auth", () => {
-  const registrationUser: AuthRegistrationInputModal = {
-    login: `login${new Date().getHours()}${new Date().getMilliseconds()}`.slice(0,10),
-    password: "password",
-    email: `test${new Date().getHours()}${new Date().getMilliseconds()}@test.ru`,
-  };
-
   let app: INestApplication;
   let usersRepository: UsersRepository;
 
@@ -56,10 +86,12 @@ describe("Auth", () => {
     await app.init();
 
     usersRepository = app.get<UsersRepository>(UsersRepository);
-
   });
+  beforeEach(()=> {
+    jest.clearAllMocks();
+  })
 
-  describe('Registration flow',() => {
+  describe("Registration flow", () => {
     it("Should registrate user successfully", () => {
       return request(app.getHttpServer())
         .post("/auth/registration")
@@ -91,31 +123,23 @@ describe("Auth", () => {
           ]);
         });
     });
-  })
+  });
 
-  describe('Registration confirmation flow', () => {
+  describe("Registration confirmation flow", () => {
     it("Should confirm registration successfully", () => {
-      const userByConfirmCodeMock = {
-        createdAt: new Date(),
-        emailExpDate: add(new Date(), {
-          minutes: 1,
-        }),
-        isConfirmed: false,
-        confirmCode: "45dff427-ccdd-49df-9e9d-c6b407538137",
-        registrationId: "123",
-      } as const;
+      jest
+        .spyOn(usersRepository, "findUserByConfirmCode")
+        .mockImplementation(async () => userByConfirmCodeMock);
 
       jest
-      .spyOn(usersRepository, "findUserByConfirmCode")
-      .mockImplementation(async () => userByConfirmCodeMock);
-
-    jest
-    .spyOn(usersRepository, "confirmRegistration")
-    .mockImplementation(async () => true);
+        .spyOn(usersRepository, "confirmRegistration")
+        .mockImplementation(async () => true);
 
       return request(app.getHttpServer())
         .post("/auth/registration-confirmation")
-        .send({code: "45dff427-ccdd-49df-9e9d-c6b407538137"} as AuthRegistrationConfirmInputModal)
+        .send({
+          code: "45dff427-ccdd-49df-9e9d-c6b407538137",
+        } as AuthRegistrationConfirmInputModal)
         .expect(204);
     });
 
@@ -125,28 +149,25 @@ describe("Auth", () => {
       .mockImplementation(async () => null);
       return request(app.getHttpServer())
         .post("/auth/registration-confirmation")
-        .send({code: "55dff337-ccdd-49df-9e9d-c6b407538137"} as AuthRegistrationConfirmInputModal)
+        .send({
+          code: uuidv4(), //should be different code
+        } as AuthRegistrationConfirmInputModal)
         .expect(404);
     });
 
     it("Should return 400 error", async () => {
-      const userByConfirmCodeMock = {
-        createdAt: new Date(),
-        emailExpDate: add(new Date(), {
-          minutes: 1,
-        }),
-        isConfirmed: true,
-        confirmCode: "45dff427-ccdd-49df-9e9d-c6b407538137",
-        registrationId: "123",
-      } as const;
-
       jest
-      .spyOn(usersRepository, "findUserByConfirmCode")
-      .mockImplementation(async () => userByConfirmCodeMock);
+        .spyOn(usersRepository, "findUserByConfirmCode")
+        .mockImplementation(async () => ({
+          ...userByConfirmCodeMock,
+          isConfirmed: true,
+        }));
 
-       request(app.getHttpServer())
+      request(app.getHttpServer())
         .post("/auth/registration-confirmation")
-        .send({code: "45dff427-ccdd-49df-9e9d-c6b407538137"} as AuthRegistrationConfirmInputModal)
+        .send({
+          code: "45dff427-ccdd-49df-9e9d-c6b407538137",
+        } as AuthRegistrationConfirmInputModal)
         .expect(400)
         .then(({ body }) => {
           expect(body.errorsMessages).toHaveLength(1);
@@ -154,11 +175,63 @@ describe("Auth", () => {
             {
               field: "code",
               message: "Email is already confirmed",
-            }
+            },
           ]);
         });
     });
-  })
+  });
+
+  describe("Confirm email resending", () => {
+    it("Should resend email", () => {
+      jest
+      .spyOn(usersRepository, "findUserRegistrationDataByEmail")
+      .mockImplementation(async () => (userByEmailMock));
+
+      request(app.getHttpServer())
+      .post("/auth/registration-email-resending")
+      .send({
+        email: "not-real-email@test.com",
+      } as AuthEmailResendingInputModal)
+      .expect(204)
+    });
+
+    it("Should return 404 error", () => {
+      jest
+      .spyOn(usersRepository, "findUserRegistrationDataByEmail")
+      .mockImplementation(async () => null);
+      return request(app.getHttpServer())
+        .post("/auth/registration-email-resending")
+        .send({
+          email: "not-3real-email@test.com",
+        } as AuthEmailResendingInputModal)
+        .expect(404);
+    });
+
+    it("Should return 400 error, if email already confirmed", () => {
+      jest
+        .spyOn(usersRepository, "findUserRegistrationDataByEmail")
+        .mockImplementation(async () => ({
+          ...userByEmailMock,
+          isConfirmed: true,
+        }));
+
+        request(app.getHttpServer())
+        .post("/auth/registration-email-resending")
+        .send({
+          email: "not-real-email@test.com",
+        } as AuthEmailResendingInputModal)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.errorsMessages).toHaveLength(1);
+          expect(body.errorsMessages).toEqual([
+            {
+              field: "code",
+              message: "Email is already confirmed",
+            },
+          ]);
+        });
+    });
+  });
 
   afterAll(async () => {
     await app.close();

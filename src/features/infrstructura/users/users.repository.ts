@@ -4,8 +4,10 @@ import { v4 as uuidv4 } from "uuid";
 import {
   ConfirmRegistrationEntryDTO,
   CreateUserEntryDTO,
+  NewConfirmCodeEntryDTO,
   RegistrationEntryDTO,
   RegistrationViewDTO,
+  RegistrationWithUserViewDTO,
   UserViewDTO,
 } from "./models/users.models";
 
@@ -96,7 +98,7 @@ export class UsersRepository {
       userId: { Id },
     } = registrationUser;
 
-    const result = await  this.dataSource.query(
+    const result = await this.dataSource.query(
       `INSERT INTO public."Registration"(
       "ConfirmCode", "IsConfirmed", "EmailExpDate", "CreatedAt", "UserId")
 	    VALUES ($1, $2, $3, $4, $5)
@@ -118,7 +120,45 @@ export class UsersRepository {
         WHERE "ConfirmCode" = $1`,
       [confirmCode, isConfirmed]
     );
-  // result = [[], 1 | 0]
+    // result = [[], 1 | 0]
+    return !!result[1];
+  }
+
+  async findUserRegistrationDataByEmail(
+    email: string
+  ): Promise<RegistrationWithUserViewDTO | null> {
+    const result = await this.dataSource.query(
+      ` SELECT r.*, u."Email"
+	      FROM public."Registration" r
+	      LEFT JOIN public."Users" u
+	      on r."UserId" = u."Id"
+        WHERE u."Email" = $1`,
+      [email]
+    );
+
+    if (result.length === 0) return null;
+
+    return {
+      registrationId: result[0].Id,
+      confirmCode: result[0].ConfirmCode,
+      isConfirmed: result[0].IsConfirmed,
+      emailExpDate: result[0].EmailExpDate,
+      createdAt: result[0].CreatedAt,
+      userId: result[0].UserId,
+      email: result[0].Email,
+    };
+  }
+
+  async setNewConfirmCode(newConfirmCode: NewConfirmCodeEntryDTO): Promise<boolean> {
+    const { confirmCode, emailExpDate, registrationId } = newConfirmCode;
+
+    let result = await this.dataSource.query(
+      `UPDATE public."Registration"
+        SET "ConfirmCode"= $1, "EmailExpDate"= $2
+        WHERE "Id" = $3`,
+      [confirmCode, emailExpDate, registrationId]
+    );
+    // result = [[], 1 | 0]
     return !!result[1];
   }
 }
