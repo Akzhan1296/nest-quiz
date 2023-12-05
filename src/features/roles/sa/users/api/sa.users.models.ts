@@ -16,9 +16,9 @@ export class AddUserInputModel {
   login: string;
   @MinLength(6)
   @MaxLength(20)
-  @Matches(/^[a-zA-Z0-9_-]*$/, { message: "not valid login" })
+  @Matches(/^[a-zA-Z0-9_-]*$/, { message: "not valid password" })
   password: string;
-  @Matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/, { message: "not valid email" })
+  @Matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
   email: string;
 }
 

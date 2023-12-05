@@ -4,11 +4,13 @@ import { AppModule } from "../../../../../app.module";
 import { UsersController } from "./sa.users.controller";
 import { AddUserInputModel } from "./sa.users.models";
 import { CreateUserCommand } from "../application/use-cases/create-user-use-case";
+import { v4 as uuidv4 } from "uuid";
+import { BadRequestException } from "@nestjs/common";
 
 const createUserMock: AddUserInputModel = {
-  login: "login",
+  login: "Login",
   password: "password",
-  email: "test@test.com",
+  email: "email@email.com",
 };
 
 describe("AuthController", () => {
@@ -33,18 +35,24 @@ describe("AuthController", () => {
 
   describe("Registration user flow", () => {
     it("Should add user by SA", async () => {
-      const mockExecute = jest.fn().mockReturnValue({
-        isLoginAlreadyExist: false,
-        isEmailAlreadyExist: false,
-        isUserRegistered: true,
-      });
+      const mockResult = {
+        id: uuidv4(),
+        login: "Login",
+        createdAt: new Date(),
+        email: "email@email.com",
+      };
+      // Создание моковой реализации для execute:
+      const mockExecute = jest.fn().mockReturnValue(mockResult);
+
+      // Использование jest.spyOn для замены реализации execute на моковую:
       jest.spyOn(commandBus, "execute").mockImplementation(mockExecute);
 
       // act
       let result = await usersController.createUser(createUserMock);
 
-      // results
+      //results
       expect(result).toBeTruthy();
+      expect(result).toEqual(mockResult);
       expect(mockExecute).toHaveBeenCalledWith(
         new CreateUserCommand(createUserMock)
       );
