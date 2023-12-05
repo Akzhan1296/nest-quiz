@@ -2,6 +2,7 @@ export type CreateUserEntryDTO = {
   login: string;
   passwordHash: string;
   email: string;
+  createdAt: Date;
 };
 
 export type RegistrationEntryDTO = {
@@ -39,12 +40,18 @@ export type UserViewDTO = {
 };
 
 export type RegistrationWithUserViewDTO = {
-  registrationId: string,
-  confirmCode: string,
-  isConfirmed: boolean,
-  emailExpDate: Date,
-  createdAt: Date,
-  userId: string,
-  email: string
-}
+  registrationId: string;
+  confirmCode: string;
+  isConfirmed: boolean;
+  emailExpDate: Date;
+  createdAt: Date;
+  userId: string;
+  email: string;
+};
 
+export type CreatedUserViewModel = {
+  id: string;
+  login: string;
+  email: string;
+  createdAt: Date;
+};

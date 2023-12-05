@@ -56,14 +56,15 @@ export class RegistrationUserUseCase
     }
 
     try {
-      userId = await this.commandBus.execute(
+      const createdUser = await this.commandBus.execute(
         new CreateUserCommand({
           email,
           login,
           password,
         })
       );
-      result.isUserCreated = !!userId;
+      result.isUserCreated = !!createdUser;
+      userId = createdUser.id
     } catch (err) {
       throw new Error(err);
     }
