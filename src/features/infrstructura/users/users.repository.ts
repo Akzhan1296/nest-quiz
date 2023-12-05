@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 import {
   ConfirmRegistrationEntryDTO,
   CreateUserEntryDTO,
+  CreatedUserViewModel,
   NewConfirmCodeEntryDTO,
   RegistrationEntryDTO,
   RegistrationViewDTO,
@@ -74,17 +75,24 @@ export class UsersRepository {
     };
   }
 
-  async createUser(creationUser: CreateUserEntryDTO): Promise<{ Id: string }> {
-    const { login, passwordHash, email } = creationUser;
+  async createUser(
+    creationUser: CreateUserEntryDTO
+  ): Promise<CreatedUserViewModel> {
+    const { login, passwordHash, email, createdAt } = creationUser;
 
     let result = await this.dataSource.query(
       `INSERT INTO public."Users"(
-      "Login", "Password", "Email")
-      VALUES ($1, $2, $3)
-      RETURNING "Id";`,
-      [login, passwordHash, email]
+      "Login", "Password", "Email", "CreatedAt")
+      VALUES ($1, $2, $3, $4)
+      RETURNING "Id", "Email", "CreatedAt", "Login";`,
+      [login, passwordHash, email, createdAt]
     );
-    return result[0];
+    return {
+      id: result[0].Id,
+      login: result[0].Login,
+      createdAt: result[0].CreatedAt,
+      email: result[0].Email,
+    };
   }
 
   async registrationUser(
@@ -149,7 +157,9 @@ export class UsersRepository {
     };
   }
 
-  async setNewConfirmCode(newConfirmCode: NewConfirmCodeEntryDTO): Promise<boolean> {
+  async setNewConfirmCode(
+    newConfirmCode: NewConfirmCodeEntryDTO
+  ): Promise<boolean> {
     const { confirmCode, emailExpDate, registrationId } = newConfirmCode;
 
     let result = await this.dataSource.query(
