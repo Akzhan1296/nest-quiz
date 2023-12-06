@@ -16,7 +16,8 @@ import { useContainer } from "class-validator";
 import { add } from "date-fns";
 import { UsersRepository } from "../../src/features/infrstructura/users/users.repository";
 import { v4 as uuidv4 } from "uuid";
-
+import { AuthController } from "../../src/features/roles/public/auth/api/auth.controller";
+import { DeleteDataController } from "../../src/features/infrstructura/deleting-all-data";
 
 const registrationUser: AuthRegistrationInputModal = {
   login: `login${new Date().getHours()}${new Date().getMilliseconds()}`.slice(
@@ -52,6 +53,7 @@ const userByConfirmCodeMock = {
 describe("Auth", () => {
   let app: INestApplication;
   let usersRepository: UsersRepository;
+  let deleteDataController: DeleteDataController;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -86,10 +88,13 @@ describe("Auth", () => {
     await app.init();
 
     usersRepository = app.get<UsersRepository>(UsersRepository);
+    deleteDataController = app.get<DeleteDataController>(DeleteDataController);
   });
-  beforeEach(()=> {
+  beforeEach(async () => {
     jest.clearAllMocks();
-  })
+
+    await deleteDataController.deleteTestData();
+  });
 
   describe("Registration flow", () => {
     it("Should registrate user successfully", () => {
@@ -145,8 +150,8 @@ describe("Auth", () => {
 
     it("Should return 404 error ", () => {
       jest
-      .spyOn(usersRepository, "findUserByConfirmCode")
-      .mockImplementation(async () => null);
+        .spyOn(usersRepository, "findUserByConfirmCode")
+        .mockImplementation(async () => null);
       return request(app.getHttpServer())
         .post("/auth/registration-confirmation")
         .send({
@@ -184,21 +189,21 @@ describe("Auth", () => {
   describe("Confirm email resending", () => {
     it("Should resend email", () => {
       jest
-      .spyOn(usersRepository, "findUserRegistrationDataByEmail")
-      .mockImplementation(async () => (userByEmailMock));
+        .spyOn(usersRepository, "findUserRegistrationDataByEmail")
+        .mockImplementation(async () => userByEmailMock);
 
       request(app.getHttpServer())
-      .post("/auth/registration-email-resending")
-      .send({
-        email: "not-real-email@test.com",
-      } as AuthEmailResendingInputModal)
-      .expect(204)
+        .post("/auth/registration-email-resending")
+        .send({
+          email: "not-real-email@test.com",
+        } as AuthEmailResendingInputModal)
+        .expect(204);
     });
 
     it("Should return 404 error", () => {
       jest
-      .spyOn(usersRepository, "findUserRegistrationDataByEmail")
-      .mockImplementation(async () => null);
+        .spyOn(usersRepository, "findUserRegistrationDataByEmail")
+        .mockImplementation(async () => null);
       return request(app.getHttpServer())
         .post("/auth/registration-email-resending")
         .send({
@@ -215,7 +220,7 @@ describe("Auth", () => {
           isConfirmed: true,
         }));
 
-        request(app.getHttpServer())
+      request(app.getHttpServer())
         .post("/auth/registration-email-resending")
         .send({
           email: "not-real-email@test.com",
