@@ -21,6 +21,7 @@ import { DeleteUserUseCase } from "./features/roles/sa/users/application/use-cas
 
 //repository
 import { UsersRepository } from "./features/infrstructura/users/users.repository";
+import { DeleteAllTestingData, DeleteDataController } from "./features/infrstructura/deleting-all-data";
 
 
 
@@ -45,11 +46,12 @@ const authUseCases = [
       synchronize: false,
     }),
   ],
-  controllers: [AppController, AuthController, UsersController],
+  controllers: [AppController, AuthController, UsersController, DeleteDataController],
   providers: [
     AppService,
     AuthService,
     UsersRepository,
+    DeleteAllTestingData,
     ...userUseCases,
     ...authUseCases,
   ],

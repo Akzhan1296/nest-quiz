@@ -9,6 +9,7 @@ import { AuthRegistrationInputModal } from "../../src/features/roles/public/auth
 import { AppModule } from "../../src/app.module";
 import { HttpExceptionFilter } from "../../src/exception.filter";
 import { useContainer } from "class-validator";
+import { DeleteDataController } from "../../src/features/infrstructura/deleting-all-data";
 
 const registrationUser: AuthRegistrationInputModal = {
   login: `login${new Date().getHours()}${new Date().getMilliseconds()}`.slice(
@@ -21,6 +22,7 @@ const registrationUser: AuthRegistrationInputModal = {
 
 describe("Auth", () => {
   let app: INestApplication;
+  let deleteDataController: DeleteDataController;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -52,11 +54,14 @@ describe("Auth", () => {
       })
     );
     app.useGlobalFilters(new HttpExceptionFilter());
+    deleteDataController = app.get<DeleteDataController>(DeleteDataController);
+
     await app.init();
   });
 
-  beforeEach(() => {
+  beforeEach(async () => {
     jest.clearAllMocks();
+    await deleteDataController.deleteTestData();
   });
 
   describe("Create user by SA", () => {
@@ -66,10 +71,14 @@ describe("Auth", () => {
         .send(registrationUser as AuthRegistrationInputModal)
         .expect(201);
     });
-    it("Should return 400 error, validation errors", async() => {
+    it("Should return 400 error, validation errors", async () => {
       return request(app.getHttpServer())
         .post("/sa/users")
-        .send({password: '           ', email: '123', login: ''} as AuthRegistrationInputModal)
+        .send({
+          password: "           ",
+          email: "123",
+          login: "",
+        } as AuthRegistrationInputModal)
         .expect(400)
         .then(({ body }) => {
           expect(body.errorsMessages).toHaveLength(3);
