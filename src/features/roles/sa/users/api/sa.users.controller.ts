@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   HttpCode,
+  NotFoundException,
   Param,
   Post,
   Put,
@@ -18,8 +19,10 @@ import { CreateUserCommand } from "../application/use-cases/create-user-use-case
 //   import { DeleteUserCommand } from '../application/use-cases/delete-user-use-case';
 // models
 //   import { PaginationViewModel } from '../../../common/common-types';
-import { AddUserInputModel } from "./sa.users.models";
+import { AddUserInputModel, ValidId } from "./sa.users.models";
 import { CreatedUserViewModel } from "../../../../infrstructura/users/models/users.models";
+import { DeleteUserCommand } from "../application/use-cases/delete-user-use-case";
+import { DeleteUserResultDTO } from "../application/users.dto";
 //   import {
 //     AddUserInputModel,
 //     BanUserInputModal,
@@ -43,7 +46,7 @@ export class UsersController {
   //   return await this.usersQueryRepository.getUsers(pageSize);
   // }
 
-  // create user
+  // create user by SA
   @Post()
   @HttpCode(201)
   async createUser(
@@ -75,10 +78,18 @@ export class UsersController {
   //   return await this.usersQueryRepository.findUserById(user._id.toString());
   // }
 
-  // delete user
-  // @Delete(':id')
-  // @HttpCode(204)
-  // async deleteUser(@Param() params: { id: string }): Promise<boolean> {
-  //   return await this.commandBus.execute(new DeleteUserCommand(params.id));
-  // }
+  // delete user by SA
+  @Delete(":id")
+  @HttpCode(204)
+  async deleteUser(@Param() params: ValidId): Promise<boolean> {
+    const { isUserFound, isUserDeleted } = await this.commandBus.execute<
+      unknown,
+      DeleteUserResultDTO
+    >(new DeleteUserCommand(params.id));
+
+    if (!isUserFound) {
+      throw new NotFoundException("User by this confirm code not found");
+    }
+    return isUserDeleted;
+  }
 }

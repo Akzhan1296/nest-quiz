@@ -5,6 +5,7 @@ import { UsersController } from "./sa.users.controller";
 import { AddUserInputModel } from "./sa.users.models";
 import { CreateUserCommand } from "../application/use-cases/create-user-use-case";
 import { v4 as uuidv4 } from "uuid";
+import { DeleteUserCommand } from "../application/use-cases/delete-user-use-case";
 import { BadRequestException } from "@nestjs/common";
 
 const createUserMock: AddUserInputModel = {
@@ -13,7 +14,7 @@ const createUserMock: AddUserInputModel = {
   email: "email@email.com",
 };
 
-describe("AuthController", () => {
+describe("UsersController", () => {
   let usersController: UsersController;
   let commandBus: CommandBus;
   let app: TestingModule;
@@ -33,8 +34,8 @@ describe("AuthController", () => {
     expect(commandBus).toBeDefined();
   });
 
-  describe("Registration user flow", () => {
-    it("Should add user by SA", async () => {
+  describe("Adding user flow by SA", () => {
+    it("Should add user", async () => {
       const mockResult = {
         id: uuidv4(),
         login: "Login",
@@ -55,6 +56,53 @@ describe("AuthController", () => {
       expect(result).toEqual(mockResult);
       expect(mockExecute).toHaveBeenCalledWith(
         new CreateUserCommand(createUserMock)
+      );
+    });
+  });
+
+  describe("Delete user flow by SA", () => {
+    it("Should delete user", async () => {
+      const mockDeleteUserResult = {
+        isUserFound: true,
+        isUserDeleted: true,
+      };
+      const mockDeleteUserId = "7d41fc88-7f38-4f5f-97fb-5cac9c05253c";
+
+      // Создание моковой реализации для execute:
+      const mockExecute = jest.fn().mockReturnValue(mockDeleteUserResult);
+
+      // Использование jest.spyOn для замены реализации execute на моковую:
+      jest.spyOn(commandBus, "execute").mockImplementation(mockExecute);
+
+      // act
+      let result = await usersController.deleteUser({
+        id: mockDeleteUserId,
+      });
+
+      //results
+      expect(result).toBeTruthy();
+      expect(mockExecute).toHaveBeenCalledWith(
+        new DeleteUserCommand(mockDeleteUserId)
+      );
+    });
+    it("Should return 404, if user not found", async () => {
+      const mockDeleteUserResult = {
+        isUserFound: false,
+        isUserDeleted: false,
+      };
+      const mockDeleteUserId = "7d41fc88-7f38-4f5f-97fb-5cac9c05253c";
+
+      // Создание моковой реализации для execute:
+      const mockExecute = jest.fn().mockReturnValue(mockDeleteUserResult);
+
+      // Использование jest.spyOn для замены реализации execute на моковую:
+      jest.spyOn(commandBus, "execute").mockImplementation(mockExecute);
+
+      //result
+      await expect(
+        usersController.deleteUser({ id: mockDeleteUserId })
+      ).rejects.toEqual(
+        new BadRequestException("User by this confirm code not found")
       );
     });
   });

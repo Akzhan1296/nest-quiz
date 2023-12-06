@@ -5,6 +5,7 @@ import {
   IsBoolean,
   IsOptional,
   IsEnum,
+  IsUUID,
 } from "class-validator";
 
 //   import { PageSizeDTO } from '../../../../common/common-types';
@@ -43,4 +44,10 @@ export class BanUserInputModal {
   isBanned: boolean;
   @MinLength(20)
   banReason: string;
+}
+
+
+export class ValidId {
+  @IsUUID(undefined,{each:true})
+  id: string;
 }
