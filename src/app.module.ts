@@ -1,24 +1,30 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import { CqrsModule } from "@nestjs/cqrs";
 
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 
 //controllers
 import { AuthController } from "./features/roles/public/auth/api/auth.controller";
+import { UsersController } from "./features/roles/sa/users/api/sa.users.controller";
+
+//service
+import { AuthService } from "./features/roles/public/auth/application/auth.service";
 
 //useCases
 import { RegistrationUserUseCase } from "./features/roles/public/auth/application/use-cases/registration-user-use-case";
 import { CreateUserUseCase } from "./features/roles/sa/users/application/use-cases/create-user-use-case";
-import { UsersRepository } from "./features/infrstructura/users/users.repository";
-import { AuthService } from "./features/roles/public/auth/application/auth.service";
-import { CqrsModule } from "@nestjs/cqrs";
 import { RegistrationConfirmationUseCase } from "./features/roles/public/auth/application/use-cases/registration-confirmation-use-case";
 import { EmailResendingUseCase } from "./features/roles/public/auth/application/use-cases/registration-email-resendings-use-case";
-import { UsersController } from "./features/roles/sa/users/api/sa.users.controller";
+import { DeleteUserUseCase } from "./features/roles/sa/users/application/use-cases/delete-user-use-case";
 
 //repository
-const userUseCases = [CreateUserUseCase];
+import { UsersRepository } from "./features/infrstructura/users/users.repository";
+
+
+
+const userUseCases = [CreateUserUseCase, DeleteUserUseCase];
 const authUseCases = [
   RegistrationUserUseCase,
   RegistrationConfirmationUseCase,

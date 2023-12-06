@@ -5,6 +5,7 @@ import {
   IsBoolean,
   IsOptional,
   IsEnum,
+  IsUUID,
 } from "class-validator";
 
 //   import { PageSizeDTO } from '../../../../common/common-types';
@@ -16,9 +17,9 @@ export class AddUserInputModel {
   login: string;
   @MinLength(6)
   @MaxLength(20)
-  @Matches(/^[a-zA-Z0-9_-]*$/, { message: "not valid login" })
+  @Matches(/^[a-zA-Z0-9_-]*$/, { message: "not valid password" })
   password: string;
-  @Matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/, { message: "not valid email" })
+  @Matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
   email: string;
 }
 
@@ -43,4 +44,10 @@ export class BanUserInputModal {
   isBanned: boolean;
   @MinLength(20)
   banReason: string;
+}
+
+
+export class ValidId {
+  @IsUUID(undefined,{each:true})
+  id: string;
 }

@@ -64,7 +64,7 @@ export class RegistrationUserUseCase
         })
       );
       result.isUserCreated = !!createdUser;
-      userId = createdUser.id
+      userId = createdUser.id;
     } catch (err) {
       throw new Error(err);
     }
@@ -84,8 +84,8 @@ export class RegistrationUserUseCase
 
         result.isUserRegistered = !!registrationId;
       } catch (err) {
+        this.usersRepository.deleteUser(userId);
         throw new Error(err);
-        // add remove user logic
       }
     }
 

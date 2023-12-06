@@ -66,6 +66,30 @@ describe("Auth", () => {
         .send(registrationUser as AuthRegistrationInputModal)
         .expect(201);
     });
+    it("Should return 400 error, validation errors", async() => {
+      return request(app.getHttpServer())
+        .post("/sa/users")
+        .send({password: '           ', email: '123', login: ''} as AuthRegistrationInputModal)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.errorsMessages).toHaveLength(3);
+          expect(body.errorsMessages).toEqual([
+            {
+              field: "login",
+              message: "login must be longer than or equal to 3 characters",
+            },
+            {
+              field: "password",
+              message: "not valid password",
+            },
+            {
+              field: "email",
+              message:
+                "email must match /^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$/ regular expression",
+            },
+          ]);
+        });
+    });
   });
 
   afterAll(async () => {
