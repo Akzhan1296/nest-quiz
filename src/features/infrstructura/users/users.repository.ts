@@ -220,7 +220,7 @@ export class UsersRepository {
   }
 
   // long way of method
-  //
+  // registration table
   deleteRegistration = async function (regestrationId: string) {
     await this.dataSource.query(
       ` 

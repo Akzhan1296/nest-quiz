@@ -19,10 +19,12 @@ import { CreateUserCommand } from "../application/use-cases/create-user-use-case
 //   import { DeleteUserCommand } from '../application/use-cases/delete-user-use-case';
 // models
 //   import { PaginationViewModel } from '../../../common/common-types';
-import { AddUserInputModel, ValidId } from "./sa.users.models";
+import { AddUserInputModel, UsersQueryType } from "./sa.users.models";
 import { CreatedUserViewModel } from "../../../../infrstructura/users/models/users.models";
 import { DeleteUserCommand } from "../application/use-cases/delete-user-use-case";
 import { DeleteUserResultDTO } from "../application/users.dto";
+import { PaginationViewModel, ValidId } from "../../../../../common/types";
+import { UsersQueryRepository } from "../../../../infrstructura/users/users.query.repository";
 //   import {
 //     AddUserInputModel,
 //     BanUserInputModal,
@@ -36,15 +38,16 @@ import { DeleteUserResultDTO } from "../application/users.dto";
 //   @UseGuards(AuthBasicGuard)
 export class UsersController {
   constructor(
-    private readonly commandBus: CommandBus //   private readonly usersQueryRepository: UsersQueryRepository,
+    private readonly commandBus: CommandBus,
+    private readonly usersQueryRepository: UsersQueryRepository
   ) {}
 
-  // @Get()
-  // async getUsers(
-  //   @Query() pageSize: UsersQueryType,
-  // ): Promise<PaginationViewModel<UserViewModel>> {
-  //   return await this.usersQueryRepository.getUsers(pageSize);
-  // }
+  @Get()
+  async getUsers(
+    @Query() pageSize: UsersQueryType
+  ): Promise<PaginationViewModel<CreatedUserViewModel>> {
+    return this.usersQueryRepository.getUsers(pageSize);
+  }
 
   // create user by SA
   @Post()

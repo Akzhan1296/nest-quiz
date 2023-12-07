@@ -24,6 +24,8 @@ export type NewConfirmCodeEntryDTO = {
   registrationId: string;
 };
 
+// view models 
+
 export type RegistrationViewDTO = {
   createdAt: Date;
   emailExpDate: Date;

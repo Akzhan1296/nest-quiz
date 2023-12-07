@@ -21,9 +21,11 @@ import { DeleteUserUseCase } from "./features/roles/sa/users/application/use-cas
 
 //repository
 import { UsersRepository } from "./features/infrstructura/users/users.repository";
-import { DeleteAllTestingData, DeleteDataController } from "./features/infrstructura/deleting-all-data";
-
-
+import {
+  DeleteAllTestingData,
+  DeleteDataController,
+} from "./features/infrstructura/deleting-all-data";
+import { UsersQueryRepository } from "./features/infrstructura/users/users.query.repository";
 
 const userUseCases = [CreateUserUseCase, DeleteUserUseCase];
 const authUseCases = [
@@ -46,10 +48,16 @@ const authUseCases = [
       synchronize: false,
     }),
   ],
-  controllers: [AppController, AuthController, UsersController, DeleteDataController],
+  controllers: [
+    AppController,
+    AuthController,
+    UsersController,
+    DeleteDataController,
+  ],
   providers: [
     AppService,
     AuthService,
+    UsersQueryRepository,
     UsersRepository,
     DeleteAllTestingData,
     ...userUseCases,
