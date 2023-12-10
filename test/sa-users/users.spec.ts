@@ -101,6 +101,41 @@ describe("Auth", () => {
     });
   });
 
+  describe("Gettings users by SA", () => {
+    it("Get users", async () => {
+      await request(app.getHttpServer())
+        .post("/sa/users")
+        .send({
+          login: "login1",
+          password: "password",
+          email: "login1@login.com",
+        } as AuthRegistrationInputModal)
+        .expect(201);
+
+      await request(app.getHttpServer())
+        .post("/sa/users")
+        .send({
+          login: "login2",
+          password: "password",
+          email: "login2@login.com",
+        } as AuthRegistrationInputModal)
+        .expect(201);
+
+      await request(app.getHttpServer())
+        .get("/sa/users")
+        .then(({ body }) => {
+          expect(body).toEqual(
+            expect.objectContaining({
+              totalCount: 2,
+              page: 1,
+              pageSize: 10,
+              pagesCount: 1,
+            })
+          );
+        });
+    });
+  });
+
   afterAll(async () => {
     await app.close();
   });

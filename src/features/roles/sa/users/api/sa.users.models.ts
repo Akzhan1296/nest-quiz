@@ -5,10 +5,8 @@ import {
   IsBoolean,
   IsOptional,
   IsEnum,
-  IsUUID,
 } from "class-validator";
-
-//   import { PageSizeDTO } from '../../../../common/common-types';
+import { PageSizeDTO } from "../../../../../common/types";
 
 export class AddUserInputModel {
   @MinLength(3)
@@ -28,26 +26,21 @@ export enum BanStatuses {
   BANNED = "banned",
   NOT_BANNED = "notBanned",
 }
-//   export class UsersQueryType extends PageSizeDTO {
-//     // eslint-disable-next-line @typescript-eslint/no-inferrable-types
-//     searchLoginTerm = '';
-//     searchEmailTerm = '';
-//     sortBy = 'createdAt';
-//     sortDirection = 'desc';
-//     @IsOptional()
-//     @IsEnum(BanStatuses)
-//     banStatus: string;
-//   }
+
+export class UsersQueryType extends PageSizeDTO {
+  // eslint-disable-next-line @typescript-eslint/no-inferrable-types
+  searchLoginTerm = "";
+  searchEmailTerm = "";
+  sortBy = "createdAt";
+  sortDirection = "desc";
+  @IsOptional()
+  @IsEnum(BanStatuses)
+  banStatus: string;
+}
 
 export class BanUserInputModal {
   @IsBoolean()
   isBanned: boolean;
   @MinLength(20)
   banReason: string;
-}
-
-
-export class ValidId {
-  @IsUUID(undefined,{each:true})
-  id: string;
 }
