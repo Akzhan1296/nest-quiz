@@ -90,6 +90,7 @@ describe("Auth", () => {
     usersRepository = app.get<UsersRepository>(UsersRepository);
     deleteDataController = app.get<DeleteDataController>(DeleteDataController);
   });
+
   beforeEach(async () => {
     jest.clearAllMocks();
 
