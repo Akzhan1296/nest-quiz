@@ -8,6 +8,7 @@ import {
   Post,
   Req,
   Res,
+  UnauthorizedException,
   // UseGuards,
 } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
@@ -24,11 +25,13 @@ import {
 import { RegistrationUserCommand } from "../application/use-cases/registration-user-use-case";
 import { RegistrationConfirmationCommand } from "../application/use-cases/registration-confirmation-use-case";
 import {
+  AutoResultDTO,
   RegistrationConfirmationDTO,
   RegistrationConfirmationResultDTO,
   RegistrationEmailResendingResultDTO,
 } from "../application/auth.dto";
 import { EmailResendingCommand } from "../application/use-cases/registration-email-resendings-use-case";
+import { LoginCommand } from "../application/use-cases/login-use-case";
 
 @Controller("auth")
 export class AuthController {
@@ -36,28 +39,32 @@ export class AuthController {
     private readonly commandBus: CommandBus // private readonly usersQueryRepository: UsersQueryRepository
   ) {}
 
-  // @Post("login")
-  // @HttpCode(200)
-  // async login(
-  //   @Req() request: Request,
-  //   @Res() response: Response,
-  //   @Ip() deviceIp,
-  //   @Body() inputModel: AuthLoginInputModal
-  // ) {
-  //   // const tokens = await this.commandBus.execute(
-  //   //   new LoginCommand({
-  //   //     ...inputModel,
-  //   //     deviceIp,
-  //   //     deviceName: request.headers["user-agent"],
-  //   //   })
-  //   // );
-  //   // response.cookie("refreshToken", tokens.refreshToken, {
-  //   //   httpOnly: true,
-  //   //   secure: true,
-  //   //   // expires: addSeconds(new Date(), 20),
-  //   // });
-  //   // return response.status(200).send({ accessToken: tokens.accessToken });
-  // }
+  @Post("login")
+  @HttpCode(200)
+  async login(
+    @Req() request: Request,
+    @Res() response: Response,
+    @Ip() deviceIp,
+    @Body() inputModel: AuthLoginInputModal
+  ) {
+    const result = await this.commandBus.execute<unknown, AutoResultDTO>(
+      new LoginCommand({
+        ...inputModel,
+        deviceIp,
+        deviceName: request.headers["user-agent"],
+      })
+    );
+
+    if (!result.isCorrectPassword) {
+      throw new UnauthorizedException({ message: "Email or login incorrect" });
+    }
+    response.cookie("refreshToken", result.refreshToken, {
+      httpOnly: true,
+      secure: true,
+      // expires: addSeconds(new Date(), 20),
+    });
+    return response.status(200).send({ accessToken: result.accessToken });
+  }
 
   // @Post("refresh-token")
   // // @UseGuards(RefreshTokenGuard)
@@ -174,7 +181,10 @@ export class AuthController {
     @Body() inputModel: AuthEmailResendingInputModal
   ): Promise<boolean> {
     const { isUserFound, isEmailResent, isEmailAlreadyConfirmed } =
-      await this.commandBus.execute<unknown, RegistrationEmailResendingResultDTO>(new EmailResendingCommand(inputModel.email));
+      await this.commandBus.execute<
+        unknown,
+        RegistrationEmailResendingResultDTO
+      >(new EmailResendingCommand(inputModel.email));
 
     if (!isUserFound) {
       throw new NotFoundException("User by this confirm code not found");
