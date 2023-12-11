@@ -10,7 +10,7 @@ export class DeleteUserUseCase implements ICommandHandler<DeleteUserCommand> {
   constructor(private readonly usersRepository: UsersRepository) {}
 
   async execute(command: DeleteUserCommand): Promise<DeleteUserResultDTO> {
-    const result = {
+    const result: DeleteUserResultDTO = {
       isUserFound: false,
       isUserDeleted: false,
       isUserHaveRegistrationData: false,

@@ -18,12 +18,11 @@ export class LoginUseCase implements ICommandHandler<LoginCommand> {
     private readonly deviceSessionRepository: DeviceSessionsRepository
   ) {}
 
-  async execute(
-    command: LoginCommand
-  ): Promise<{ accessToken: string; refreshToken: string }> {
+  async execute(command: LoginCommand): Promise<AutoResultDTO> {
     let authSessionMetaData = null;
     let deviceId = null;
-    let result = {
+
+    let result: AutoResultDTO = {
       accessToken: null,
       refreshToken: null,
       isCorrectPassword: false,

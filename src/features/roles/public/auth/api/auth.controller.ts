@@ -25,6 +25,7 @@ import {
 import { RegistrationUserCommand } from "../application/use-cases/registration-user-use-case";
 import { RegistrationConfirmationCommand } from "../application/use-cases/registration-confirmation-use-case";
 import {
+  AutoResultDTO,
   RegistrationConfirmationDTO,
   RegistrationConfirmationResultDTO,
   RegistrationEmailResendingResultDTO,
@@ -46,7 +47,7 @@ export class AuthController {
     @Ip() deviceIp,
     @Body() inputModel: AuthLoginInputModal
   ) {
-    const result = await this.commandBus.execute(
+    const result = await this.commandBus.execute<unknown, AutoResultDTO>(
       new LoginCommand({
         ...inputModel,
         deviceIp,

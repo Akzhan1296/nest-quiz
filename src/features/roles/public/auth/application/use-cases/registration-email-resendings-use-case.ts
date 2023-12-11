@@ -20,7 +20,7 @@ export class EmailResendingUseCase
   async execute(command: EmailResendingCommand): Promise<RegistrationEmailResendingResultDTO> {
     const { email } = command;
 
-    const result = {
+    const result: RegistrationEmailResendingResultDTO = {
       isUserFound: false,
       isEmailResent: false,
       isEmailAlreadyConfirmed: false,

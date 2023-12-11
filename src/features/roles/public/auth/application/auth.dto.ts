@@ -49,8 +49,8 @@ export type AuthDTO = {
 export type AutoResultDTO = {
   accessToken: null | string;
   refreshToken: null | string;
-  isUserFound: boolean;
-  isUserAlreadyHaveAuthSession: boolean;
+  isCorrectPassword: boolean;
+  isUserAlreadyHasAuthSession: boolean;
 };
 
 export interface AccessTokenPayloadDTO {
