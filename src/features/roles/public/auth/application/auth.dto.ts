@@ -10,8 +10,8 @@ export type EmailDataDTO = {
 export type RegistrationUserResultDTO = {
   isLoginAlreadyExist: boolean;
   isEmailAlreadyExist: boolean;
-  isUserRegistered: boolean,
-  isUserCreated: boolean,
+  isUserRegistered: boolean;
+  isUserCreated: boolean;
 };
 export type RegistrationUserDTO = {
   login: string;
@@ -30,9 +30,37 @@ export type RegistrationConfirmationDTO = {
   code: string;
 };
 
+// registration email resending
 export type RegistrationEmailResendingResultDTO = {
-  isUserFound: boolean,
-  isEmailResent: boolean,
-  isEmailAlreadyConfirmed: boolean,
-  isConfirmDataUpdated: boolean,
+  isUserFound: boolean;
+  isEmailResent: boolean;
+  isEmailAlreadyConfirmed: boolean;
+  isConfirmDataUpdated: boolean;
+};
+
+// login
+export type AuthDTO = {
+  loginOrEmail: string;
+  password: string;
+  deviceName: string;
+  deviceIp: string;
+};
+
+export type AutoResultDTO = {
+  accessToken: null | string;
+  refreshToken: null | string;
+  isUserFound: boolean;
+  isUserAlreadyHaveAuthSession: boolean;
+};
+
+export interface AccessTokenPayloadDTO {
+  userId: string;
+  login: string;
+  email: string;
+}
+
+export interface refreshTokenPayloadDTO extends AccessTokenPayloadDTO {
+  deviceName: string;
+  deviceIp: string;
+  deviceId: string;
 }

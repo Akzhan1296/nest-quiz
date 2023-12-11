@@ -16,7 +16,6 @@ import { useContainer } from "class-validator";
 import { add } from "date-fns";
 import { UsersRepository } from "../../src/features/infrstructura/users/users.repository";
 import { v4 as uuidv4 } from "uuid";
-import { AuthController } from "../../src/features/roles/public/auth/api/auth.controller";
 import { DeleteDataController } from "../../src/features/infrstructura/deleting-all-data";
 
 const registrationUser: AuthRegistrationInputModal = {

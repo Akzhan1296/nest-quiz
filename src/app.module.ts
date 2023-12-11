@@ -26,12 +26,16 @@ import {
   DeleteDataController,
 } from "./features/infrstructura/deleting-all-data";
 import { UsersQueryRepository } from "./features/infrstructura/users/users.query.repository";
+import { LoginUseCase } from "./features/roles/public/auth/application/use-cases/login-use-case";
+import { JwtService } from "@nestjs/jwt";
+import { DeviceSessionsRepository } from "./features/infrstructura/deviceSessions/device-sessions.repository";
 
 const userUseCases = [CreateUserUseCase, DeleteUserUseCase];
 const authUseCases = [
   RegistrationUserUseCase,
   RegistrationConfirmationUseCase,
   EmailResendingUseCase,
+  LoginUseCase,
 ];
 
 @Module({
@@ -55,10 +59,12 @@ const authUseCases = [
     DeleteDataController,
   ],
   providers: [
+    JwtService,
     AppService,
     AuthService,
     UsersQueryRepository,
     UsersRepository,
+    DeviceSessionsRepository,
     DeleteAllTestingData,
     ...userUseCases,
     ...authUseCases,
