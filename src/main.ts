@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { useContainer } from 'class-validator';
-// import cookieParser from 'cookie-parser';
+import * as cookieParser from 'cookie-parser';
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './exception.filter';
@@ -12,7 +12,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
   app.enableCors();
-  // app.use(cookieParser());
+  app.use(cookieParser());
   app.useGlobalPipes(
     new ValidationPipe({
       stopAtFirstError: true,
@@ -42,6 +42,3 @@ async function bootstrap() {
   });
 }
 bootstrap();
-
-
-
