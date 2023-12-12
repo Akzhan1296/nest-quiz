@@ -39,7 +39,7 @@ export class UpdateUserRefreshTokenUseCase
     result.isUserFound = true;
 
     authSessionMetaData =
-      this.deviceSessionRepository.getAuthMetaDataByDeviceIdAndUserId({
+      await this.deviceSessionRepository.getAuthMetaDataByDeviceIdAndUserId({
         userId,
         deviceId,
       });
@@ -49,7 +49,7 @@ export class UpdateUserRefreshTokenUseCase
       try {
         await this.deviceSessionRepository.updateAuthMetaData({
           authSessionId: authSessionMetaData.id,
-          createdAt: new Date(),
+          createdAt: createdAtRefreshToken,
         });
       } catch (err) {
         throw new Error(`Some error while updating meta auth data ${err}`);

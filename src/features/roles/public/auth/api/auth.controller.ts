@@ -67,7 +67,9 @@ export class AuthController {
       secure: true,
       // expires: addSeconds(new Date(), 20),
     });
-    return response.status(200).send({ accessToken: result.accessToken });
+    return response.status(200).send({
+      accessToken: result.accessToken,
+    });
   }
 
   @Post("refresh-token")
@@ -80,12 +82,16 @@ export class AuthController {
         deviceId: request.body.deviceId,
       })
     );
+
     response.cookie("refreshToken", `${result.refreshToken}`, {
       httpOnly: true,
       secure: true,
       // expires: addSeconds(new Date(), 20),
     });
-    return response.status(200).send({ accessToken: result.accessToken });
+    return response.status(200).send({
+      accessToken: result.accessToken,
+      refreshToken: result.refreshToken,
+    });
   }
 
   // @Post("logout")
