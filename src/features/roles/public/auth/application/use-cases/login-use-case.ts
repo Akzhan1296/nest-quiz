@@ -4,9 +4,6 @@ import { AuthService } from "../auth.service";
 import { DeviceSessionsRepository } from "../../../../../infrstructura/deviceSessions/device-sessions.repository";
 import { v4 as uuidv4 } from "uuid";
 
-//command
-// import { UpdateUserRefreshTokenCommand } from './update-refresh-token-use-case';
-
 export class LoginCommand {
   constructor(public authDTO: AuthDTO) {}
 }
@@ -19,6 +16,8 @@ export class LoginUseCase implements ICommandHandler<LoginCommand> {
   ) {}
 
   async execute(command: LoginCommand): Promise<AutoResultDTO> {
+    const createdAtRefreshToken: Date = new Date();
+
     let authSessionMetaData = null;
     let deviceId = null;
 
@@ -40,24 +39,41 @@ export class LoginUseCase implements ICommandHandler<LoginCommand> {
     // try to find auth meta data in DB, if we have meta data in DB
     // update createdAt field
     authSessionMetaData =
-      await this.deviceSessionRepository.getAuthMetaDataByDeviceNameAndUserId(
+      await this.deviceSessionRepository.getAuthMetaDataByDeviceNameAndUserId({
+        userId: userData.id,
         deviceName,
-        userData.id
-      );
+      });
 
-    // update refresh token if user already logined
+    // update auth meta data if user already has it
     if (authSessionMetaData) {
       result.isUserAlreadyHasAuthSession = true;
-      //   return this.commandBus.execute(
-      //     new UpdateUserRefreshTokenCommand({
-      //       userId: user._id.toString(),
-      //       deviceId: refreshToken.getDeviceId(),
-      //     }),
-      //   );
+      try {
+        await this.deviceSessionRepository.updateAuthMetaData({
+          authSessionId: authSessionMetaData.id,
+          createdAt: new Date(),
+        });
+      } catch (err) {
+        throw new Error(`Some error while updating meta auth data ${err}`);
+      }
     }
 
+    // save auth meta data for future refresh token
     if (!authSessionMetaData) {
       deviceId = uuidv4();
+
+      try {
+        await this.deviceSessionRepository.createAuthMetaData({
+          email: userData.email,
+          login: userData.login,
+          userId: userData.id,
+          createdAt: createdAtRefreshToken,
+          deviceIp,
+          deviceId,
+          deviceName,
+        });
+      } catch (err) {
+        throw new Error(`Some error while saving meta auth data ${err}`);
+      }
     }
 
     // creating AT
@@ -72,24 +88,11 @@ export class LoginUseCase implements ICommandHandler<LoginCommand> {
       userId: userData.id,
       login: userData.login,
       email: userData.email,
+      createdAt: createdAtRefreshToken,
       deviceIp,
       deviceName,
       deviceId,
     });
-
-    try {
-      await this.deviceSessionRepository.createAuthMetaData({
-        email: userData.email,
-        login: userData.login,
-        userId: userData.id,
-        createdAt: new Date(),
-        deviceIp,
-        deviceId,
-        deviceName,
-      });
-    } catch (err) {
-      throw new Error(`Some error while saving meta auth data ${err}`);
-    }
 
     return result;
   }

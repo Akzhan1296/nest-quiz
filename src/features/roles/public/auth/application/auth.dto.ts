@@ -53,14 +53,27 @@ export type AutoResultDTO = {
   isUserAlreadyHasAuthSession: boolean;
 };
 
+// refresh token
+export type GetRefreshTokenDTO = {
+  userId: string;
+  deviceId: string;
+};
+
+export type RefreshTokenResultDTO = {
+  isUserFound: boolean;
+  accessToken: null | string;
+  refreshToken: null | string;
+};
+
+// tokens
 export interface AccessTokenPayloadDTO {
   userId: string;
   login: string;
   email: string;
 }
-
-export interface refreshTokenPayloadDTO extends AccessTokenPayloadDTO {
+export interface RefreshTokenPayloadDTO extends AccessTokenPayloadDTO {
   deviceName: string;
   deviceIp: string;
   deviceId: string;
+  createdAt: Date;
 }

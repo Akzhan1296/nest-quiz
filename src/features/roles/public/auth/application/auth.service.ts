@@ -4,7 +4,7 @@ import * as bcrypt from "bcrypt";
 import {
   EmailDataDTO,
   AccessTokenPayloadDTO,
-  refreshTokenPayloadDTO,
+  RefreshTokenPayloadDTO,
 } from "./auth.dto";
 import { emailAdapter } from "../../../../../utils/emailAdapter";
 import { UsersRepository } from "../../../../infrstructura/users/users.repository";
@@ -52,6 +52,7 @@ export class AuthService {
   async createAccessToken(
     accessTokenPayload: AccessTokenPayloadDTO
   ): Promise<string> {
+    let accessToken = null;
     const { userId, login, email } = accessTokenPayload;
 
     const payload = {
@@ -59,16 +60,24 @@ export class AuthService {
       login,
       email,
     };
-    const accessToken = this.jwtService.sign(payload, {
-      secret: settings.JWT_SECRET,
-      expiresIn: "10min",
-    });
+
+    try {
+      accessToken = this.jwtService.sign(payload, {
+        secret: settings.JWT_SECRET,
+        expiresIn: "5min",
+      });
+    } catch (err) {
+      throw new Error(`Something went wrong with access token ${err}`);
+    }
+
     return accessToken;
   }
   async createRefreshToken(
-    refreshTokenPayload: refreshTokenPayloadDTO
+    refreshTokenPayload: RefreshTokenPayloadDTO
   ): Promise<string> {
-    const { userId, login, email, deviceName, deviceIp, deviceId } = refreshTokenPayload;
+    let refreshsToken = null;
+    const { userId, login, email, deviceName, deviceIp, deviceId, createdAt } =
+      refreshTokenPayload;
 
     const payload = {
       userId,
@@ -77,12 +86,18 @@ export class AuthService {
       deviceName,
       deviceIp,
       deviceId,
-      createdAt: new Date(),
+      createdAt,
     };
-    const refreshsToken = this.jwtService.sign(payload, {
-      secret: settings.JWT_SECRET,
-      expiresIn: "10min",
-    });
+
+    try {
+      refreshsToken = this.jwtService.sign(payload, {
+        secret: settings.JWT_SECRET,
+        expiresIn: "10min",
+      });
+    } catch (err) {
+      throw new Error(`Something went wrong on refresh token${err}`);
+    }
+
     return refreshsToken;
   }
 }

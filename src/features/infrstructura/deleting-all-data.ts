@@ -8,6 +8,9 @@ export class DeleteAllTestingData {
   async deleteRegistrationTableData() {
     await this.dataSource.query(`DELETE FROM public."Registration"`);
   }
+  async deleteAuthSessionTableData() {
+    await this.dataSource.query(`DELETE FROM public."AuthSessionsMetaData"`);
+  }
   async deleteUserTableData() {
     await this.dataSource.query(`DELETE FROM public."Users"`);
   }
@@ -21,6 +24,7 @@ export class DeleteDataController {
   @HttpCode(204)
   async deleteTestData() {
     await this.deleteRepository.deleteRegistrationTableData();
+    await this.deleteRepository.deleteAuthSessionTableData();
     await this.deleteRepository.deleteUserTableData();
   }
 }

@@ -9,6 +9,7 @@ import {
   Req,
   Res,
   UnauthorizedException,
+  UseGuards,
   // UseGuards,
 } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
@@ -32,6 +33,8 @@ import {
 } from "../application/auth.dto";
 import { EmailResendingCommand } from "../application/use-cases/registration-email-resendings-use-case";
 import { LoginCommand } from "../application/use-cases/login-use-case";
+import { RefreshTokenGuard } from "../../../../../guards/refreshToken.guard";
+import { UpdateUserRefreshTokenCommand } from "../application/use-cases/refresh-token-use-case";
 
 @Controller("auth")
 export class AuthController {
@@ -49,7 +52,8 @@ export class AuthController {
   ) {
     const result = await this.commandBus.execute<unknown, AutoResultDTO>(
       new LoginCommand({
-        ...inputModel,
+        loginOrEmail: inputModel.loginOrEmail,
+        password: inputModel.password,
         deviceIp,
         deviceName: request.headers["user-agent"],
       })
@@ -63,30 +67,32 @@ export class AuthController {
       secure: true,
       // expires: addSeconds(new Date(), 20),
     });
-    return response.status(200).send({ accessToken: result.accessToken });
+    return response.status(200).send({
+      accessToken: result.accessToken,
+    });
   }
 
-  // @Post("refresh-token")
-  // // @UseGuards(RefreshTokenGuard)
-  // @HttpCode(200)
-  // async refreshtoken(
-  //   @Req() request: Request,
-  //   @Res() response: Response
-  // ): Promise<undefined> {
-  //   // const tokens = await this.commandBus.execute(
-  //   //   new UpdateUserRefreshTokenCommand({
-  //   //     userId: request.body.userId,
-  //   //     deviceId: request.body.deviceId,
-  //   //   })
-  //   // );
-  //   // response.cookie("refreshToken", `${tokens.refreshToken}`, {
-  //   //   httpOnly: true,
-  //   //   secure: true,
-  //   //   // expires: addSeconds(new Date(), 20),
-  //   // });
-  //   // response.status(200).send({ accessToken: tokens.accessToken });
-  //   // return;
-  // }
+  @Post("refresh-token")
+  @UseGuards(RefreshTokenGuard)
+  @HttpCode(200)
+  async refreshtoken(@Req() request: Request, @Res() response: Response) {
+    const result = await this.commandBus.execute(
+      new UpdateUserRefreshTokenCommand({
+        userId: request.body.userId,
+        deviceId: request.body.deviceId,
+      })
+    );
+
+    response.cookie("refreshToken", `${result.refreshToken}`, {
+      httpOnly: true,
+      secure: true,
+      // expires: addSeconds(new Date(), 20),
+    });
+    return response.status(200).send({
+      accessToken: result.accessToken,
+      refreshToken: result.refreshToken,
+    });
+  }
 
   // @Post("logout")
   // // @UseGuards(RefreshTokenGuard)

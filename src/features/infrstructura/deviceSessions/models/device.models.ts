@@ -1,4 +1,4 @@
-export type AuthMetaDataEntryDTO = {
+export interface AuthMetaDataEntryDTO {
   email: string;
   login: string;
   deviceIp: string;
@@ -6,4 +6,8 @@ export type AuthMetaDataEntryDTO = {
   deviceName: string;
   createdAt: Date; // main field to detect different RT
   userId: string;
-};
+}
+
+export interface AuthMetaDataViewModel extends AuthMetaDataEntryDTO {
+  id: string;
+}

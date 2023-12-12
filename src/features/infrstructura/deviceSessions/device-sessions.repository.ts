@@ -1,14 +1,85 @@
 import { InjectDataSource } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
-import { AuthMetaDataEntryDTO } from "./models/device.models";
+import {
+  AuthMetaDataEntryDTO,
+  AuthMetaDataViewModel,
+} from "./models/device.models";
 
 export class DeviceSessionsRepository {
   constructor(@InjectDataSource() protected dataSource: DataSource) {}
-  async getAuthMetaDataByDeviceNameAndUserId(
-    userId: string,
-    deviceName: string
-  ) {}
-  async updateAuthMetaData() {}
+
+  async getAuthMetaDataByDeviceIdAndUserId(dto: {
+    userId: string;
+    deviceId: string;
+  }) {
+    const { userId, deviceId } = dto;
+
+    let result = await this.dataSource.query(
+      `
+    SELECT "Id", "Email", "Login", "DeviceIp", "DeviceId", "DeviceName", "CreatedAt", "UserId"
+	  FROM public."AuthSessionsMetaData"
+	  WHERE "UserId" = $1 AND "DeviceId" = $2`,
+      [userId, deviceId]
+    );
+
+    if (result.length === 0) return null;
+
+    return {
+      email: result[0].Email,
+      login: result[0].Login,
+      deviceIp: result[0].DeviceIp,
+      deviceId: result[0].DeviceId,
+      deviceName: result[0].DeviceName,
+      createdAt: result[0].CreatedAt,
+      userId: result[0].UserId,
+      id: result[0].Id,
+    };
+  }
+
+  async getAuthMetaDataByDeviceNameAndUserId(dto: {
+    userId: string;
+    deviceName: string;
+  }): Promise<AuthMetaDataViewModel | null> {
+    const { userId, deviceName } = dto;
+
+    let result = await this.dataSource.query(
+      `
+    SELECT "Id", "Email", "Login", "DeviceIp", "DeviceId", "DeviceName", "CreatedAt", "UserId"
+	  FROM public."AuthSessionsMetaData"
+	  WHERE "UserId" = $1 AND "DeviceName" like $2`,
+      [userId, deviceName]
+    );
+
+    if (result.length === 0) return null;
+
+    return {
+      email: result[0].Email,
+      login: result[0].Login,
+      deviceIp: result[0].DeviceIp,
+      deviceId: result[0].DeviceId,
+      deviceName: result[0].DeviceName,
+      createdAt: result[0].CreatedAt,
+      userId: result[0].UserId,
+      id: result[0].Id,
+    };
+  }
+
+  async updateAuthMetaData(dto: {
+    authSessionId: string;
+    createdAt: Date;
+  }): Promise<boolean> {
+    const { authSessionId, createdAt } = dto;
+
+    let result = await this.dataSource.query(
+      `UPDATE public."AuthSessionsMetaData"
+        SET "CreatedAt"= $2
+        WHERE "Id" = $1`,
+      [authSessionId, createdAt]
+    );
+    // result = [[], 1 | 0]
+    return !!result[1];
+
+  }
   async createAuthMetaData(authMetaData: AuthMetaDataEntryDTO) {
     const { email, login, deviceId, deviceIp, deviceName, createdAt, userId } =
       authMetaData;
