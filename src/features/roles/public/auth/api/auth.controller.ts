@@ -63,8 +63,8 @@ export class AuthController {
       throw new UnauthorizedException({ message: "Email or login incorrect" });
     }
     response.cookie("refreshToken", result.refreshToken, {
-      httpOnly: false,
-      secure: false,
+      httpOnly: true,
+      secure: true,
       // expires: addSeconds(new Date(), 20),
     });
     return response.status(200).send({
@@ -85,8 +85,8 @@ export class AuthController {
     );
 
     response.cookie("refreshToken", `${result.refreshToken}`, {
-      httpOnly: false,
-      secure: false,
+      httpOnly: true,
+      secure: true,
       // expires: addSeconds(new Date(), 20),
     });
     return response.status(200).send({
