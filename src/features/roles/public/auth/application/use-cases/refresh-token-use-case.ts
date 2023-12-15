@@ -28,12 +28,14 @@ export class UpdateUserRefreshTokenUseCase
 
     const result: RefreshTokenResultDTO = {
       isUserFound: false,
+      isUserAlreadyHasAuthSession: false,
       accessToken: null,
       refreshToken: null,
     };
 
     const userData = await this.usersRepository.findUserById(userId);
 
+    // return result, if user not found
     if (!userData) return result;
 
     result.isUserFound = true;
@@ -43,6 +45,9 @@ export class UpdateUserRefreshTokenUseCase
         userId,
         deviceId,
       });
+
+    // return result, if no authSessionMetaData
+    if (!authSessionMetaData) return result;
 
     // if found valid meta data, update it
     if (authSessionMetaData) {
