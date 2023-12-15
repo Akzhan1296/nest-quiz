@@ -61,6 +61,7 @@ export type GetRefreshTokenDTO = {
 
 export type RefreshTokenResultDTO = {
   isUserFound: boolean;
+  isUserAlreadyHasAuthSession: boolean;
   accessToken: null | string;
   refreshToken: null | string;
 };

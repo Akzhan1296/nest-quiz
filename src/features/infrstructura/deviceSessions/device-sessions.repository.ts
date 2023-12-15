@@ -11,7 +11,7 @@ export class DeviceSessionsRepository {
   async getAuthMetaDataByDeviceIdAndUserId(dto: {
     userId: string;
     deviceId: string;
-  }) {
+  }): Promise<AuthMetaDataViewModel | null> {
     const { userId, deviceId } = dto;
 
     let result = await this.dataSource.query(
@@ -78,7 +78,6 @@ export class DeviceSessionsRepository {
     );
     // result = [[], 1 | 0]
     return !!result[1];
-
   }
   async createAuthMetaData(authMetaData: AuthMetaDataEntryDTO) {
     const { email, login, deviceId, deviceIp, deviceName, createdAt, userId } =
