@@ -54,10 +54,10 @@ export type AutoResultDTO = {
 };
 
 // refresh token
-export type GetRefreshTokenDTO = {
+export interface GetRefreshTokenDTO {
   userId: string;
   deviceId: string;
-};
+}
 
 export type RefreshTokenResultDTO = {
   isUserFound: boolean;
@@ -77,4 +77,11 @@ export interface RefreshTokenPayloadDTO extends AccessTokenPayloadDTO {
   deviceIp: string;
   deviceId: string;
   createdAt: Date;
+}
+
+// logout
+export interface LogOutDTO extends GetRefreshTokenDTO {}
+export interface LogOutResultDTO {
+  isDeleted: boolean;
+  isForbidden: boolean;
 }

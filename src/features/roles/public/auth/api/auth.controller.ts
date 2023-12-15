@@ -35,6 +35,7 @@ import { EmailResendingCommand } from "../application/use-cases/registration-ema
 import { LoginCommand } from "../application/use-cases/login-use-case";
 import { RefreshTokenGuard } from "../../../../../guards/refreshToken.guard";
 import { UpdateUserRefreshTokenCommand } from "../application/use-cases/refresh-token-use-case";
+import { LogOutCommand } from "../application/use-cases/logout-use-case";
 
 @Controller("auth")
 export class AuthController {
@@ -93,24 +94,24 @@ export class AuthController {
     });
   }
 
-  // @Post("logout")
-  // // @UseGuards(RefreshTokenGuard)
-  // @HttpCode(204)
-  // async logOut(@Req() request: Request, @Res() response: Response) {
-  //   // await this.commandBus.execute(
-  //   //   new DeleteCurrentDeviceCommand({
-  //   //     deviceId: request.body.deviceId,
-  //   //     userId: request.body.userId,
-  //   //   })
-  //   // );
-  //   // return response
-  //   //   .cookie("refreshToken", ``, {
-  //   //     httpOnly: true,
-  //   //     secure: true,
-  //   //     // expires: new Date(),
-  //   //   })
-  //   //   .send();
-  // }
+  @Post("logout")
+  @UseGuards(RefreshTokenGuard)
+  @HttpCode(204)
+  async logOut(@Req() request: Request, @Res() response: Response) {
+    await this.commandBus.execute(
+      new LogOutCommand({
+        deviceId: request.body.deviceId,
+        userId: request.body.userId,
+      })
+    );
+    return response
+      .cookie("refreshToken", ``, {
+        httpOnly: true,
+        secure: true,
+        // expires: new Date(),
+      })
+      .send();
+  }
 
   @Post("registration")
   // @UseGuards(BlockIpGuard)

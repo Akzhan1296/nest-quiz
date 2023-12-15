@@ -242,3 +242,9 @@ describe("Auth", () => {
     await app.close();
   });
 });
+
+//future E2E cases
+
+// login add user by SA -> auth in to system
+// refresh add user by SA -> auth ->  refresh token
+// log out add user by SA -> auth -> logout -> refresh token expect 401

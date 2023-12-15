@@ -79,6 +79,7 @@ export class DeviceSessionsRepository {
     // result = [[], 1 | 0]
     return !!result[1];
   }
+
   async createAuthMetaData(authMetaData: AuthMetaDataEntryDTO) {
     const { email, login, deviceId, deviceIp, deviceName, createdAt, userId } =
       authMetaData;
@@ -88,6 +89,16 @@ export class DeviceSessionsRepository {
         "Email", "Login", "DeviceIp", "DeviceId", "DeviceName", "CreatedAt", "UserId")
         VALUES ($1, $2, $3, $4, $5, $6, $7);`,
       [email, login, deviceIp, deviceId, deviceName, createdAt, userId]
+    );
+  }
+
+  async deleteAuthMetaData(deviceId: string) {
+    await this.dataSource.query(
+      ` 
+	      DELETE FROM public."AuthSessionsMetaData"
+	      WHERE "DeviceId" = $1
+        `,
+      [deviceId]
     );
   }
 }
