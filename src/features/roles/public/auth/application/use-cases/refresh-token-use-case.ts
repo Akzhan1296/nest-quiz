@@ -51,6 +51,7 @@ export class UpdateUserRefreshTokenUseCase
 
     // if found valid meta data, update it
     if (authSessionMetaData) {
+      result.isUserAlreadyHasAuthSession = true;
       try {
         await this.deviceSessionRepository.updateAuthMetaData({
           authSessionId: authSessionMetaData.id,
