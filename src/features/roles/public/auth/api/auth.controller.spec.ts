@@ -7,6 +7,8 @@ import { RegistrationUserCommand } from "../application/use-cases/registration-u
 import { BadRequestException } from "@nestjs/common";
 import { RegistrationConfirmationCommand } from "../application/use-cases/registration-confirmation-use-case";
 import { EmailResendingCommand } from "../application/use-cases/registration-email-resendings-use-case";
+import { LoginCommand } from "../application/use-cases/login-use-case";
+import { Request, Response } from "express";
 
 const registrationUserMock: AuthRegistrationInputModal = {
   login: "login",
@@ -205,6 +207,47 @@ describe("AuthController", () => {
       await expect(
         authController.registrationEmailResending({ email: "test@test.com" })
       ).rejects.toEqual(new BadRequestException("Email is already confirmed"));
+    });
+  });
+
+  describe("Login flow", () => {
+    it("Should auth successfully ", async () => {
+      const loginMock = {
+        loginOrEmail: "login",
+        password: "password",
+        deviceIp: "1",
+        deviceName: "device name",
+      };
+
+      const mockExecute = jest.fn().mockReturnValue({
+        accessToken: "access token",
+        refreshToken: "refresh token",
+        isCorrectPassword: true,
+        isUserAlreadyHasAuthSession: true,
+      });
+      jest.spyOn(commandBus, "execute").mockImplementation(mockExecute);
+
+      const mockRequest = {
+        headers: {
+          "user-agent": "device name",
+        },
+      } as unknown as Request;
+
+      const mockResponse = {
+        cookie: jest.fn(),
+        status: jest.fn(() => mockResponse),
+        send: jest.fn(() => true),
+      } as unknown as Response;
+
+      // act
+      let result = await authController.login(mockRequest, mockResponse, "1", {
+        loginOrEmail: "login",
+        password: "password",
+      });
+
+      // results
+      expect(result).toBeTruthy();
+      expect(mockExecute).toHaveBeenCalledWith(new LoginCommand(loginMock));
     });
   });
 
