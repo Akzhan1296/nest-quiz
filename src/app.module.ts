@@ -30,6 +30,7 @@ import { LoginUseCase } from "./features/roles/public/auth/application/use-cases
 import { JwtService } from "@nestjs/jwt";
 import { DeviceSessionsRepository } from "./features/infrstructura/deviceSessions/device-sessions.repository";
 import { UpdateUserRefreshTokenUseCase } from "./features/roles/public/auth/application/use-cases/refresh-token-use-case";
+import { LogOutUseCase } from "./features/roles/public/auth/application/use-cases/logout-use-case";
 
 const userUseCases = [CreateUserUseCase, DeleteUserUseCase];
 const authUseCases = [
@@ -38,6 +39,7 @@ const authUseCases = [
   EmailResendingUseCase,
   LoginUseCase,
   UpdateUserRefreshTokenUseCase,
+  LogOutUseCase,
 ];
 
 @Module({
