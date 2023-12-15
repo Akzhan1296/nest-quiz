@@ -19,7 +19,7 @@ export class LoginUseCase implements ICommandHandler<LoginCommand> {
     const createdAtRefreshToken: Date = new Date();
 
     let authSessionMetaData = null;
-    let deviceId = null;
+    let deviceId = uuidv4();
 
     let result: AutoResultDTO = {
       accessToken: null,
@@ -47,10 +47,11 @@ export class LoginUseCase implements ICommandHandler<LoginCommand> {
     // update auth meta data if user already has it
     if (authSessionMetaData) {
       result.isUserAlreadyHasAuthSession = true;
+
       try {
         await this.deviceSessionRepository.updateAuthMetaData({
           authSessionId: authSessionMetaData.id,
-          createdAt: new Date(),
+          createdAt: createdAtRefreshToken,
         });
       } catch (err) {
         throw new Error(`Some error while updating meta auth data ${err}`);
@@ -59,8 +60,6 @@ export class LoginUseCase implements ICommandHandler<LoginCommand> {
 
     // save auth meta data for future refresh token
     if (!authSessionMetaData) {
-      deviceId = uuidv4();
-
       try {
         await this.deviceSessionRepository.createAuthMetaData({
           email: userData.email,
@@ -89,9 +88,9 @@ export class LoginUseCase implements ICommandHandler<LoginCommand> {
       login: userData.login,
       email: userData.email,
       createdAt: createdAtRefreshToken,
+      deviceId: authSessionMetaData ? authSessionMetaData.deviceId : deviceId,
       deviceIp,
       deviceName,
-      deviceId,
     });
 
     return result;

@@ -23,27 +23,29 @@ export class RefreshTokenGuard implements CanActivate {
       throw new UnauthorizedException();
     }
     let payload = null;
-    let jwtTokenByIds = null;
+    let authMetaData = null;
 
     try {
       payload = this.jwtService.verify(refreshToken, {
         secret: settings.JWT_SECRET,
       });
     } catch (err) {
+      console.log(err);
       throw new UnauthorizedException();
     }
     if (payload) {
-      jwtTokenByIds =
+      authMetaData =
         await this.deviceSessionRepository.getAuthMetaDataByDeviceIdAndUserId({
           userId: payload.userId,
           deviceId: payload.deviceId,
         });
     }
 
-    if (!jwtTokenByIds) throw new UnauthorizedException();
+    if (!authMetaData) {
+      throw new UnauthorizedException();
+    }
     if (
-      jwtTokenByIds.createdAt.getTime() !==
-      new Date(payload.createdAt).getTime()
+      authMetaData.createdAt.getTime() !== new Date(payload.createdAt).getTime()
     ) {
       throw new UnauthorizedException();
     }

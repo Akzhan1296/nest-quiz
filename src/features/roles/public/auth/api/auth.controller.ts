@@ -69,6 +69,7 @@ export class AuthController {
     });
     return response.status(200).send({
       accessToken: result.accessToken,
+      refreshToken: result.refreshToken,
     });
   }
 
