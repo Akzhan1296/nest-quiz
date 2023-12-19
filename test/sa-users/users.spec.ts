@@ -1,6 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import {
   BadRequestException,
+  HttpStatus,
   INestApplication,
   ValidationPipe,
 } from "@nestjs/common";
@@ -69,7 +70,7 @@ describe("Auth", () => {
       return request(app.getHttpServer())
         .post("/sa/users")
         .send(registrationUser as AuthRegistrationInputModal)
-        .expect(201);
+        .expect(HttpStatus.CREATED);
     });
     it("Should return 400 error, validation errors", async () => {
       return request(app.getHttpServer())
@@ -110,7 +111,7 @@ describe("Auth", () => {
           password: "password",
           email: "login1@login.com",
         } as AuthRegistrationInputModal)
-        .expect(201);
+        .expect(HttpStatus.CREATED);
 
       await request(app.getHttpServer())
         .post("/sa/users")
@@ -119,7 +120,7 @@ describe("Auth", () => {
           password: "password",
           email: "login2@login.com",
         } as AuthRegistrationInputModal)
-        .expect(201);
+        .expect(HttpStatus.CREATED);
 
       await request(app.getHttpServer())
         .get("/sa/users")

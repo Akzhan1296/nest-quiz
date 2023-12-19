@@ -1,4 +1,4 @@
-import { Controller, Delete, HttpCode } from "@nestjs/common";
+import { Controller, Delete, HttpCode, HttpStatus } from "@nestjs/common";
 import { InjectDataSource } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
 
@@ -21,7 +21,7 @@ export class DeleteDataController {
   constructor(private readonly deleteRepository: DeleteAllTestingData) {}
 
   @Delete("/all-data")
-  @HttpCode(204)
+  @HttpCode(HttpStatus.NO_CONTENT)
   async deleteTestData() {
     await this.deleteRepository.deleteRegistrationTableData();
     await this.deleteRepository.deleteAuthSessionTableData();

@@ -3,6 +3,7 @@ import { AppModule } from "../../../../../../app.module";
 import { UsersRepository } from "../../../../../infrstructura/users/users.repository";
 import { RegistrationConfirmationUseCase } from "./registration-confirmation-use-case";
 import { add } from "date-fns";
+import { v4 as uuidv4 } from "uuid";
 
 const userByConfirmCodeMock = {
   createdAt: new Date(),
@@ -11,7 +12,8 @@ const userByConfirmCodeMock = {
   }),
   isConfirmed: false,
   confirmCode: "a8904469-3781-49a1-a5d7-56007c27ee77",
-  registrationId: "123",
+  registrationId: uuidv4(),
+  userId: uuidv4()
 } as const;
 
 describe("Registration confirmation use-case", () => {
@@ -36,7 +38,7 @@ describe("Registration confirmation use-case", () => {
   });
   it("Should confirm registration", async () => {
     jest
-      .spyOn(usersRepository, "findUserByConfirmCode")
+      .spyOn(usersRepository, "findRegistrationDataByConfirmCode")
       .mockImplementation(async () => userByConfirmCodeMock);
 
     jest
@@ -57,7 +59,7 @@ describe("Registration confirmation use-case", () => {
 
   it("Should return isEmailAlreadyConfirmed: true, if email already confirmed", async () => {
     jest
-      .spyOn(usersRepository, "findUserByConfirmCode")
+      .spyOn(usersRepository, "findRegistrationDataByConfirmCode")
       .mockImplementation(async () => ({
         ...userByConfirmCodeMock,
         isConfirmed: true,
@@ -77,7 +79,7 @@ describe("Registration confirmation use-case", () => {
 
   it("Should return isConfirmDateExpired: true, if exp date is already expired", async () => {
     jest
-      .spyOn(usersRepository, "findUserByConfirmCode")
+      .spyOn(usersRepository, "findRegistrationDataByConfirmCode")
       .mockImplementation(async () => ({
         ...userByConfirmCodeMock,
         emailExpDate: add(new Date(), {
@@ -99,7 +101,7 @@ describe("Registration confirmation use-case", () => {
 
   it("Should return isUserByConfirmCodeFound: false, if user by confirm code not found", async () => {
     jest
-      .spyOn(usersRepository, "findUserByConfirmCode")
+      .spyOn(usersRepository, "findRegistrationDataByConfirmCode")
       .mockImplementation(async () => null);
 
     const result = await registrationConfirmationUserUseCase.execute({

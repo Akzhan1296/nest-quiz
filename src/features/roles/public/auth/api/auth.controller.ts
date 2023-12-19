@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   HttpCode,
+  HttpStatus,
   Ip,
   NotFoundException,
   Post,
@@ -51,7 +52,7 @@ export class AuthController {
   ) {}
 
   @Post("login")
-  @HttpCode(200)
+  @HttpCode(HttpStatus.OK)
   async login(
     @Req() request: Request,
     @Res() response: Response,
@@ -82,7 +83,7 @@ export class AuthController {
 
   @Post("refresh-token")
   @UseGuards(RefreshTokenGuard)
-  @HttpCode(200)
+  @HttpCode(HttpStatus.OK)
   async refreshtoken(@Req() request: Request, @Res() response: Response) {
     const result = await this.commandBus.execute(
       new UpdateUserRefreshTokenCommand({
@@ -103,7 +104,7 @@ export class AuthController {
 
   @Post("logout")
   @UseGuards(RefreshTokenGuard)
-  @HttpCode(204)
+  @HttpCode(HttpStatus.NO_CONTENT)
   async logOut(@Req() request: Request, @Res() response: Response) {
     await this.commandBus.execute(
       new LogOutCommand({
@@ -122,7 +123,7 @@ export class AuthController {
 
   @Post("registration")
   // @UseGuards(BlockIpGuard)
-  @HttpCode(204)
+  @HttpCode(HttpStatus.NO_CONTENT)
   async registration(
     @Body() inputModel: AuthRegistrationInputModal
   ): Promise<void> {
@@ -156,7 +157,7 @@ export class AuthController {
 
   @Post("registration-confirmation")
   // @UseGuards(BlockIpGuard)
-  @HttpCode(204)
+  @HttpCode(HttpStatus.NO_CONTENT)
   async registrationConfirmation(
     @Body() inputModel: AuthRegistrationConfirmInputModal
   ): Promise<boolean> {
@@ -189,7 +190,7 @@ export class AuthController {
 
   @Post("registration-email-resending")
   // @UseGuards(BlockIpGuard)
-  @HttpCode(204)
+  @HttpCode(HttpStatus.NO_CONTENT)
   async registrationEmailResending(
     @Body() inputModel: AuthEmailResendingInputModal
   ): Promise<boolean> {
@@ -222,7 +223,7 @@ export class AuthController {
 
   @Post("password-recovery")
   // @UseGuards(BlockIpGuard)
-  @HttpCode(204)
+  @HttpCode(HttpStatus.NO_CONTENT)
   async passwordRecovery(
     @Body() inputModel: AuthEmailResendingInputModal
   ): Promise<void> {
@@ -238,7 +239,7 @@ export class AuthController {
 
   @Post("new-password")
   // @UseGuards(BlockIpGuard)
-  @HttpCode(204)
+  @HttpCode(HttpStatus.NO_CONTENT)
   async newPassword(
     @Body() inputModal: NewPasswordInputModal
   ): Promise<boolean> {
