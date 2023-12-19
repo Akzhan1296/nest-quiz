@@ -27,6 +27,7 @@ import { RegistrationUserCommand } from "../application/use-cases/registration-u
 import { RegistrationConfirmationCommand } from "../application/use-cases/registration-confirmation-use-case";
 import {
   AutoResultDTO,
+  NewPasswordResultDTO,
   RecoveryPasswordResultDTO,
   RegistrationConfirmationDTO,
   RegistrationConfirmationResultDTO,
@@ -41,6 +42,7 @@ import { AuthGuard } from "../../../../../guards/auth.guard";
 import { UsersQueryRepository } from "../../../../infrstructura/users/users.query.repository";
 import { UserQueryViewDTO } from "../../../../infrstructura/users/models/users.models";
 import { PasswordRecoveryCommand } from "../application/use-cases/password-recovery-use-case";
+import { NewPasswordCommand } from "../application/use-cases/new-password-use-case";
 
 @Controller("auth")
 export class AuthController {
@@ -224,7 +226,6 @@ export class AuthController {
   async passwordRecovery(
     @Body() inputModel: AuthEmailResendingInputModal
   ): Promise<void> {
-    console.log(inputModel.email);
 
     const { isUserFound } = await this.commandBus.execute<
       unknown,
@@ -236,13 +237,31 @@ export class AuthController {
     }
   }
 
-  // @Post("new-password")
-  // // @UseGuards(BlockIpGuard)
-  // @HttpCode(204)
-  // async newPassword(
-  //   @Body() inputModal: NewPasswordInputModal
-  // ): Promise<boolean> {
-  //   return true;
-  //   // return this.commandBus.execute(new NewPasswordCommand(inputModal));
-  // }
+  @Post("new-password")
+  // @UseGuards(BlockIpGuard)
+  @HttpCode(204)
+  async newPassword(
+    @Body() inputModal: NewPasswordInputModal
+  ): Promise<boolean> {
+    const {
+      isRegistrationDataFound,
+      isCorrectRecoveryCode,
+      isPasswordUpdated,
+    } = await this.commandBus.execute<unknown, NewPasswordResultDTO>(
+      new NewPasswordCommand({
+        recoveryCode: inputModal.recoveryCode,
+        newPassword: inputModal.newPassword,
+      })
+    );
+
+    if (!isRegistrationDataFound) {
+      throw new NotFoundException("User by recovery code not found");
+    }
+
+    if (!isCorrectRecoveryCode) {
+      throw new BadRequestException("Recovery code is incorrect");
+    }
+
+    return isPasswordUpdated;
+  }
 }

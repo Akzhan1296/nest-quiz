@@ -32,6 +32,7 @@ export type RegistrationViewDTO = {
   isConfirmed: boolean;
   confirmCode: string;
   registrationId: string;
+  userId: string
 };
 
 export type UserViewDTO = {
@@ -60,4 +61,9 @@ export type CreatedUserViewModel = {
   login: string;
   email: string;
   createdAt: Date;
+};
+
+export type NewPasswordDTO = {
+  userId: string;
+  passwordHash: string;
 };

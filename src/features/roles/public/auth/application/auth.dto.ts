@@ -91,3 +91,14 @@ export type RecoveryPasswordResultDTO = {
   isUserFound: boolean;
   isConfirmDataUpdated: boolean;
 };
+
+export type NewPasswordDTO = {
+  newPassword: string;
+  recoveryCode: string;
+};
+
+export type NewPasswordResultDTO = {
+  isRegistrationDataFound: boolean;
+  isCorrectRecoveryCode: boolean;
+  isPasswordUpdated: boolean
+}

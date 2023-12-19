@@ -5,6 +5,7 @@ import {
   CreateUserEntryDTO,
   CreatedUserViewModel,
   NewConfirmCodeEntryDTO,
+  NewPasswordDTO,
   RegistrationEntryDTO,
   RegistrationViewDTO,
   RegistrationWithUserViewDTO,
@@ -75,7 +76,7 @@ export class UsersRepository {
   }
 
   // registration table
-  async findUserByConfirmCode(
+  async findRegistrationDataByConfirmCode(
     code: string
   ): Promise<RegistrationViewDTO | null> {
     // registration table
@@ -94,6 +95,7 @@ export class UsersRepository {
       isConfirmed: result[0].IsConfirmed,
       confirmCode: result[0].ConfirmCode,
       registrationId: result[0].Id,
+      userId: result[0].UserId
     };
   }
 
@@ -203,6 +205,19 @@ export class UsersRepository {
         SET "ConfirmCode"= $1, "EmailExpDate"= $2
         WHERE "Id" = $3`,
       [confirmCode, emailExpDate, registrationId]
+    );
+    // result = [[], 1 | 0]
+    return !!result[1];
+  }
+
+  async setNewPassword(newPasswordDTO: NewPasswordDTO): Promise<boolean> {
+    const { passwordHash, userId } = newPasswordDTO;
+
+    let result = await this.dataSource.query(
+      `UPDATE public."Users"
+        SET "Password"= $1
+        WHERE "Id" = $2`,
+      [passwordHash, userId]
     );
     // result = [[], 1 | 0]
     return !!result[1];

@@ -27,24 +27,30 @@ export class RegistrationConfirmationUseCase
     };
 
     // get user by confirm code
-    const userByConfirmCode =
-      await this.usersRepository.findUserByConfirmCode(code);
+    const registrationDataByConfirmCode =
+      await this.usersRepository.findRegistrationDataByConfirmCode(code);
 
     // check is user found
-    if (userByConfirmCode) {
+    if (registrationDataByConfirmCode) {
       result.isUserByConfirmCodeFound = true;
     } else {
       return result;
     }
 
     // check is confirmed
-    if (userByConfirmCode && userByConfirmCode.isConfirmed) {
+    if (
+      registrationDataByConfirmCode &&
+      registrationDataByConfirmCode.isConfirmed
+    ) {
       result.isEmailAlreadyConfirmed = true;
       return result;
     }
 
     // check is isConfirmDateExpired
-    if (userByConfirmCode && userByConfirmCode.emailExpDate < new Date()) {
+    if (
+      registrationDataByConfirmCode &&
+      registrationDataByConfirmCode.emailExpDate < new Date()
+    ) {
       result.isConfirmDateExpired = true;
       return result;
     }
@@ -52,7 +58,7 @@ export class RegistrationConfirmationUseCase
     try {
       const isRegistrationConfirmed =
         await this.usersRepository.confirmRegistration({
-          confirmCode: userByConfirmCode.confirmCode,
+          confirmCode: registrationDataByConfirmCode.confirmCode,
           isConfirmed: true,
         });
       result.isRegistrationConfirmed = isRegistrationConfirmed;
