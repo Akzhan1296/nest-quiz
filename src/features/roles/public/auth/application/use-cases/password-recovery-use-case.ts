@@ -27,6 +27,7 @@ export class PasswordRecoveryUseCase
 
     const userByEmail =
       await this.usersRepository.findUserRegistrationDataByEmail(command.email);
+
     if (!userByEmail) {
       return result;
     }

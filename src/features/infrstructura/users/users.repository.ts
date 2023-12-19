@@ -95,7 +95,7 @@ export class UsersRepository {
       isConfirmed: result[0].IsConfirmed,
       confirmCode: result[0].ConfirmCode,
       registrationId: result[0].Id,
-      userId: result[0].UserId
+      userId: result[0].UserId,
     };
   }
 
@@ -103,16 +103,17 @@ export class UsersRepository {
   async findUserRegistrationDataByEmail(
     email: string
   ): Promise<RegistrationWithUserViewDTO | null> {
+    // FIXME: THIS REQUEST RETURN NULL
     const result = await this.dataSource.query(
-      ` SELECT r.*, u."Email"
-          FROM public."Registration" r
-          LEFT JOIN public."Users" u
-          on r."UserId" = u."Id"
-          WHERE u."Email" = $1`,
+      `SELECT r.*, u."Email"
+        FROM public."Registration" r
+        LEFT JOIN public."Users" u
+        on r."UserId" = u."Id"
+        WHERE u."Email" = $1`,
       [email]
     );
 
-    if (result.length === 0) return null;
+    if (!result.length) return null;
 
     return {
       registrationId: result[0].Id,

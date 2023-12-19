@@ -10,7 +10,6 @@ import {
   Res,
   UnauthorizedException,
   UseGuards,
-  // UseGuards,
 } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
 import { Request, Response } from "express";
@@ -171,10 +170,6 @@ export class AuthController {
       RegistrationConfirmationResultDTO
     >(new RegistrationConfirmationCommand({ code: inputModel.code }));
 
-    if (!isUserByConfirmCodeFound) {
-      throw new NotFoundException("User by this confirm code not found");
-    }
-
     if (isEmailAlreadyConfirmed) {
       throw new BadRequestException({
         message: "Email is already confirmed",
@@ -185,6 +180,10 @@ export class AuthController {
     if (isConfirmDateExpired) {
       throw new BadRequestException("Date is already expired");
     }
+
+    if (!isUserByConfirmCodeFound) {
+      throw new NotFoundException("User by this confirm code not found");
+    }
     return isRegistrationConfirmed;
   }
 
@@ -194,21 +193,22 @@ export class AuthController {
   async registrationEmailResending(
     @Body() inputModel: AuthEmailResendingInputModal
   ): Promise<boolean> {
+
     const { isUserFound, isEmailResent, isEmailAlreadyConfirmed } =
       await this.commandBus.execute<
         unknown,
         RegistrationEmailResendingResultDTO
       >(new EmailResendingCommand(inputModel.email));
 
-    if (!isUserFound) {
-      throw new NotFoundException("User by this confirm code not found");
-    }
-
     if (isEmailAlreadyConfirmed) {
       throw new BadRequestException({
         message: "Email is already confirmed",
         field: "code",
       });
+    }
+
+    if (!isUserFound) {
+      throw new NotFoundException("User by this confirm code not found");
     }
 
     return isEmailResent;
@@ -226,7 +226,6 @@ export class AuthController {
   async passwordRecovery(
     @Body() inputModel: AuthEmailResendingInputModal
   ): Promise<void> {
-
     const { isUserFound } = await this.commandBus.execute<
       unknown,
       RecoveryPasswordResultDTO
@@ -254,12 +253,12 @@ export class AuthController {
       })
     );
 
-    if (!isRegistrationDataFound) {
-      throw new NotFoundException("User by recovery code not found");
-    }
-
     if (!isCorrectRecoveryCode) {
       throw new BadRequestException("Recovery code is incorrect");
+    }
+
+    if (!isRegistrationDataFound) {
+      throw new NotFoundException("User by recovery code not found");
     }
 
     return isPasswordUpdated;
