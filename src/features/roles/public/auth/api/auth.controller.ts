@@ -10,7 +10,6 @@ import {
   Res,
   UnauthorizedException,
   UseGuards,
-  // UseGuards,
 } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
 import { Request, Response } from "express";
@@ -27,6 +26,7 @@ import { RegistrationUserCommand } from "../application/use-cases/registration-u
 import { RegistrationConfirmationCommand } from "../application/use-cases/registration-confirmation-use-case";
 import {
   AutoResultDTO,
+  NewPasswordResultDTO,
   RecoveryPasswordResultDTO,
   RegistrationConfirmationDTO,
   RegistrationConfirmationResultDTO,
@@ -41,6 +41,7 @@ import { AuthGuard } from "../../../../../guards/auth.guard";
 import { UsersQueryRepository } from "../../../../infrstructura/users/users.query.repository";
 import { UserQueryViewDTO } from "../../../../infrstructura/users/models/users.models";
 import { PasswordRecoveryCommand } from "../application/use-cases/password-recovery-use-case";
+import { NewPasswordCommand } from "../application/use-cases/new-password-use-case";
 
 @Controller("auth")
 export class AuthController {
@@ -169,10 +170,6 @@ export class AuthController {
       RegistrationConfirmationResultDTO
     >(new RegistrationConfirmationCommand({ code: inputModel.code }));
 
-    if (!isUserByConfirmCodeFound) {
-      throw new NotFoundException("User by this confirm code not found");
-    }
-
     if (isEmailAlreadyConfirmed) {
       throw new BadRequestException({
         message: "Email is already confirmed",
@@ -183,6 +180,10 @@ export class AuthController {
     if (isConfirmDateExpired) {
       throw new BadRequestException("Date is already expired");
     }
+
+    if (!isUserByConfirmCodeFound) {
+      throw new NotFoundException("User by this confirm code not found");
+    }
     return isRegistrationConfirmed;
   }
 
@@ -192,21 +193,22 @@ export class AuthController {
   async registrationEmailResending(
     @Body() inputModel: AuthEmailResendingInputModal
   ): Promise<boolean> {
+
     const { isUserFound, isEmailResent, isEmailAlreadyConfirmed } =
       await this.commandBus.execute<
         unknown,
         RegistrationEmailResendingResultDTO
       >(new EmailResendingCommand(inputModel.email));
 
-    if (!isUserFound) {
-      throw new NotFoundException("User by this confirm code not found");
-    }
-
     if (isEmailAlreadyConfirmed) {
       throw new BadRequestException({
         message: "Email is already confirmed",
         field: "code",
       });
+    }
+
+    if (!isUserFound) {
+      throw new NotFoundException("User by this confirm code not found");
     }
 
     return isEmailResent;
@@ -224,8 +226,6 @@ export class AuthController {
   async passwordRecovery(
     @Body() inputModel: AuthEmailResendingInputModal
   ): Promise<void> {
-    console.log(inputModel.email);
-
     const { isUserFound } = await this.commandBus.execute<
       unknown,
       RecoveryPasswordResultDTO
@@ -236,13 +236,31 @@ export class AuthController {
     }
   }
 
-  // @Post("new-password")
-  // // @UseGuards(BlockIpGuard)
-  // @HttpCode(204)
-  // async newPassword(
-  //   @Body() inputModal: NewPasswordInputModal
-  // ): Promise<boolean> {
-  //   return true;
-  //   // return this.commandBus.execute(new NewPasswordCommand(inputModal));
-  // }
+  @Post("new-password")
+  // @UseGuards(BlockIpGuard)
+  @HttpCode(204)
+  async newPassword(
+    @Body() inputModal: NewPasswordInputModal
+  ): Promise<boolean> {
+    const {
+      isRegistrationDataFound,
+      isCorrectRecoveryCode,
+      isPasswordUpdated,
+    } = await this.commandBus.execute<unknown, NewPasswordResultDTO>(
+      new NewPasswordCommand({
+        recoveryCode: inputModal.recoveryCode,
+        newPassword: inputModal.newPassword,
+      })
+    );
+
+    if (!isCorrectRecoveryCode) {
+      throw new BadRequestException("Recovery code is incorrect");
+    }
+
+    if (!isRegistrationDataFound) {
+      throw new NotFoundException("User by recovery code not found");
+    }
+
+    return isPasswordUpdated;
+  }
 }

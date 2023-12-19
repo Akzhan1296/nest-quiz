@@ -17,7 +17,9 @@ export class EmailResendingUseCase
     private readonly authService: AuthService
   ) {}
 
-  async execute(command: EmailResendingCommand): Promise<RegistrationEmailResendingResultDTO> {
+  async execute(
+    command: EmailResendingCommand
+  ): Promise<RegistrationEmailResendingResultDTO> {
     const { email } = command;
 
     const result: RegistrationEmailResendingResultDTO = {
@@ -42,7 +44,6 @@ export class EmailResendingUseCase
       result.isEmailAlreadyConfirmed = true;
       return result;
     }
-  
 
     const confirmCode = uuidv4();
     // update confirm data

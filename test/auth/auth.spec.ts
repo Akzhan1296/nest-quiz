@@ -283,6 +283,7 @@ describe("Auth", () => {
 
 //future E2E cases
 
-// login add user by SA -> auth in to system
-// refresh add user by SA -> auth ->  refresh token
-// log out add user by SA -> auth -> logout -> refresh token expect 401
+// login: add user by SA -> auth in to system
+// refresh: add user by SA -> auth ->  refresh token
+// log out: add user by SA -> auth -> logout -> refresh token expect 401
+// new-password: registration user -> confirm registration -> auth -> (expect 401) -> recovery-password -> set new password -> auth (new password 200) -> auth (old)

@@ -32,6 +32,7 @@ import { DeviceSessionsRepository } from "./features/infrstructura/deviceSession
 import { UpdateUserRefreshTokenUseCase } from "./features/roles/public/auth/application/use-cases/refresh-token-use-case";
 import { LogOutUseCase } from "./features/roles/public/auth/application/use-cases/logout-use-case";
 import { PasswordRecoveryUseCase } from "./features/roles/public/auth/application/use-cases/password-recovery-use-case";
+import { NewPasswordUseCase } from "./features/roles/public/auth/application/use-cases/new-password-use-case";
 
 const userUseCases = [CreateUserUseCase, DeleteUserUseCase];
 const authUseCases = [
@@ -42,6 +43,7 @@ const authUseCases = [
   UpdateUserRefreshTokenUseCase,
   LogOutUseCase,
   PasswordRecoveryUseCase,
+  NewPasswordUseCase,
 ];
 
 @Module({
