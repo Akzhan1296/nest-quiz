@@ -7,6 +7,7 @@ import {
 import * as request from "supertest";
 import {
   AuthEmailResendingInputModal,
+  AuthLoginInputModal,
   AuthRegistrationConfirmInputModal,
   AuthRegistrationInputModal,
 } from "../../src/features/roles/public/auth/api/auth.models";
@@ -234,6 +235,43 @@ describe("Auth", () => {
               message: "Email is already confirmed",
             },
           ]);
+        });
+    });
+  });
+
+  describe("Get user info", () => {
+    it("User info", async () => {
+      // adding user by SA
+      await request(app.getHttpServer())
+        .post("/sa/users")
+        .send({
+          login: "login1",
+          password: "password",
+          email: "login1@login.com",
+        } as AuthRegistrationInputModal)
+        .expect(201);
+
+      //auth user
+      const result = await request(app.getHttpServer())
+        .post("/auth/login")
+        .send({
+          loginOrEmail: "login1",
+          password: "password",
+        } as AuthLoginInputModal);
+
+      const accessToken = result.body.accessToken;
+      
+      //get added user info
+      await request(app.getHttpServer())
+        .get("/auth/me")
+        .set("Authorization", `Bearer ${accessToken}`)
+        .then(({ body }) => {
+          expect(body).toEqual(
+            expect.objectContaining({
+              login: 'login1',
+              email: 'login1@login.com',
+            })
+          );
         });
     });
   });

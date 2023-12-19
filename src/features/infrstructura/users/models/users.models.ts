@@ -24,7 +24,7 @@ export type NewConfirmCodeEntryDTO = {
   registrationId: string;
 };
 
-// view models 
+// view models
 
 export type RegistrationViewDTO = {
   createdAt: Date;
@@ -39,6 +39,10 @@ export type UserViewDTO = {
   login: string;
   password: string;
   email: string;
+};
+
+export type UserQueryViewDTO = Pick<UserViewDTO, "login" | "email"> & {
+  userId: string;
 };
 
 export type RegistrationWithUserViewDTO = {
