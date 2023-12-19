@@ -1,6 +1,6 @@
 import { InjectDataSource } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
-import { CreatedUserViewModel, UserViewDTO } from "./models/users.models";
+import { CreatedUserViewModel, UserQueryViewDTO } from "./models/users.models";
 import { PageSizeQueryModel, PaginationViewModel } from "../../../common/types";
 import { Paginated } from "../../../common/paginated";
 import { transformFirstLetter } from "../../../utils/upperFirstLetter";
@@ -46,5 +46,24 @@ export class UsersQueryRepository {
       },
       result
     );
+  }
+
+  // user table
+  async findUserById(id: string): Promise<UserQueryViewDTO | null> {
+    // Users table
+    let result = await this.dataSource.query(
+      `
+      SELECT "Id", "Login", "Password", "Email"
+      FROM public."Users"
+      WHERE "Id" = $1`,
+      [id]
+    );
+
+    if (result.length === 0) return null;
+    return {
+      login: result[0].Login,
+      userId: result[0].Id,
+      email: result[0].Email,
+    };
   }
 }

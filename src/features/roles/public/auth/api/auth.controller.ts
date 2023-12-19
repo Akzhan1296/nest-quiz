@@ -36,11 +36,15 @@ import { LoginCommand } from "../application/use-cases/login-use-case";
 import { RefreshTokenGuard } from "../../../../../guards/refreshToken.guard";
 import { UpdateUserRefreshTokenCommand } from "../application/use-cases/refresh-token-use-case";
 import { LogOutCommand } from "../application/use-cases/logout-use-case";
+import { AuthGuard } from "../../../../../guards/auth.guard";
+import { UsersQueryRepository } from "../../../../infrstructura/users/users.query.repository";
+import { UserQueryViewDTO } from "../../../../infrstructura/users/models/users.models";
 
 @Controller("auth")
 export class AuthController {
   constructor(
-    private readonly commandBus: CommandBus // private readonly usersQueryRepository: UsersQueryRepository
+    private readonly commandBus: CommandBus,
+    private readonly usersQueryRepository: UsersQueryRepository
   ) {}
 
   @Post("login")
@@ -206,12 +210,11 @@ export class AuthController {
     return isEmailResent;
   }
 
-  // @Get("me")
-  // // @UseGuards(AuthGuard)
-  // async getMe(@Req() request: Request): Promise<boolean> {
-  //   return true;
-  //   // return await this.usersQueryRepository.findMe(request.body.userId);
-  // }
+  @Get("me")
+  @UseGuards(AuthGuard)
+  async getMe(@Req() request: Request): Promise<UserQueryViewDTO> {
+    return await this.usersQueryRepository.findUserById(request.body.userId);
+  }
 
   // @Post("password-recovery")
   // // @UseGuards(BlockIpGuard)
