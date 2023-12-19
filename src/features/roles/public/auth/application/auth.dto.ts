@@ -85,3 +85,9 @@ export interface LogOutResultDTO {
   isDeleted: boolean;
   isForbidden: boolean;
 }
+
+// recovery
+export type RecoveryPasswordResultDTO = {
+  isUserFound: boolean;
+  isConfirmDataUpdated: boolean;
+};

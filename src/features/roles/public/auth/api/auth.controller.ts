@@ -27,6 +27,7 @@ import { RegistrationUserCommand } from "../application/use-cases/registration-u
 import { RegistrationConfirmationCommand } from "../application/use-cases/registration-confirmation-use-case";
 import {
   AutoResultDTO,
+  RecoveryPasswordResultDTO,
   RegistrationConfirmationDTO,
   RegistrationConfirmationResultDTO,
   RegistrationEmailResendingResultDTO,
@@ -39,6 +40,7 @@ import { LogOutCommand } from "../application/use-cases/logout-use-case";
 import { AuthGuard } from "../../../../../guards/auth.guard";
 import { UsersQueryRepository } from "../../../../infrstructura/users/users.query.repository";
 import { UserQueryViewDTO } from "../../../../infrstructura/users/models/users.models";
+import { PasswordRecoveryCommand } from "../application/use-cases/password-recovery-use-case";
 
 @Controller("auth")
 export class AuthController {
@@ -216,16 +218,23 @@ export class AuthController {
     return await this.usersQueryRepository.findUserById(request.body.userId);
   }
 
-  // @Post("password-recovery")
-  // // @UseGuards(BlockIpGuard)
-  // @HttpCode(204)
-  // async passwordRecovery(
-  //   @Body() inputModel: AuthEmailResendingInputModal
-  // ): Promise<void> {
-  //   // return this.commandBus.execute(
-  //   //   new PasswordRecoveryCommand(inputModel.email)
-  //   // );
-  // }
+  @Post("password-recovery")
+  // @UseGuards(BlockIpGuard)
+  @HttpCode(204)
+  async passwordRecovery(
+    @Body() inputModel: AuthEmailResendingInputModal
+  ): Promise<void> {
+    console.log(inputModel.email);
+
+    const { isUserFound } = await this.commandBus.execute<
+      unknown,
+      RecoveryPasswordResultDTO
+    >(new PasswordRecoveryCommand(inputModel.email));
+
+    if (!isUserFound) {
+      throw new NotFoundException("User by this  email not found");
+    }
+  }
 
   // @Post("new-password")
   // // @UseGuards(BlockIpGuard)
