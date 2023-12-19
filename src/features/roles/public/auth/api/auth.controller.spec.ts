@@ -141,7 +141,7 @@ describe("AuthController", () => {
       const mockExecute = jest.fn().mockReturnValue({
         isUserByConfirmCodeFound: false,
         isEmailAlreadyConfirmed: false,
-        isConfirmDateExpired: true,
+        isConfirmDateExpired: false,
         isRegistrationConfirmed: false,
       });
 

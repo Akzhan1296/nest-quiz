@@ -1,6 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import {
   BadRequestException,
+  HttpStatus,
   INestApplication,
   ValidationPipe,
 } from "@nestjs/common";
@@ -48,6 +49,7 @@ const userByConfirmCodeMock = {
   isConfirmed: false,
   confirmCode: uuidv4(),
   registrationId: uuidv4(),
+  userId: uuidv4(),
 } as const;
 
 describe("Auth", () => {
@@ -102,7 +104,7 @@ describe("Auth", () => {
       return request(app.getHttpServer())
         .post("/auth/registration")
         .send(registrationUser as AuthRegistrationInputModal)
-        .expect(204);
+        .expect(HttpStatus.NO_CONTENT);
     });
 
     it("Should return 400, class validator errors", async () => {
@@ -134,7 +136,7 @@ describe("Auth", () => {
   describe("Registration confirmation flow", () => {
     it("Should confirm registration successfully", () => {
       jest
-        .spyOn(usersRepository, "findUserByConfirmCode")
+        .spyOn(usersRepository, "findRegistrationDataByConfirmCode")
         .mockImplementation(async () => userByConfirmCodeMock);
 
       jest
@@ -146,12 +148,12 @@ describe("Auth", () => {
         .send({
           code: "45dff427-ccdd-49df-9e9d-c6b407538137",
         } as AuthRegistrationConfirmInputModal)
-        .expect(204);
+        .expect(HttpStatus.NO_CONTENT);
     });
 
     it("Should return 404 error ", () => {
       jest
-        .spyOn(usersRepository, "findUserByConfirmCode")
+        .spyOn(usersRepository, "findRegistrationDataByConfirmCode")
         .mockImplementation(async () => null);
       return request(app.getHttpServer())
         .post("/auth/registration-confirmation")
@@ -163,7 +165,7 @@ describe("Auth", () => {
 
     it("Should return 400 error", async () => {
       jest
-        .spyOn(usersRepository, "findUserByConfirmCode")
+        .spyOn(usersRepository, "findRegistrationDataByConfirmCode")
         .mockImplementation(async () => ({
           ...userByConfirmCodeMock,
           isConfirmed: true,
@@ -198,7 +200,7 @@ describe("Auth", () => {
         .send({
           email: "not-real-email@test.com",
         } as AuthEmailResendingInputModal)
-        .expect(204);
+        .expect(HttpStatus.NO_CONTENT);
     });
 
     it("Should return 404 error", () => {
@@ -249,7 +251,7 @@ describe("Auth", () => {
           password: "password",
           email: "login1@login.com",
         } as AuthRegistrationInputModal)
-        .expect(201);
+        .expect(HttpStatus.CREATED);
 
       //auth user
       const result = await request(app.getHttpServer())
@@ -281,6 +283,8 @@ describe("Auth", () => {
   });
 });
 
+
+// TODO: implement E2E test cases
 //future E2E cases
 
 // login: add user by SA -> auth in to system

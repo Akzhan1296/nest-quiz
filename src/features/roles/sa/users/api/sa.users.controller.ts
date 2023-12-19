@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   HttpCode,
+  HttpStatus,
   NotFoundException,
   Param,
   Post,
@@ -51,7 +52,7 @@ export class UsersController {
 
   // create user by SA
   @Post()
-  @HttpCode(201)
+  @HttpCode(HttpStatus.CREATED)
   async createUser(
     @Body() inputModel: AddUserInputModel
   ): Promise<CreatedUserViewModel> {
@@ -83,7 +84,7 @@ export class UsersController {
 
   // delete user by SA
   @Delete(":id")
-  @HttpCode(204)
+  @HttpCode(HttpStatus.NO_CONTENT)
   async deleteUser(@Param() params: ValidId): Promise<boolean> {
     const { isUserFound, isUserDeleted } = await this.commandBus.execute<
       unknown,
