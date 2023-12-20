@@ -1,12 +1,11 @@
-import { NestFactory } from '@nestjs/core';
-import { useContainer } from 'class-validator';
-import * as cookieParser from 'cookie-parser';
-import { BadRequestException, ValidationPipe } from '@nestjs/common';
-import { AppModule } from './app.module';
-import { HttpExceptionFilter } from './exception.filter';
+import { NestFactory } from "@nestjs/core";
+import { useContainer } from "class-validator";
+import cookieParser from "cookie-parser";
+import { BadRequestException, ValidationPipe } from "@nestjs/common";
+import { AppModule } from "./app.module";
+import { HttpExceptionFilter } from "./exception.filter";
 
 const PORT = process.env.PORT || 3000;
-
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -33,12 +32,12 @@ async function bootstrap() {
 
         throw new BadRequestException(errorsForProperty);
       },
-    }),
+    })
   );
 
   app.useGlobalFilters(new HttpExceptionFilter());
   await app.listen(PORT, () => {
-    console.log('app started');
+    console.log("app started");
   });
 }
 bootstrap();
