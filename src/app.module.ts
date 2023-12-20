@@ -35,6 +35,10 @@ import { PasswordRecoveryUseCase } from "./features/roles/public/auth/applicatio
 import { NewPasswordUseCase } from "./features/roles/public/auth/application/use-cases/new-password-use-case";
 import { DevicesController } from "./features/roles/public/devices/api/device.controller";
 import { DeviceSessionsQueryRepository } from "./features/infrstructura/deviceSessions/device-sessions.query.repository";
+import { ConfigModule } from '@nestjs/config';
+
+
+
 
 const userUseCases = [CreateUserUseCase, DeleteUserUseCase];
 const authUseCases = [
@@ -51,6 +55,9 @@ const authUseCases = [
 @Module({
   imports: [
     CqrsModule,
+    ConfigModule.forRoot({
+      isGlobal: true
+    }),
     // TypeOrmModule.forRoot({
     //   type: "postgres",
     //   host: "127.0.0.1",
@@ -62,7 +69,12 @@ const authUseCases = [
     //   synchronize: false,
     // }),
     TypeOrmModule.forRoot({
+      type: "postgres",
       url: process.env.DB_URL,
+      // host: process.env.HOST,
+      // username: process.env.USER,
+      // password: process.env.PASSWORD,
+      // database: process.env.DATABASE,
       ssl: true,
       autoLoadEntities: true,
       synchronize: true,
@@ -88,4 +100,7 @@ const authUseCases = [
     ...authUseCases,
   ],
 })
+
+
 export class AppModule {}
+console.log(process.env.PASSWORD)
