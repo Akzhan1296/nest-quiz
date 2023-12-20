@@ -103,7 +103,6 @@ export class UsersRepository {
   async findUserRegistrationDataByEmail(
     email: string
   ): Promise<RegistrationWithUserViewDTO | null> {
-    // FIXME: THIS REQUEST RETURN NULL
     const result = await this.dataSource.query(
       `SELECT r.*, u."Email"
         FROM public."Registration" r
