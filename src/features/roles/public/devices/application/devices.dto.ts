@@ -5,6 +5,7 @@ export type DeleteDeviceDTO = {
 
 export type DeleteDeviceResultDTO = {
   isUserFound: boolean;
+  isDeviceFound: boolean;
   canDeleteDevice: boolean;
   isDeviceDeleted: boolean;
 };

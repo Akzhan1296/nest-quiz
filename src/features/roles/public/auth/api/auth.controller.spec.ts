@@ -180,7 +180,7 @@ describe("AuthController", () => {
         new EmailResendingCommand("test@test.com")
       );
     });
-    it("Should return 404 error, if user by email not found", async () => {
+    it("Should return 400 error, if user by email not found", async () => {
       const mockExecute = jest.fn().mockReturnValue({
         isUserFound: false,
         isEmailResent: false,

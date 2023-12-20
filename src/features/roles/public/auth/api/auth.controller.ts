@@ -209,7 +209,7 @@ export class AuthController {
     }
 
     if (!isUserFound) {
-      throw new NotFoundException("User by this confirm code not found");
+      throw new BadRequestException("User by this confirm code not found");
     }
 
     return isEmailResent;
