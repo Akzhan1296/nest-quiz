@@ -11,3 +11,10 @@ export interface AuthMetaDataEntryDTO {
 export interface AuthMetaDataViewModel extends AuthMetaDataEntryDTO {
   id: string;
 }
+
+export type DevicesViewModel = {
+  ip: string;
+  title: string;
+  lastActiveDate: string;
+  deviceId: string;
+};
