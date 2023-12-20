@@ -97,7 +97,7 @@ export class RegistrationUserUseCase
           code: confirmCode,
           letterTitle: "Registration",
           letterText: "Confirm code",
-          codeText: "Code",
+          codeText: "code",
         });
       } catch (err) {
         throw new Error(err);

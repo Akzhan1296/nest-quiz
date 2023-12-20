@@ -27,7 +27,7 @@ export class UsersQueryRepository {
       `
         SELECT "Id", "Login", "CreatedAt", "Email"
         FROM public."Users"
-        WHERE "Login" LIKE $1 AND "Email" LIKE $2
+        WHERE "Login"  ILIKE $1 AND "Email" ILIKE $2
         ORDER BY "${orderBy}" ${sortDirection}
         LIMIT $3 OFFSET $4
       `,
@@ -37,7 +37,8 @@ export class UsersQueryRepository {
     let count = await this.dataSource.query(`
       SELECT count (*)
       FROM public."Users"
-    `);
+      WHERE "Login" ILIKE $1 AND "Email" ILIKE $2
+    `, [`%${searchLoginTerm}%`, `%${searchEmailTerm}%`]);
 
     const mappedResult = result.map((r) => ({
       id: r.Id,

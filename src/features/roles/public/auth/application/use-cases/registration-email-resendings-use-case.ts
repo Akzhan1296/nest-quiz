@@ -70,7 +70,7 @@ export class EmailResendingUseCase
           code: confirmCode,
           letterTitle: "Registration",
           letterText: "Confirm new code",
-          codeText: "New code",
+          codeText: "code",
         });
         result.isEmailResent = true;
       } catch (err) {

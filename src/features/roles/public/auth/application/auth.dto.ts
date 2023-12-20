@@ -3,7 +3,7 @@ export type EmailDataDTO = {
   code: string;
   letterTitle: string;
   letterText: string;
-  codeText: string;
+  codeText?: string;
 };
 
 //registration types
