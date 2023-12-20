@@ -1,6 +1,14 @@
-import { Controller, Delete, HttpCode, HttpStatus } from "@nestjs/common";
+import {
+  Controller,
+  Delete,
+  HttpCode,
+  HttpStatus,
+  Req,
+  Res,
+} from "@nestjs/common";
 import { InjectDataSource } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
+import { Request, Response } from "express";
 
 export class DeleteAllTestingData {
   constructor(@InjectDataSource() protected dataSource: DataSource) {}
@@ -22,9 +30,11 @@ export class DeleteDataController {
 
   @Delete("/all-data")
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteTestData() {
+  async deleteTestData(@Req() request: Request, @Res() response: Response) {
     await this.deleteRepository.deleteRegistrationTableData();
     await this.deleteRepository.deleteAuthSessionTableData();
     await this.deleteRepository.deleteUserTableData();
+
+    return response.status(204).send();
   }
 }
