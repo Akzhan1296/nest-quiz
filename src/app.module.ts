@@ -58,6 +58,7 @@ const authUseCases = [
     ConfigModule.forRoot({
       isGlobal: true
     }),
+    // local DB 
     // TypeOrmModule.forRoot({
     //   type: "postgres",
     //   host: "127.0.0.1",
@@ -68,6 +69,7 @@ const authUseCases = [
     //   autoLoadEntities: false,
     //   synchronize: false,
     // }),
+    // remote db
     TypeOrmModule.forRoot({
       type: "postgres",
       url: process.env.DB_URL,
