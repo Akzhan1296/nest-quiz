@@ -71,10 +71,6 @@ const authUseCases = [
     TypeOrmModule.forRoot({
       type: "postgres",
       url: process.env.DB_URL,
-      // host: process.env.HOST,
-      // username: process.env.USER,
-      // password: process.env.PASSWORD,
-      // database: process.env.DATABASE,
       ssl: true,
       autoLoadEntities: true,
       synchronize: true,
