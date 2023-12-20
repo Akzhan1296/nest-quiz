@@ -93,7 +93,7 @@ export class DeviceSessionsRepository {
   }
 
   async deleteAuthMetaData(deviceId: string) {
-    await this.dataSource.query(
+    const result = await this.dataSource.query(
       ` 
 	      DELETE FROM public."AuthSessionsMetaData"
 	      WHERE "DeviceId" = $1

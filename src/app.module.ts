@@ -35,10 +35,8 @@ import { PasswordRecoveryUseCase } from "./features/roles/public/auth/applicatio
 import { NewPasswordUseCase } from "./features/roles/public/auth/application/use-cases/new-password-use-case";
 import { DevicesController } from "./features/roles/public/devices/api/device.controller";
 import { DeviceSessionsQueryRepository } from "./features/infrstructura/deviceSessions/device-sessions.query.repository";
-import { ConfigModule } from '@nestjs/config';
-
-
-
+import { ConfigModule } from "@nestjs/config";
+import { DeleteCurrentDeviceUseCase } from "./features/roles/public/devices/application/use-cases/delete-current-device-use-case";
 
 const userUseCases = [CreateUserUseCase, DeleteUserUseCase];
 const authUseCases = [
@@ -51,32 +49,33 @@ const authUseCases = [
   PasswordRecoveryUseCase,
   NewPasswordUseCase,
 ];
+const deviceUseCases = [DeleteCurrentDeviceUseCase];
 
 @Module({
   imports: [
     CqrsModule,
     ConfigModule.forRoot({
-      isGlobal: true
+      isGlobal: true,
     }),
-    // local DB 
-    // TypeOrmModule.forRoot({
-    //   type: "postgres",
-    //   host: "127.0.0.1",
-    //   port: 5432,
-    //   username: "postgres",
-    //   password: "postgres ",
-    //   database: "postgres",
-    //   autoLoadEntities: false,
-    //   synchronize: false,
-    // }),
-    // remote db
+    // local DB
     TypeOrmModule.forRoot({
       type: "postgres",
-      url: process.env.DB_URL,
-      ssl: true,
-      autoLoadEntities: true,
-      synchronize: true,
+      host: "127.0.0.1",
+      port: 5432,
+      username: "postgres",
+      password: "postgres ",
+      database: "postgres",
+      autoLoadEntities: false,
+      synchronize: false,
     }),
+    // remote db
+    // TypeOrmModule.forRoot({
+    //   type: "postgres",
+    //   url: process.env.DB_URL,
+    //   ssl: true,
+    //   autoLoadEntities: true,
+    //   synchronize: true,
+    // }),
   ],
   controllers: [
     AppController,
@@ -96,9 +95,7 @@ const authUseCases = [
     DeviceSessionsQueryRepository,
     ...userUseCases,
     ...authUseCases,
+    ...deviceUseCases,
   ],
 })
-
-
 export class AppModule {}
-console.log(process.env.PASSWORD)

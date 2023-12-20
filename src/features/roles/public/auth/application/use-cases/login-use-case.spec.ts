@@ -4,7 +4,7 @@ import { AuthService } from "../auth.service";
 import { DeviceSessionsRepository } from "../../../../../infrstructura/deviceSessions/device-sessions.repository";
 import { LoginUseCase } from "./login-use-case";
 import { UsersRepository } from "../../../../../infrstructura/users/users.repository";
-import * as bcrypt from "bcrypt";
+import bcrypt from "bcrypt";
 import { AuthMetaDataViewModel } from "../../../../../infrstructura/deviceSessions/models/device.models";
 
 const authMock = {

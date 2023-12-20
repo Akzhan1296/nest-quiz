@@ -5,7 +5,7 @@ import {
   INestApplication,
   ValidationPipe,
 } from "@nestjs/common";
-import * as request from "supertest";
+import request from "supertest";
 import { AuthRegistrationInputModal } from "../../src/features/roles/public/auth/api/auth.models";
 import { AppModule } from "../../src/app.module";
 import { HttpExceptionFilter } from "../../src/exception.filter";
