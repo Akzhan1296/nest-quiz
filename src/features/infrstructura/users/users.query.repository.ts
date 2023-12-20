@@ -25,7 +25,7 @@ export class UsersQueryRepository {
 
     let result = await this.dataSource.query(
       `
-        SELECT "Id", "Login", "Password", "Email"
+        SELECT "Id", "Login", "CreatedAt", "Email"
         FROM public."Users"
         WHERE "Login" LIKE $1 AND "Email" LIKE $2
         ORDER BY "${orderBy}" ${sortDirection}
@@ -39,12 +39,19 @@ export class UsersQueryRepository {
       FROM public."Users"
     `);
 
+    const mappedResult = result.map((r) => ({
+      id: r.Id,
+      login: r.Login,
+      email: r.Email,
+      createdAt: r.CreatedAt,
+    }));
+
     return Paginated.transformPagination<CreatedUserViewModel>(
       {
         ...pageParams,
         totalCount: +count[0].count,
       },
-      result
+      mappedResult
     );
   }
 

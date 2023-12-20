@@ -25,6 +25,7 @@ export class DeleteCurrentDeviceUseCase
 
     const result: DeleteDeviceResultDTO = {
       isUserFound: false,
+      isDeviceFound: false,
       canDeleteDevice: false,
       isDeviceDeleted: false,
     };
@@ -35,17 +36,19 @@ export class DeleteCurrentDeviceUseCase
 
     result.isUserFound = true;
 
-    // check device
-    const authMetaData =
-      await this.deviceSessionRepository.getAuthMetaDataByDeviceIdAndUserId({
-        userId,
+    // check device in DB
+    const deviceData =
+      await this.deviceSessionRepository.getAuthMetaDataByDeviceId({
         deviceId,
       });
-    // if user found, however device not found it is a forbidden
-    if (!authMetaData) return result;
-    result.canDeleteDevice = true;
 
-    // if the first 2 conditions have passed,delete device
+    if (!deviceData) return result;
+    result.isDeviceFound = true;
+
+    if (user.id !== deviceData.userId) {
+      return result;
+    }
+    result.canDeleteDevice = true;
 
     try {
       await this.deviceSessionRepository.deleteAuthMetaData(deviceId);

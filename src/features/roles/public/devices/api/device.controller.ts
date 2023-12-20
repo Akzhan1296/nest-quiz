@@ -57,7 +57,7 @@ export class DevicesController {
     @Req() request: Request,
     @Param() params: { deviceId: string }
   ): Promise<boolean> {
-    const { isUserFound, canDeleteDevice, isDeviceDeleted } =
+    const { isDeviceFound, canDeleteDevice, isDeviceDeleted } =
       await this.commandBus.execute<unknown, DeleteDeviceResultDTO>(
         new DeleteCurrentDeviceCommand({
           deviceId: params.deviceId,
@@ -65,7 +65,7 @@ export class DevicesController {
         })
       );
 
-    if (!isUserFound) throw new NotFoundException();
+    if (!isDeviceFound) throw new NotFoundException();
     if (!canDeleteDevice) throw new ForbiddenException();
 
     return isDeviceDeleted;

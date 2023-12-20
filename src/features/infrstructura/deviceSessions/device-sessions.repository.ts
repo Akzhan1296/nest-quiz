@@ -65,6 +65,33 @@ export class DeviceSessionsRepository {
     };
   }
 
+  async getAuthMetaDataByDeviceId(dto: {
+    deviceId: string;
+  }): Promise<AuthMetaDataViewModel | null> {
+    const { deviceId } = dto;
+
+    let result = await this.dataSource.query(
+      `
+    SELECT "Id", "Email", "Login", "DeviceIp", "DeviceId", "DeviceName", "CreatedAt", "UserId"
+	  FROM public."AuthSessionsMetaData"
+	  WHERE "DeviceId" = $1`,
+      [deviceId]
+    );
+
+    if (result.length === 0) return null;
+
+    return {
+      email: result[0].Email,
+      login: result[0].Login,
+      deviceIp: result[0].DeviceIp,
+      deviceId: result[0].DeviceId,
+      deviceName: result[0].DeviceName,
+      createdAt: result[0].CreatedAt,
+      userId: result[0].UserId,
+      id: result[0].Id,
+    };
+  }
+
   async updateAuthMetaData(dto: {
     authSessionId: string;
     createdAt: Date;
