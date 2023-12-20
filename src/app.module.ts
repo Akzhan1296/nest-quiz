@@ -33,6 +33,8 @@ import { UpdateUserRefreshTokenUseCase } from "./features/roles/public/auth/appl
 import { LogOutUseCase } from "./features/roles/public/auth/application/use-cases/logout-use-case";
 import { PasswordRecoveryUseCase } from "./features/roles/public/auth/application/use-cases/password-recovery-use-case";
 import { NewPasswordUseCase } from "./features/roles/public/auth/application/use-cases/new-password-use-case";
+import { DevicesController } from "./features/roles/public/devices/api/device.controller";
+import { DeviceSessionsQueryRepository } from "./features/infrstructura/deviceSessions/device-sessions.query.repository";
 
 const userUseCases = [CreateUserUseCase, DeleteUserUseCase];
 const authUseCases = [
@@ -64,6 +66,7 @@ const authUseCases = [
     AppController,
     AuthController,
     UsersController,
+    DevicesController,
     DeleteDataController,
   ],
   providers: [
@@ -74,6 +77,7 @@ const authUseCases = [
     UsersRepository,
     DeviceSessionsRepository,
     DeleteAllTestingData,
+    DeviceSessionsQueryRepository,
     ...userUseCases,
     ...authUseCases,
   ],

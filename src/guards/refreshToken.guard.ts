@@ -18,6 +18,10 @@ export class RefreshTokenGuard implements CanActivate {
   async canActivate(context: ExecutionContext) {
     const request: Request = context.switchToHttp().getRequest();
 
+    if (!request.cookies) {
+      throw new UnauthorizedException();
+    }
+
     const { refreshToken } = request.cookies;
     if (!refreshToken) {
       throw new UnauthorizedException();
