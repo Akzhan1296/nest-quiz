@@ -39,8 +39,3 @@ describe("Logout use case", () => {
     await app.close();
   });
 });
-
-
-// TODO:add test cases for auth controller
-
-// FIXME: interesting background

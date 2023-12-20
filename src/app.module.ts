@@ -51,15 +51,21 @@ const authUseCases = [
 @Module({
   imports: [
     CqrsModule,
+    // TypeOrmModule.forRoot({
+    //   type: "postgres",
+    //   host: "127.0.0.1",
+    //   port: 5432,
+    //   username: "postgres",
+    //   password: "postgres ",
+    //   database: "postgres",
+    //   autoLoadEntities: false,
+    //   synchronize: false,
+    // }),
     TypeOrmModule.forRoot({
-      type: "postgres",
-      host: "127.0.0.1",
-      port: 5432,
-      username: "postgres",
-      password: "postgres ",
-      database: "postgres",
-      autoLoadEntities: false,
-      synchronize: false,
+      url: process.env.DB_URL,
+      ssl: true,
+      autoLoadEntities: true,
+      synchronize: true,
     }),
   ],
   controllers: [
