@@ -37,6 +37,7 @@ import { DevicesController } from "./features/roles/public/devices/api/device.co
 import { DeviceSessionsQueryRepository } from "./features/infrstructura/deviceSessions/device-sessions.query.repository";
 import { ConfigModule } from "@nestjs/config";
 import { DeleteCurrentDeviceUseCase } from "./features/roles/public/devices/application/use-cases/delete-current-device-use-case";
+import { DeleteDevicesExceptCurrentUseCase } from "./features/roles/public/devices/application/use-cases/delete-all-devices-use-case";
 
 const userUseCases = [CreateUserUseCase, DeleteUserUseCase];
 const authUseCases = [
@@ -49,7 +50,10 @@ const authUseCases = [
   PasswordRecoveryUseCase,
   NewPasswordUseCase,
 ];
-const deviceUseCases = [DeleteCurrentDeviceUseCase];
+const deviceUseCases = [
+  DeleteCurrentDeviceUseCase,
+  DeleteDevicesExceptCurrentUseCase,
+];
 
 @Module({
   imports: [

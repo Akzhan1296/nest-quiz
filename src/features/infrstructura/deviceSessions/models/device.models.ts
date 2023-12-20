@@ -18,3 +18,8 @@ export type DevicesViewModel = {
   lastActiveDate: string;
   deviceId: string;
 };
+
+export type DeleteAllDevicesDTO = {
+  deviceId: string;
+  userId: string;
+};

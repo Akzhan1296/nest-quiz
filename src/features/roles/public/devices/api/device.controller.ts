@@ -17,6 +17,7 @@ import { DeviceSessionsQueryRepository } from "../../../../infrstructura/deviceS
 import { DevicesViewModel } from "../../../../infrstructura/deviceSessions/models/device.models";
 import { DeleteCurrentDeviceCommand } from "../application/use-cases/delete-current-device-use-case";
 import { DeleteDeviceResultDTO } from "../application/devices.dto";
+import { DeleteDevicesExceptCurrentCommand } from "../application/use-cases/delete-all-devices-use-case";
 
 @Controller("security/devices")
 export class DevicesController {
@@ -34,18 +35,24 @@ export class DevicesController {
     );
   }
 
-  // @Delete("")
-  // @UseGuards(RefreshTokenGuard)
-  // @HttpCode(204)
-  // async deleteAllDevices(@Req() request: Request): Promise<boolean> {
-  //   return this.commandBus.execute(
-  //     new DeleteDevicesExceptOneCommand(request.body.deviceId as string)
-  //   );
-  // }
+  @Delete("")
+  @UseGuards(RefreshTokenGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteAllDevices(
+    @Req() request: Request,
+    @Param() params: { deviceId: string }
+  ): Promise<boolean> {
+    return this.commandBus.execute(
+      new DeleteDevicesExceptCurrentCommand({
+        deviceId: params.deviceId,
+        userId: request.body.userId,
+      })
+    );
+  }
 
   @Delete(":deviceId")
   @UseGuards(RefreshTokenGuard)
-  @HttpCode(204)
+  @HttpCode(HttpStatus.NO_CONTENT)
   async deleteSelectedDevice(
     @Req() request: Request,
     @Param() params: { deviceId: string }
