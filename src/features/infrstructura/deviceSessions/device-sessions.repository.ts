@@ -3,6 +3,7 @@ import { DataSource } from "typeorm";
 import {
   AuthMetaDataEntryDTO,
   AuthMetaDataViewModel,
+  DeleteAllDevicesDTO,
 } from "./models/device.models";
 
 export class DeviceSessionsRepository {
@@ -93,12 +94,27 @@ export class DeviceSessionsRepository {
   }
 
   async deleteAuthMetaData(deviceId: string) {
-    const result = await this.dataSource.query(
+    await this.dataSource.query(
       ` 
 	      DELETE FROM public."AuthSessionsMetaData"
 	      WHERE "DeviceId" = $1
         `,
       [deviceId]
     );
+
+    return;
+  }
+  async deleteAllAuthMetaDataExceptCurrent(deleteDevices: DeleteAllDevicesDTO) {
+    const { deviceId, userId } = deleteDevices;
+
+    await this.dataSource.query(
+      ` 
+	      DELETE FROM public."AuthSessionsMetaData"
+	      WHERE "DeviceId" = $1 AND "UserId" != $2
+        `,
+      [deviceId, userId]
+    );
+
+    return;
   }
 }

@@ -35,6 +35,6 @@ export class DeleteDataController {
     await this.deleteRepository.deleteAuthSessionTableData();
     await this.deleteRepository.deleteUserTableData();
 
-    return response.status(204).send();
+    return response.status(HttpStatus.NO_CONTENT).send();
   }
 }

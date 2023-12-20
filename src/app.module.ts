@@ -37,6 +37,7 @@ import { DevicesController } from "./features/roles/public/devices/api/device.co
 import { DeviceSessionsQueryRepository } from "./features/infrstructura/deviceSessions/device-sessions.query.repository";
 import { ConfigModule } from "@nestjs/config";
 import { DeleteCurrentDeviceUseCase } from "./features/roles/public/devices/application/use-cases/delete-current-device-use-case";
+import { DeleteDevicesExceptCurrentUseCase } from "./features/roles/public/devices/application/use-cases/delete-all-devices-use-case";
 
 const userUseCases = [CreateUserUseCase, DeleteUserUseCase];
 const authUseCases = [
@@ -49,7 +50,10 @@ const authUseCases = [
   PasswordRecoveryUseCase,
   NewPasswordUseCase,
 ];
-const deviceUseCases = [DeleteCurrentDeviceUseCase];
+const deviceUseCases = [
+  DeleteCurrentDeviceUseCase,
+  DeleteDevicesExceptCurrentUseCase,
+];
 
 @Module({
   imports: [
@@ -58,24 +62,24 @@ const deviceUseCases = [DeleteCurrentDeviceUseCase];
       isGlobal: true,
     }),
     // local DB
-    // TypeOrmModule.forRoot({
-    //   type: "postgres",
-    //   host: "127.0.0.1",
-    //   port: 5432,
-    //   username: "postgres",
-    //   password: "postgres ",
-    //   database: "postgres",
-    //   autoLoadEntities: false,
-    //   synchronize: false,
-    // }),
-    // remote db
     TypeOrmModule.forRoot({
       type: "postgres",
-      url: process.env.DB_URL,
-      ssl: true,
-      autoLoadEntities: true,
-      synchronize: true,
+      host: "127.0.0.1",
+      port: 5432,
+      username: "postgres",
+      password: "postgres ",
+      database: "postgres",
+      autoLoadEntities: false,
+      synchronize: false,
     }),
+    // remote db
+    // TypeOrmModule.forRoot({
+    //   type: "postgres",
+    //   url: process.env.DB_URL,
+    //   ssl: true,
+    //   autoLoadEntities: true,
+    //   synchronize: true,
+    // }),
   ],
   controllers: [
     AppController,

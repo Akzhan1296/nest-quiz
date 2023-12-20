@@ -76,7 +76,7 @@ export class AuthController {
       secure: true,
       // expires: addSeconds(new Date(), 20),
     });
-    return response.status(200).send({
+    return response.status(HttpStatus.OK).send({
       accessToken: result.accessToken,
     });
   }
@@ -97,7 +97,7 @@ export class AuthController {
       secure: true,
       // expires: addSeconds(new Date(), 20),
     });
-    return response.status(200).send({
+    return response.status(HttpStatus.OK).send({
       accessToken: result.accessToken,
     });
   }
