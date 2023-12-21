@@ -38,6 +38,8 @@ import { DeviceSessionsQueryRepository } from "./features/infrstructura/deviceSe
 import { ConfigModule } from "@nestjs/config";
 import { DeleteCurrentDeviceUseCase } from "./features/roles/public/devices/application/use-cases/delete-current-device-use-case";
 import { DeleteDevicesExceptCurrentUseCase } from "./features/roles/public/devices/application/use-cases/delete-all-devices-use-case";
+import { BlockIpsService } from "./features/infrstructura/ip-retriction.service";
+import { BlockIpsRepository } from "./features/infrstructura/ip/ip.repository";
 
 const userUseCases = [CreateUserUseCase, DeleteUserUseCase];
 const authUseCases = [
@@ -92,6 +94,8 @@ const deviceUseCases = [
     JwtService,
     AppService,
     AuthService,
+    BlockIpsService,
+    BlockIpsRepository,
     UsersQueryRepository,
     UsersRepository,
     DeviceSessionsRepository,
