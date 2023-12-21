@@ -174,7 +174,7 @@ export class AuthController {
     if (isEmailAlreadyConfirmed) {
       throw new BadRequestException({
         message: "Email is already confirmed",
-        field: "email",
+        field: "code",
       });
     }
 
