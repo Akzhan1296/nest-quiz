@@ -40,11 +40,10 @@ export class DevicesController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteAllDevices(
     @Req() request: Request,
-    @Param() params: { deviceId: string }
   ): Promise<boolean> {
     return this.commandBus.execute(
       new DeleteDevicesExceptCurrentCommand({
-        deviceId: params.deviceId,
+        deviceId: request.body.deviceId,
         userId: request.body.userId,
       })
     );
