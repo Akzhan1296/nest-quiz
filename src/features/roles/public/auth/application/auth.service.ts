@@ -64,7 +64,7 @@ export class AuthService {
     try {
       accessToken = this.jwtService.sign(payload, {
         secret: settings.JWT_SECRET,
-        expiresIn: "30 sec",
+        expiresIn: "10 sec",
       });
     } catch (err) {
       throw new Error(`Something went wrong with access token ${err}`);
@@ -92,7 +92,7 @@ export class AuthService {
     try {
       refreshsToken = this.jwtService.sign(payload, {
         secret: settings.JWT_SECRET,
-        expiresIn: "2 min",
+        expiresIn: "20 sec",
       });
     } catch (err) {
       throw new Error(`Something went wrong on refresh token${err}`);
