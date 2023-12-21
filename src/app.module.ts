@@ -35,11 +35,13 @@ import { PasswordRecoveryUseCase } from "./features/roles/public/auth/applicatio
 import { NewPasswordUseCase } from "./features/roles/public/auth/application/use-cases/new-password-use-case";
 import { DevicesController } from "./features/roles/public/devices/api/device.controller";
 import { DeviceSessionsQueryRepository } from "./features/infrstructura/deviceSessions/device-sessions.query.repository";
-import { ConfigModule } from "@nestjs/config";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 import { DeleteCurrentDeviceUseCase } from "./features/roles/public/devices/application/use-cases/delete-current-device-use-case";
 import { DeleteDevicesExceptCurrentUseCase } from "./features/roles/public/devices/application/use-cases/delete-all-devices-use-case";
 import { BlockIpsService } from "./features/infrstructura/ip-retriction.service";
 import { BlockIpsRepository } from "./features/infrstructura/ip/ip.repository";
+
+import configuration from "./config";
 
 const userUseCases = [CreateUserUseCase, DeleteUserUseCase];
 const authUseCases = [
@@ -62,25 +64,21 @@ const deviceUseCases = [
     CqrsModule,
     ConfigModule.forRoot({
       isGlobal: true,
+      load: [configuration],
     }),
-    // local DB
-    // TypeOrmModule.forRoot({
-    //   type: "postgres",
-    //   host: "127.0.0.1",
-    //   port: 5432,
-    //   username: "postgres",
-    //   password: "postgres ",
-    //   database: "postgres",
-    //   autoLoadEntities: false,
-    //   synchronize: false,
-    // }),
-    // remote db
-    TypeOrmModule.forRoot({
-      type: "postgres",
-      url: process.env.DB_URL,
-      ssl: true,
-      autoLoadEntities: true,
-      synchronize: true,
+    TypeOrmModule.forRootAsync({
+      useFactory: (configService: ConfigService) => {
+        const env = process.env.ENV;
+
+        if (env === "TESTING") {
+          console.log(configService.get("localDB"))
+          return configService.get("localDB");
+        } else {
+          console.log(configService.get("remoteDB"))
+          return configService.get("remoteDB");
+        }
+      },
+      inject: [ConfigService],
     }),
   ],
   controllers: [
