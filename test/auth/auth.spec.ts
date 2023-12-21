@@ -19,6 +19,7 @@ import { add } from "date-fns";
 import { UsersRepository } from "../../src/features/infrstructura/users/users.repository";
 import { v4 as uuidv4 } from "uuid";
 import { DeleteDataController } from "../../src/features/infrstructura/deleting-all-data";
+import { Request, Response } from "express";
 
 const registrationUser: AuthRegistrationInputModal = {
   login: `login${new Date().getHours()}${new Date().getMilliseconds()}`.slice(
@@ -51,6 +52,20 @@ const userByConfirmCodeMock = {
   registrationId: uuidv4(),
   userId: uuidv4(),
 } as const;
+
+
+const mockRequest = {
+  headers: {
+    "user-agent": "device name",
+  },
+} as unknown as Request;
+
+const mockResponse = {
+  cookie: jest.fn(),
+  status: jest.fn(() => mockResponse),
+  send: jest.fn(() => true),
+} as unknown as Response;
+
 
 describe("Auth", () => {
   let app: INestApplication;
@@ -96,7 +111,7 @@ describe("Auth", () => {
   beforeEach(async () => {
     jest.clearAllMocks();
 
-    await deleteDataController.deleteTestData();
+    await deleteDataController.deleteTestData(mockRequest, mockResponse);
   });
 
   describe("Registration flow", () => {
@@ -181,7 +196,7 @@ describe("Auth", () => {
           expect(body.errorsMessages).toHaveLength(1);
           expect(body.errorsMessages).toEqual([
             {
-              field: "code",
+              field: "email",
               message: "Email is already confirmed",
             },
           ]);
@@ -203,7 +218,7 @@ describe("Auth", () => {
         .expect(HttpStatus.NO_CONTENT);
     });
 
-    it("Should return 404 error", () => {
+    it("Should return 400 error, if no headers", () => {
       jest
         .spyOn(usersRepository, "findUserRegistrationDataByEmail")
         .mockImplementation(async () => null);
@@ -212,7 +227,7 @@ describe("Auth", () => {
         .send({
           email: "not-3real-email@test.com",
         } as AuthEmailResendingInputModal)
-        .expect(404);
+        .expect(400);
     });
 
     it("Should return 400 error, if email already confirmed", () => {
@@ -233,7 +248,7 @@ describe("Auth", () => {
           expect(body.errorsMessages).toHaveLength(1);
           expect(body.errorsMessages).toEqual([
             {
-              field: "code",
+              field: "email",
               message: "Email is already confirmed",
             },
           ]);
@@ -246,6 +261,7 @@ describe("Auth", () => {
       // adding user by SA
       await request(app.getHttpServer())
         .post("/sa/users")
+        .auth("admin", "qwerty", { type: 'basic'})
         .send({
           login: "login1",
           password: "password",

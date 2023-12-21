@@ -174,7 +174,7 @@ export class AuthController {
     if (isEmailAlreadyConfirmed) {
       throw new BadRequestException({
         message: "Email is already confirmed",
-        field: "code",
+        field: "email",
       });
     }
 
@@ -194,7 +194,6 @@ export class AuthController {
   async registrationEmailResending(
     @Body() inputModel: AuthEmailResendingInputModal
   ): Promise<boolean> {
-
     const { isUserFound, isEmailResent, isEmailAlreadyConfirmed } =
       await this.commandBus.execute<
         unknown,
@@ -204,12 +203,15 @@ export class AuthController {
     if (isEmailAlreadyConfirmed) {
       throw new BadRequestException({
         message: "Email is already confirmed",
-        field: "code",
+        field: "email",
       });
     }
 
     if (!isUserFound) {
-      throw new BadRequestException("User by this confirm code not found");
+      throw new BadRequestException({
+        message: "User by this confirm code not found",
+        field: "email",
+      });
     }
 
     return isEmailResent;
