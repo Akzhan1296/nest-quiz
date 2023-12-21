@@ -5,16 +5,6 @@ import { add } from "date-fns";
 import { PasswordRecoveryUseCase } from "./password-recovery-use-case";
 import { RegistrationWithUserViewDTO } from "../../../../../infrstructura/users/models/users.models";
 
-const userByConfirmCodeMock = {
-  createdAt: new Date(),
-  emailExpDate: add(new Date(), {
-    minutes: 1,
-  }),
-  isConfirmed: false,
-  confirmCode: "a8904469-3781-49a1-a5d7-56007c27ee77",
-  registrationId: "123",
-} as const;
-
 describe("Password recovery use-case", () => {
   let app: TestingModule;
   let usersRepository: UsersRepository;
