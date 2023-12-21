@@ -4,11 +4,17 @@ import { CommandBus } from "@nestjs/cqrs";
 import { AppModule } from "../../../../../app.module";
 import { AuthRegistrationInputModal } from "./auth.models";
 import { RegistrationUserCommand } from "../application/use-cases/registration-user-use-case";
-import { BadRequestException } from "@nestjs/common";
+import {
+  BadRequestException,
+  INestApplication,
+  ValidationPipe,
+} from "@nestjs/common";
 import { RegistrationConfirmationCommand } from "../application/use-cases/registration-confirmation-use-case";
 import { EmailResendingCommand } from "../application/use-cases/registration-email-resendings-use-case";
 import { LoginCommand } from "../application/use-cases/login-use-case";
 import { Request, Response } from "express";
+import { useContainer } from "class-validator";
+import { HttpExceptionFilter } from "../../../../../exception.filter";
 
 const registrationUserMock: AuthRegistrationInputModal = {
   login: "login",
@@ -19,12 +25,38 @@ const registrationUserMock: AuthRegistrationInputModal = {
 describe("AuthController", () => {
   let authController: AuthController;
   let commandBus: CommandBus;
-  let app: TestingModule;
+  let app: INestApplication;
 
   beforeEach(async () => {
-    app = await Test.createTestingModule({
+    const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
+
+    app = moduleFixture.createNestApplication();
+    useContainer(app.select(AppModule), { fallbackOnErrors: true });
+    app.useGlobalPipes(
+      new ValidationPipe({
+        stopAtFirstError: true,
+        transform: true,
+        transformOptions: { enableImplicitConversion: true },
+        exceptionFactory: (errors) => {
+          const errorsForProperty: any[] = [];
+
+          errors.forEach((e) => {
+            const constrainKey = Object.keys(e.constraints!);
+            constrainKey.forEach((cKey) => {
+              errorsForProperty.push({
+                field: e.property,
+                message: e.constraints![cKey],
+              });
+            });
+          });
+
+          throw new BadRequestException(errorsForProperty);
+        },
+      })
+    );
+    app.useGlobalFilters(new HttpExceptionFilter());
     await app.init();
 
     authController = app.get<AuthController>(AuthController);
@@ -192,7 +224,10 @@ describe("AuthController", () => {
       await expect(
         authController.registrationEmailResending({ email: "test@test.com" })
       ).rejects.toEqual(
-        new BadRequestException("User by this confirm code not found")
+        new BadRequestException({
+          message: "User by this confirm code not found",
+          field: "email",
+        })
       );
     });
     it("Should return 400 error, if email is already confirmed", async () => {
@@ -206,7 +241,12 @@ describe("AuthController", () => {
       jest.spyOn(commandBus, "execute").mockImplementation(mockExecute);
       await expect(
         authController.registrationEmailResending({ email: "test@test.com" })
-      ).rejects.toEqual(new BadRequestException("Email is already confirmed"));
+      ).rejects.toEqual(
+        new BadRequestException({
+          message: "Email is already confirmed",
+          field: "email",
+        })
+      );
     });
   });
 

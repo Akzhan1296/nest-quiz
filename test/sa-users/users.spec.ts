@@ -11,6 +11,7 @@ import { AppModule } from "../../src/app.module";
 import { HttpExceptionFilter } from "../../src/exception.filter";
 import { useContainer } from "class-validator";
 import { DeleteDataController } from "../../src/features/infrstructura/deleting-all-data";
+import { Request, Response } from "express";
 
 const registrationUser: AuthRegistrationInputModal = {
   login: `login${new Date().getHours()}${new Date().getMilliseconds()}`.slice(
@@ -20,6 +21,18 @@ const registrationUser: AuthRegistrationInputModal = {
   password: "password",
   email: `test${new Date().getHours()}${new Date().getMilliseconds()}@test.ru`,
 } as const;
+
+const mockRequest = {
+  headers: {
+    "user-agent": "device name",
+  },
+} as unknown as Request;
+
+const mockResponse = {
+  cookie: jest.fn(),
+  status: jest.fn(() => mockResponse),
+  send: jest.fn(() => true),
+} as unknown as Response;
 
 describe("Auth", () => {
   let app: INestApplication;
@@ -62,7 +75,7 @@ describe("Auth", () => {
 
   beforeEach(async () => {
     jest.clearAllMocks();
-    await deleteDataController.deleteTestData();
+    await deleteDataController.deleteTestData(mockRequest, mockResponse);
   });
 
   describe("Create user by SA", () => {
@@ -106,6 +119,7 @@ describe("Auth", () => {
     it("Get users", async () => {
       await request(app.getHttpServer())
         .post("/sa/users")
+        .auth("admin", "qwerty", { type: 'basic'})
         .send({
           login: "login1",
           password: "password",
@@ -115,6 +129,7 @@ describe("Auth", () => {
 
       await request(app.getHttpServer())
         .post("/sa/users")
+        .auth("admin", "qwerty", { type: 'basic'})
         .send({
           login: "login2",
           password: "password",
@@ -124,6 +139,7 @@ describe("Auth", () => {
 
       await request(app.getHttpServer())
         .get("/sa/users")
+        .auth("admin", "qwerty", { type: 'basic'})
         .then(({ body }) => {
           expect(body).toEqual(
             expect.objectContaining({
