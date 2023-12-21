@@ -13,8 +13,11 @@ export class DeleteDevicesExceptCurrentUseCase
     private readonly deviceSessionRepository: DeviceSessionsRepository
   ) {}
   async execute(command: DeleteDevicesExceptCurrentCommand): Promise<void> {
-    return this.deviceSessionRepository.deleteAllAuthMetaDataExceptCurrent(
-      command.deleteDeviceDTO
-    );
+    const { deviceId, userId } = command.deleteDeviceDTO;
+
+    return this.deviceSessionRepository.deleteAllAuthMetaDataExceptCurrent({
+      deviceId,
+      userId,
+    });
   }
 }

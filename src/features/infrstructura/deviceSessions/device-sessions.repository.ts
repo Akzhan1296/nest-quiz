@@ -137,7 +137,7 @@ export class DeviceSessionsRepository {
     await this.dataSource.query(
       ` 
 	      DELETE FROM public."AuthSessionsMetaData"
-	      WHERE "DeviceId" = $1 AND "UserId" != $2
+	      WHERE "DeviceId" != $1 AND "UserId" = $2
         `,
       [deviceId, userId]
     );
