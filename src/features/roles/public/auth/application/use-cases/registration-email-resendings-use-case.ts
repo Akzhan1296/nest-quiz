@@ -52,7 +52,7 @@ export class EmailResendingUseCase
         {
           confirmCode,
           emailExpDate: add(new Date(), {
-            minutes: 10,
+            minutes: 100,
           }),
           registrationId: userByEmail.registrationId,
         }

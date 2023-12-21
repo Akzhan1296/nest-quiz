@@ -41,7 +41,7 @@ export class PasswordRecoveryUseCase
         {
           confirmCode,
           emailExpDate: add(new Date(), {
-            minutes: 10,
+            minutes: 100,
           }),
           registrationId: userByEmail.registrationId,
         }
