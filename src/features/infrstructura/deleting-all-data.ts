@@ -22,6 +22,9 @@ export class DeleteAllTestingData {
   async deleteUserTableData() {
     await this.dataSource.query(`DELETE FROM public."Users"`);
   }
+  async deleteIpsTableData() {
+    await this.dataSource.query(`DELETE FROM public."Ips"`);
+  }
 }
 
 @Controller("testing")
