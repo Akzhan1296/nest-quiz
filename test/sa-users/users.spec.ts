@@ -82,12 +82,23 @@ describe("Auth", () => {
     it("Should create user successfully", () => {
       return request(app.getHttpServer())
         .post("/sa/users")
+        .auth("admin", "qwerty", { type: 'basic'})
         .send(registrationUser as AuthRegistrationInputModal)
         .expect(HttpStatus.CREATED);
     });
+
+    it("Should return 401 if no headers", () => {
+      return request(app.getHttpServer())
+        .post("/sa/users")
+        .auth("admin", "qwerty", { type: 'basic'})
+        .send(registrationUser as AuthRegistrationInputModal)
+        .expect(HttpStatus.CREATED);
+    });
+
     it("Should return 400 error, validation errors", async () => {
       return request(app.getHttpServer())
         .post("/sa/users")
+        .auth("admin", "qwerty", { type: 'basic'})
         .send({
           password: "           ",
           email: "123",

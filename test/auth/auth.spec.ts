@@ -20,6 +20,7 @@ import { UsersRepository } from "../../src/features/infrstructura/users/users.re
 import { v4 as uuidv4 } from "uuid";
 import { DeleteDataController } from "../../src/features/infrstructura/deleting-all-data";
 import { Request, Response } from "express";
+import cookieParser from "cookie-parser";
 
 const registrationUser: AuthRegistrationInputModal = {
   login: `login${new Date().getHours()}${new Date().getMilliseconds()}`.slice(
@@ -53,7 +54,6 @@ const userByConfirmCodeMock = {
   userId: uuidv4(),
 } as const;
 
-
 const mockRequest = {
   headers: {
     "user-agent": "device name",
@@ -65,7 +65,6 @@ const mockResponse = {
   status: jest.fn(() => mockResponse),
   send: jest.fn(() => true),
 } as unknown as Response;
-
 
 describe("Auth", () => {
   let app: INestApplication;
@@ -79,6 +78,8 @@ describe("Auth", () => {
 
     app = moduleFixture.createNestApplication();
     useContainer(app.select(AppModule), { fallbackOnErrors: true });
+    app.use(cookieParser());
+
     app.useGlobalPipes(
       new ValidationPipe({
         stopAtFirstError: true,
@@ -112,6 +113,42 @@ describe("Auth", () => {
     jest.clearAllMocks();
 
     await deleteDataController.deleteTestData(mockRequest, mockResponse);
+  });
+
+  it("Should get user info", async () => {
+    // adding user by SA
+    await request(app.getHttpServer())
+      .post("/sa/users")
+      .auth("admin", "qwerty", { type: "basic" })
+      .send({
+        login: "login1",
+        password: "password",
+        email: "login1@login.com",
+      } as AuthRegistrationInputModal)
+      .expect(HttpStatus.CREATED);
+
+    //auth user
+    const result = await request(app.getHttpServer())
+      .post("/auth/login")
+      .send({
+        loginOrEmail: "login1",
+        password: "password",
+      } as AuthLoginInputModal);
+
+    const accessToken = result.body.accessToken;
+
+    //get added user info
+    await request(app.getHttpServer())
+      .get("/auth/me")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .then(({ body }) => {
+        expect(body).toEqual(
+          expect.objectContaining({
+            login: "login1",
+            email: "login1@login.com",
+          })
+        );
+      });
   });
 
   describe("Registration flow", () => {
@@ -196,7 +233,7 @@ describe("Auth", () => {
           expect(body.errorsMessages).toHaveLength(1);
           expect(body.errorsMessages).toEqual([
             {
-              field: "email",
+              field: "code",
               message: "Email is already confirmed",
             },
           ]);
@@ -256,16 +293,38 @@ describe("Auth", () => {
     });
   });
 
-  describe("Get user info", () => {
-    it("User info", async () => {
-      // adding user by SA
+  describe("Login flow", () => {
+    it("Should create user successfully", async () => {
+      // add user
       await request(app.getHttpServer())
         .post("/sa/users")
-        .auth("admin", "qwerty", { type: 'basic'})
+        .auth("admin", "qwerty", { type: "basic" })
         .send({
-          login: "login1",
           password: "password",
-          email: "login1@login.com",
+          login: "login12345",
+          email: "email@email.com",
+        } as AuthRegistrationInputModal)
+        .expect(HttpStatus.CREATED);
+
+      //auth user
+      await request(app.getHttpServer())
+        .post("/auth/login")
+        .send({
+          loginOrEmail: "login12345",
+          password: "password",
+        } as AuthLoginInputModal)
+        .expect(HttpStatus.OK);
+    });
+
+    it("Should refresh token successfully", async () => {
+      // add user
+      await request(app.getHttpServer())
+        .post("/sa/users")
+        .auth("admin", "qwerty", { type: "basic" })
+        .send({
+          password: "password",
+          login: "login123",
+          email: "email@email.com",
         } as AuthRegistrationInputModal)
         .expect(HttpStatus.CREATED);
 
@@ -273,24 +332,60 @@ describe("Auth", () => {
       const result = await request(app.getHttpServer())
         .post("/auth/login")
         .send({
-          loginOrEmail: "login1",
+          loginOrEmail: "login123",
           password: "password",
-        } as AuthLoginInputModal);
+        } as AuthLoginInputModal)
+        .expect(HttpStatus.OK);
 
-      const accessToken = result.body.accessToken;
-      
-      //get added user info
+      const refreshToken = result.headers["set-cookie"][0].split("=")[1];
+
+      // should return new refresh token
       await request(app.getHttpServer())
-        .get("/auth/me")
-        .set("Authorization", `Bearer ${accessToken}`)
-        .then(({ body }) => {
-          expect(body).toEqual(
-            expect.objectContaining({
-              login: 'login1',
-              email: 'login1@login.com',
-            })
-          );
-        });
+        .post("/auth/refresh-token")
+        .set("Cookie", `refreshToken=${refreshToken}`)
+        .expect(HttpStatus.OK);
+
+      // should return 401,because old refresh token is used
+      await request(app.getHttpServer())
+        .post("/auth/refresh-token")
+        .set("Cookie", `refreshToken=${refreshToken}`)
+        .expect(HttpStatus.UNAUTHORIZED);
+    });
+
+    it("Should log out", async () => {
+      // add user
+      await request(app.getHttpServer())
+        .post("/sa/users")
+        .auth("admin", "qwerty", { type: "basic" })
+        .send({
+          password: "password",
+          login: "login123",
+          email: "email@email.com",
+        } as AuthRegistrationInputModal)
+        .expect(HttpStatus.CREATED);
+
+      //auth user
+      const result = await request(app.getHttpServer())
+        .post("/auth/login")
+        .send({
+          loginOrEmail: "login123",
+          password: "password",
+        } as AuthLoginInputModal)
+        .expect(HttpStatus.OK);
+
+      const refreshToken = result.headers["set-cookie"][0].split("=")[1];
+
+      // log out
+      await request(app.getHttpServer())
+        .post("/auth/logout")
+        .set("Cookie", `refreshToken=${refreshToken}`)
+        .expect(HttpStatus.NO_CONTENT);
+
+      // should return 401,because user log out
+      await request(app.getHttpServer())
+        .post("/auth/refresh-token")
+        .set("Cookie", `refreshToken=${refreshToken}`)
+        .expect(HttpStatus.UNAUTHORIZED);
     });
   });
 
@@ -299,11 +394,11 @@ describe("Auth", () => {
   });
 });
 
+describe("Refresh token", () => {});
+
+describe("Log out", () => {});
+
+describe("New password", () => {});
 
 // TODO: implement E2E test cases
-//future E2E cases
-
-// login: add user by SA -> auth in to system
-// refresh: add user by SA -> auth ->  refresh token
-// log out: add user by SA -> auth -> logout -> refresh token expect 401
 // new-password: registration user -> confirm registration -> auth -> (expect 401) -> recovery-password -> set new password -> auth (new password 200) -> auth (old)
