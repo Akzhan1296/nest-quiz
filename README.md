@@ -9,8 +9,8 @@ fix/fix-name
 feat(23/12/2023): implement some functionality
 
 ### MR structure
--Title: feat(23/12/2023): implement some functionality
--picture
+Title: feat(23/12/2023): implement some functionality
+picture
 
 
 | Hometask #      | Period of implementing                |
@@ -20,4 +20,4 @@ feat(23/12/2023): implement some functionality
 
 
 # Best regard 
-# Akzhan Sarzhanuly (23/12/2023)
+Akzhan Sarzhanuly (23/12/2023)
