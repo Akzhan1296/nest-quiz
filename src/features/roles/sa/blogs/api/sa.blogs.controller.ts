@@ -5,6 +5,7 @@ import {
   ForbiddenException,
   Get,
   HttpCode,
+  HttpStatus,
   Inject,
   NotFoundException,
   Param,
@@ -34,6 +35,7 @@ export class SABlogsController {
 
   // get blogs
   @Get()
+  @HttpCode(HttpStatus.OK)
   async getBlogs(
     @Query() pageSize: BlogsQueryType
   ): Promise<PaginationViewModel<BlogViewModel>> {
@@ -42,10 +44,9 @@ export class SABlogsController {
 
   // create new blog
   @Post()
-  @HttpCode(201)
+  @HttpCode(HttpStatus.CREATED)
   async createBlog(
     @Body() blogInputModel: CreateBlogInputModelType,
-    @Req() request: Request
   ): Promise<BlogViewModel> {
     const { createdBlogId } = await this.commandBus.execute<
       unknown,
@@ -64,7 +65,7 @@ export class SABlogsController {
 
   // update blog
   @Put(":id")
-  @HttpCode(204)
+  @HttpCode(HttpStatus.NO_CONTENT)
   async updateBlog(
     @Param() params: { id: string },
     @Req() request: Request,
@@ -84,7 +85,7 @@ export class SABlogsController {
 
   // delete
   @Delete(":id")
-  @HttpCode(204)
+  @HttpCode(HttpStatus.NO_CONTENT)
   async deleteBlog(
     @Param() params: { id: string },
     @Req() request: Request

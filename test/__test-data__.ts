@@ -2,6 +2,7 @@ import { AuthRegistrationInputModal } from "../src/features/roles/public/auth/ap
 import { Request, Response } from "express";
 import { add } from "date-fns";
 import { v4 as uuidv4 } from "uuid";
+import { CreateBlogInputModelType } from "../src/features/roles/sa/blogs/api/sa.blogs.models";
 
 export const mockRequest = {
   headers: {
@@ -46,3 +47,9 @@ export const userByConfirmCodeMock = {
   registrationId: uuidv4(),
   userId: uuidv4(),
 } as const;
+
+export const creatingBlogMock: CreateBlogInputModelType = {
+  name: "blog name",
+  websiteUrl: "https://www.youtube.com",
+  description: "some description",
+};
