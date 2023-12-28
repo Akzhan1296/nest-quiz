@@ -1,76 +1,22 @@
-import { Test, TestingModule } from "@nestjs/testing";
 import {
-  BadRequestException,
   HttpStatus,
   INestApplication,
-  ValidationPipe,
 } from "@nestjs/common";
 import request from "supertest";
 import { AuthRegistrationInputModal } from "../../src/features/roles/public/auth/api/auth.models";
-import { AppModule } from "../../src/app.module";
-import { HttpExceptionFilter } from "../../src/exception.filter";
-import { useContainer } from "class-validator";
 import { DeleteDataController } from "../../src/features/infrstructura/deleting-all-data";
-import { Request, Response } from "express";
+import { initTestApp } from "../init.app";
+import { mockRequest, mockResponse, registrationUser } from "../__test-data__";
 
-const registrationUser: AuthRegistrationInputModal = {
-  login: `login${new Date().getHours()}${new Date().getMilliseconds()}`.slice(
-    0,
-    10
-  ),
-  password: "password",
-  email: `test${new Date().getHours()}${new Date().getMilliseconds()}@test.ru`,
-} as const;
-
-const mockRequest = {
-  headers: {
-    "user-agent": "device name",
-  },
-} as unknown as Request;
-
-const mockResponse = {
-  cookie: jest.fn(),
-  status: jest.fn(() => mockResponse),
-  send: jest.fn(() => true),
-} as unknown as Response;
-
-describe("Auth", () => {
+describe("Users", () => {
   let app: INestApplication;
   let deleteDataController: DeleteDataController;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-
-    app = moduleFixture.createNestApplication();
-    useContainer(app.select(AppModule), { fallbackOnErrors: true });
-    app.useGlobalPipes(
-      new ValidationPipe({
-        stopAtFirstError: true,
-        transform: true,
-        transformOptions: { enableImplicitConversion: true },
-        exceptionFactory: (errors) => {
-          const errorsForProperty: any[] = [];
-
-          errors.forEach((e) => {
-            const constrainKey = Object.keys(e.constraints!);
-            constrainKey.forEach((cKey) => {
-              errorsForProperty.push({
-                field: e.property,
-                message: e.constraints![cKey],
-              });
-            });
-          });
-
-          throw new BadRequestException(errorsForProperty);
-        },
-      })
-    );
-    app.useGlobalFilters(new HttpExceptionFilter());
+    app = await initTestApp();
+    await app.init();
     deleteDataController = app.get<DeleteDataController>(DeleteDataController);
 
-    await app.init();
   });
 
   beforeEach(async () => {
@@ -82,7 +28,7 @@ describe("Auth", () => {
     it("Should create user successfully", () => {
       return request(app.getHttpServer())
         .post("/sa/users")
-        .auth("admin", "qwerty", { type: 'basic'})
+        .auth("admin", "qwerty", { type: "basic" })
         .send(registrationUser as AuthRegistrationInputModal)
         .expect(HttpStatus.CREATED);
     });
@@ -90,7 +36,7 @@ describe("Auth", () => {
     it("Should return 401 if no headers", () => {
       return request(app.getHttpServer())
         .post("/sa/users")
-        .auth("admin", "qwerty", { type: 'basic'})
+        .auth("admin", "qwerty", { type: "basic" })
         .send(registrationUser as AuthRegistrationInputModal)
         .expect(HttpStatus.CREATED);
     });
@@ -98,7 +44,7 @@ describe("Auth", () => {
     it("Should return 400 error, validation errors", async () => {
       return request(app.getHttpServer())
         .post("/sa/users")
-        .auth("admin", "qwerty", { type: 'basic'})
+        .auth("admin", "qwerty", { type: "basic" })
         .send({
           password: "           ",
           email: "123",
@@ -130,7 +76,7 @@ describe("Auth", () => {
     it("Get users", async () => {
       await request(app.getHttpServer())
         .post("/sa/users")
-        .auth("admin", "qwerty", { type: 'basic'})
+        .auth("admin", "qwerty", { type: "basic" })
         .send({
           login: "login1",
           password: "password",
@@ -140,7 +86,7 @@ describe("Auth", () => {
 
       await request(app.getHttpServer())
         .post("/sa/users")
-        .auth("admin", "qwerty", { type: 'basic'})
+        .auth("admin", "qwerty", { type: "basic" })
         .send({
           login: "login2",
           password: "password",
@@ -150,7 +96,7 @@ describe("Auth", () => {
 
       await request(app.getHttpServer())
         .get("/sa/users")
-        .auth("admin", "qwerty", { type: 'basic'})
+        .auth("admin", "qwerty", { type: "basic" })
         .then(({ body }) => {
           expect(body).toEqual(
             expect.objectContaining({

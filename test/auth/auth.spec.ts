@@ -1,10 +1,4 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import {
-  BadRequestException,
-  HttpStatus,
-  INestApplication,
-  ValidationPipe,
-} from "@nestjs/common";
+import { HttpStatus, INestApplication } from "@nestjs/common";
 import request from "supertest";
 import {
   AuthEmailResendingInputModal,
@@ -12,59 +6,17 @@ import {
   AuthRegistrationConfirmInputModal,
   AuthRegistrationInputModal,
 } from "../../src/features/roles/public/auth/api/auth.models";
-import { AppModule } from "../../src/app.module";
-import { HttpExceptionFilter } from "../../src/exception.filter";
-import { useContainer } from "class-validator";
-import { add } from "date-fns";
 import { UsersRepository } from "../../src/features/infrstructura/users/users.repository";
 import { v4 as uuidv4 } from "uuid";
 import { DeleteDataController } from "../../src/features/infrstructura/deleting-all-data";
-import { Request, Response } from "express";
-import cookieParser from "cookie-parser";
-
-const registrationUser: AuthRegistrationInputModal = {
-  login: `login${new Date().getHours()}${new Date().getMilliseconds()}`.slice(
-    0,
-    10
-  ),
-  password: "password",
-  email: `test${new Date().getHours()}${new Date().getMilliseconds()}@test.ru`,
-} as const;
-
-const userByEmailMock = {
-  createdAt: new Date(),
-  emailExpDate: add(new Date(), {
-    minutes: 1,
-  }),
-  isConfirmed: false,
-  confirmCode: "a8904469-3781-49a1-a5d7-56007c27ee77",
-  registrationId: uuidv4(),
-  userId: uuidv4(),
-  email: "test@test.com",
-} as const;
-
-const userByConfirmCodeMock = {
-  createdAt: new Date(),
-  emailExpDate: add(new Date(), {
-    minutes: 1,
-  }),
-  isConfirmed: false,
-  confirmCode: uuidv4(),
-  registrationId: uuidv4(),
-  userId: uuidv4(),
-} as const;
-
-const mockRequest = {
-  headers: {
-    "user-agent": "device name",
-  },
-} as unknown as Request;
-
-const mockResponse = {
-  cookie: jest.fn(),
-  status: jest.fn(() => mockResponse),
-  send: jest.fn(() => true),
-} as unknown as Response;
+import { initTestApp } from "../init.app";
+import {
+  mockRequest,
+  mockResponse,
+  registrationUser,
+  userByConfirmCodeMock,
+  userByEmailMock,
+} from "../__test-data__";
 
 describe("Auth", () => {
   let app: INestApplication;
@@ -72,46 +24,14 @@ describe("Auth", () => {
   let deleteDataController: DeleteDataController;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-
-    app = moduleFixture.createNestApplication();
-    useContainer(app.select(AppModule), { fallbackOnErrors: true });
-    app.use(cookieParser());
-
-    app.useGlobalPipes(
-      new ValidationPipe({
-        stopAtFirstError: true,
-        transform: true,
-        transformOptions: { enableImplicitConversion: true },
-        exceptionFactory: (errors) => {
-          const errorsForProperty: any[] = [];
-
-          errors.forEach((e) => {
-            const constrainKey = Object.keys(e.constraints!);
-            constrainKey.forEach((cKey) => {
-              errorsForProperty.push({
-                field: e.property,
-                message: e.constraints![cKey],
-              });
-            });
-          });
-
-          throw new BadRequestException(errorsForProperty);
-        },
-      })
-    );
-    app.useGlobalFilters(new HttpExceptionFilter());
+    app = await initTestApp();
     await app.init();
-
     usersRepository = app.get<UsersRepository>(UsersRepository);
     deleteDataController = app.get<DeleteDataController>(DeleteDataController);
   });
 
   beforeEach(async () => {
     jest.clearAllMocks();
-
     await deleteDataController.deleteTestData(mockRequest, mockResponse);
   });
 
@@ -393,12 +313,6 @@ describe("Auth", () => {
     await app.close();
   });
 });
-
-describe("Refresh token", () => {});
-
-describe("Log out", () => {});
-
-describe("New password", () => {});
 
 // TODO: implement E2E test cases
 // new-password: registration user -> confirm registration -> auth -> (expect 401) -> recovery-password -> set new password -> auth (new password 200) -> auth (old)
