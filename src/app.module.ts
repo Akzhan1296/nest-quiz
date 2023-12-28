@@ -42,6 +42,12 @@ import { BlockIpsService } from "./features/infrstructura/ip-retriction.service"
 import { BlockIpsRepository } from "./features/infrstructura/ip/ip.repository";
 
 import configuration from "./config";
+import { CreateBlogBySAUseCase } from "./features/roles/sa/blogs/application/use-cases/sa.create-blog.use-case";
+import { DeleteBlogBySAUseCase } from "./features/roles/sa/blogs/application/use-cases/sa.delete-blog.use-case";
+import { UpdateBlogBySAUseCase } from "./features/roles/sa/blogs/application/use-cases/sa.update-blog.use-case";
+import { BlogsRepository } from "./features/infrstructura/blogs/blogs.repository";
+import { BlogsQueryRepository } from "./features/infrstructura/blogs/blogs.query.repository";
+import { SABlogsController } from "./features/roles/sa/blogs/api/sa.blogs.controller";
 
 const userUseCases = [CreateUserUseCase, DeleteUserUseCase];
 const authUseCases = [
@@ -58,6 +64,11 @@ const deviceUseCases = [
   DeleteCurrentDeviceUseCase,
   DeleteDevicesExceptCurrentUseCase,
 ];
+const saBlogs = [
+  CreateBlogBySAUseCase,
+  DeleteBlogBySAUseCase,
+  UpdateBlogBySAUseCase,
+];
 
 @Module({
   imports: [
@@ -71,10 +82,10 @@ const deviceUseCases = [
         const env = process.env.ENV;
 
         if (env === "TESTING") {
-          console.log(configService.get("localDB"))
+          console.log(configService.get("localDB"));
           return configService.get("localDB");
         } else {
-          console.log(configService.get("remoteDB"))
+          console.log(configService.get("remoteDB"));
           return configService.get("remoteDB");
         }
       },
@@ -87,6 +98,7 @@ const deviceUseCases = [
     UsersController,
     DevicesController,
     DeleteDataController,
+    SABlogsController,
   ],
   providers: [
     JwtService,
@@ -99,9 +111,12 @@ const deviceUseCases = [
     DeviceSessionsRepository,
     DeleteAllTestingData,
     DeviceSessionsQueryRepository,
+    BlogsRepository,
+    BlogsQueryRepository,
     ...userUseCases,
     ...authUseCases,
     ...deviceUseCases,
+    ...saBlogs,
   ],
 })
 export class AppModule {}
