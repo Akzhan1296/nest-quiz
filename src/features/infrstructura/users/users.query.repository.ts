@@ -34,11 +34,14 @@ export class UsersQueryRepository {
       [`%${searchLoginTerm}%`, `%${searchEmailTerm}%`, pageSize, skip]
     );
 
-    let count = await this.dataSource.query(`
+    let count = await this.dataSource.query(
+      `
       SELECT count (*)
       FROM public."Users"
       WHERE "Login" ILIKE $1 OR "Email" ILIKE $2
-    `, [`%${searchLoginTerm}%`, `%${searchEmailTerm}%`]);
+    `,
+      [`%${searchLoginTerm}%`, `%${searchEmailTerm}%`]
+    );
 
     const mappedResult = result.map((r) => ({
       id: r.Id,
