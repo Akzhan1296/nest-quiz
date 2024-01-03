@@ -22,8 +22,12 @@ import { BlogViewModel } from "../../../../infrstructura/blogs/blogs.models";
 import { BlogsQueryRepository } from "../../../../infrstructura/blogs/blogs.query.repository";
 import { CommandBus } from "@nestjs/cqrs";
 import { CreateBlogBySACommand } from "../application/use-cases/sa.create-blog.use-case";
-import { ResultCreateBlogDTO } from "../application/sa.blogs.dto";
+import {
+  ResultCreateBlogDTO,
+  UpdateBlogResultDTO,
+} from "../application/sa.blogs.dto";
 import { AuthBasicGuard } from "../../../../../guards/authBasic.guard";
+import { UpdateBlogBySACommand } from "../application/use-cases/sa.update-blog.use-case";
 
 @UseGuards(AuthBasicGuard)
 @Controller("sa/blogs")
@@ -46,7 +50,7 @@ export class SABlogsController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async createBlog(
-    @Body() blogInputModel: CreateBlogInputModelType,
+    @Body() blogInputModel: CreateBlogInputModelType
   ): Promise<BlogViewModel> {
     const { createdBlogId } = await this.commandBus.execute<
       unknown,
@@ -71,16 +75,17 @@ export class SABlogsController {
     @Req() request: Request,
     @Body() blogInputModel: CreateBlogInputModelType
   ): Promise<boolean> {
-    // const checkingResult =
-    //   await this.blogsService.checkBlockBeforeUpdateOrDelete({
-    //     blogId: params.id,
-    //     userId: request.body.userId,
-    //   });
-    // if (!checkingResult.isBlogFound) throw new NotFoundException();
-    // if (checkingResult.isForbidden) throw new ForbiddenException();
-    // return await this.blogsService.updateBlog(params.id, blogInputModel);
+    const result = await this.commandBus.execute<unknown, UpdateBlogResultDTO>(
+      new UpdateBlogBySACommand({
+        blogId: params.id,
+        description: blogInputModel.description,
+        name: blogInputModel.name,
+        websiteUrl: blogInputModel.websiteUrl,
+      })
+    );
 
-    return true;
+    if (!result.isBlogFound) throw new NotFoundException();
+    if (result.isBlogUpdated) return true;
   }
 
   // delete
