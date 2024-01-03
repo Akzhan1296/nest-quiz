@@ -9,6 +9,12 @@ export interface ResultCreateBlogDTO {
   isBlogCreated: boolean;
 }
 
-export interface UpdateBlogDTO {}
+export interface UpdateBlogDTO extends CreateBlogDTO {
+  blogId: string;
+}
+export interface UpdateBlogResultDTO {
+  isBlogFound: boolean;
+  isBlogUpdated: boolean;
+}
 
 export interface DeleteBlogDTO {}

@@ -15,7 +15,7 @@ export class CreateBlogBySAUseCase
   async execute(command: CreateBlogBySACommand): Promise<ResultCreateBlogDTO> {
     const { description, websiteUrl, name } = command.createBlogDTO;
 
-    const result = {
+    const result: ResultCreateBlogDTO = {
       isBlogCreated: false,
       createdBlogId: null,
     };

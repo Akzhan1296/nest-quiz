@@ -56,11 +56,13 @@ export class BlogsQueryRepository {
       [`%${searchNameTerm}%`]
     );
 
-    const mappedResult = result.map((r) => ({
+    const mappedResult: BlogViewModel[] = result.map((r) => ({
+      name: r.Name,
       id: r.Id,
-      login: r.Login,
-      email: r.Email,
+      websiteUrl: r.WebsiteUrl,
       createdAt: r.CreatedAt,
+      description: r.Description,
+      isMembership: r.IsMembership,
     }));
 
     return Paginated.transformPagination<BlogViewModel>(

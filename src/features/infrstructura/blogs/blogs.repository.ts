@@ -1,6 +1,6 @@
 import { InjectDataSource } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
-import { CreateBlogDTO } from "./blogs.models";
+import { BlogViewModel, CreateBlogDTO, UpdateBlogDTO } from "./blogs.models";
 
 export class BlogsRepository {
   constructor(@InjectDataSource() protected dataSource: DataSource) {}
@@ -15,6 +15,41 @@ export class BlogsRepository {
       RETURNING "Id"`,
       [name, websiteUrl, description, isMembership, createdAt]
     );
+
     return result[0].Id;
+  }
+
+  async findBlogById(blogId: string): Promise<BlogViewModel | null> {
+    let result = await this.dataSource.query(
+      `
+      SELECT "Id", "Name", "WebsiteUrl", "Description", "IsMembership", "CreatedAt"
+	  FROM public."Blogs"
+	  WHERE "Id" = $1`,
+      [blogId]
+    );
+
+    if (result.length === 0) return null;
+
+    return {
+      name: result[0].Name,
+      id: result[0].Id,
+      websiteUrl: result[0].WebsiteUrl,
+      createdAt: result[0].CreatedAt,
+      description: result[0].Description,
+      isMembership: result[0].IsMembership,
+    };
+  }
+
+  async updateBlogById(updateBlogDTO: UpdateBlogDTO): Promise<boolean> {
+    const { blogId, description, name, websiteUrl } = updateBlogDTO;
+
+    let result = await this.dataSource.query(
+      `UPDATE public."Blogs"
+        SET "Description"= $2, "Name" = $3, "WebsiteUrl" = $4
+        WHERE "Id" = $1`,
+      [blogId, description, name, websiteUrl]
+    );
+    // result = [[], 1 | 0]
+    return !!result[1];
   }
 }

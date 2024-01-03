@@ -15,3 +15,10 @@ export type BlogViewModel = {
   isMembership: boolean;
   isBanned?: boolean;
 };
+
+export type UpdateBlogDTO = Pick<
+  CreateBlogDTO,
+  "description" | "name" | "websiteUrl"
+> & {
+  blogId: string;
+};
