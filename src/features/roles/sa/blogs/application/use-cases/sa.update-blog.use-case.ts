@@ -17,7 +17,7 @@ export class UpdateBlogBySAUseCase
 
     const result: UpdateBlogResultDTO = {
       isBlogFound: false,
-      isBlogUpdated: null,
+      isBlogUpdated: false,
     };
 
     const blogData = await this.blogsRepository.findBlogById(blogId);
