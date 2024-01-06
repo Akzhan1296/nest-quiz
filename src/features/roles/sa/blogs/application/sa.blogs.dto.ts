@@ -17,4 +17,7 @@ export interface UpdateBlogResultDTO {
   isBlogUpdated: boolean;
 }
 
-export interface DeleteBlogDTO {}
+export interface DeleteBlogResultDTO {
+  isBlogFound: boolean;
+  isBlogDeleted: boolean;
+}

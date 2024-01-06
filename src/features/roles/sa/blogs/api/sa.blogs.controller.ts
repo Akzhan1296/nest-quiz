@@ -23,11 +23,13 @@ import { BlogsQueryRepository } from "../../../../infrstructura/blogs/blogs.quer
 import { CommandBus } from "@nestjs/cqrs";
 import { CreateBlogBySACommand } from "../application/use-cases/sa.create-blog.use-case";
 import {
+  DeleteBlogResultDTO,
   ResultCreateBlogDTO,
   UpdateBlogResultDTO,
 } from "../application/sa.blogs.dto";
 import { AuthBasicGuard } from "../../../../../guards/authBasic.guard";
 import { UpdateBlogBySACommand } from "../application/use-cases/sa.update-blog.use-case";
+import { DeleteBlogBySACommand } from "../application/use-cases/sa.delete-blog.use-case";
 
 @UseGuards(AuthBasicGuard)
 @Controller("sa/blogs")
@@ -95,15 +97,14 @@ export class SABlogsController {
     @Param() params: { id: string },
     @Req() request: Request
   ): Promise<boolean> {
-    // const checkingResult =
-    //   await this.blogsService.checkBlockBeforeUpdateOrDelete({
-    //     blogId: params.id,
-    //     userId: request.body.userId,
-    //   });
-    // if (!checkingResult.isBlogFound) throw new NotFoundException();
-    // if (checkingResult.isForbidden) throw new ForbiddenException();
+    const result = await this.commandBus.execute<unknown, DeleteBlogResultDTO>(
+      new DeleteBlogBySACommand({
+        blogId: params.id,
+      })
+    );
 
-    // return await this.blogsService.deleteBlog(params.id);
+    if (!result.isBlogFound) throw new NotFoundException();
+    if (result.isBlogDeleted) return true;
     return true;
   }
 
