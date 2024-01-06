@@ -1,9 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { AppModule } from "../../../../../../app.module";
-import { UpdateBlogBySAUseCase } from "./sa.update-blog.use-case";
 import { BlogsRepository } from "../../../../../infrstructura/blogs/blogs.repository";
 import { v4 as uuidv4 } from "uuid";
-import { BlogViewModel } from "../../../../../infrstructura/blogs/blogs.models";
 import { CreateBlogBySAUseCase } from "./sa.create-blog.use-case";
 
 describe("Create blog use case", () => {

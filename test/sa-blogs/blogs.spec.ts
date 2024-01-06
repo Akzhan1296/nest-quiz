@@ -6,7 +6,7 @@ import { creatingBlogMock, mockRequest, mockResponse } from "../__test-data__";
 import { CreateBlogInputModelType } from "../../src/features/roles/sa/blogs/api/sa.blogs.models";
 import { v4 as uuidv4 } from "uuid";
 
-describe("Users", () => {
+describe("Blogs", () => {
   let app: INestApplication;
   let deleteDataController: DeleteDataController;
 
@@ -155,16 +155,73 @@ describe("Users", () => {
         });
     });
 
-    it("Should return 404 error, if blog not found", async() => {
+    it("Should return 404 error, if blog not found", async () => {
       await request(app.getHttpServer())
-      .put(`/sa/blogs/${uuidv4()}`)
-      .auth("admin", "qwerty", { type: "basic" })
-      .send({
-        ...creatingBlogMock,
-        name: "updated name",
-      } as CreateBlogInputModelType)
-      .expect(HttpStatus.NOT_FOUND);
-    })
+        .put(`/sa/blogs/${uuidv4()}`)
+        .auth("admin", "qwerty", { type: "basic" })
+        .send({
+          ...creatingBlogMock,
+          name: "updated name",
+        } as CreateBlogInputModelType)
+        .expect(HttpStatus.NOT_FOUND);
+    });
+  });
+
+  describe("Delete blog by SA", () => {
+    it("Should delete succesfully", async () => {
+      let blogId = null;
+
+      await request(app.getHttpServer())
+        .post("/sa/blogs")
+        .auth("admin", "qwerty", { type: "basic" })
+        .send(creatingBlogMock as CreateBlogInputModelType)
+        .expect(HttpStatus.CREATED);
+
+      await request(app.getHttpServer())
+        .get("/sa/blogs")
+        .auth("admin", "qwerty", { type: "basic" })
+        .then(({ body }) => {
+          blogId = body.items[0].id;
+          expect(
+            body.items.some((item) => item.name === creatingBlogMock.name)
+          ).toBeTruthy();
+
+          expect(body).toEqual(
+            expect.objectContaining({
+              totalCount: 1,
+              page: 1,
+              pageSize: 10,
+              pagesCount: 1,
+            })
+          );
+        });
+
+      await request(app.getHttpServer())
+        .delete(`/sa/blogs/${blogId}`)
+        .auth("admin", "qwerty", { type: "basic" })
+        .expect(HttpStatus.NO_CONTENT);
+
+      await request(app.getHttpServer())
+        .get("/sa/blogs")
+        .auth("admin", "qwerty", { type: "basic" })
+        .then(({ body }) => {
+          expect(body).toEqual(
+            expect.objectContaining({
+              totalCount: 0,
+              page: 1,
+              pageSize: 10,
+              pagesCount: 0,
+            })
+          );
+        });
+    });
+
+    it("Should return 404 error, if blog not found", async () => {
+      await request(app.getHttpServer())
+        .delete(`/sa/blogs/${uuidv4()}`)
+        .auth("admin", "qwerty", { type: "basic" })
+        .expect(HttpStatus.NOT_FOUND);
+    });
   });
 
   describe("Posts by SA", () => {

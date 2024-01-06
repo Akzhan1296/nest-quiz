@@ -52,4 +52,16 @@ export class BlogsRepository {
     // result = [[], 1 | 0]
     return !!result[1];
   }
+
+  async deleteBlogById(blogId: string): Promise<boolean> {
+    const result = await this.dataSource.query(
+      ` 
+	      DELETE FROM public."Blogs"
+	      WHERE "Id" = $1
+        `,
+      [blogId]
+    );
+
+    return !!result[1];
+  }
 }
