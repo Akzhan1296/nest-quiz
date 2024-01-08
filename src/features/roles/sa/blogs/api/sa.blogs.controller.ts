@@ -16,7 +16,11 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { Request } from "express";
-import { BlogsQueryType, CreateBlogInputModelType } from "./sa.blogs.models";
+import {
+  BlogsQueryType,
+  CreateBlogInputModelType,
+  CreatePostInputType,
+} from "./sa.blogs.models";
 import { PaginationViewModel } from "../../../../../common/types";
 import { BlogViewModel } from "../../../../infrstructura/blogs/blogs.models";
 import { BlogsQueryRepository } from "../../../../infrstructura/blogs/blogs.query.repository";
@@ -30,13 +34,18 @@ import {
 import { AuthBasicGuard } from "../../../../../guards/authBasic.guard";
 import { UpdateBlogBySACommand } from "../application/use-cases/sa.update-blog.use-case";
 import { DeleteBlogBySACommand } from "../application/use-cases/sa.delete-blog.use-case";
+import { PostViewModel } from "../../../../infrstructura/posts/posts.models";
+import { ResultCreatePostDTO } from "../application/sa.posts.dto";
+import { CreatePostBySACommand } from "../application/use-cases/posts/sa.create-post.use-case";
+import { PostsQueryRepository } from "../../../../infrstructura/posts/posts.query.repository";
 
 @UseGuards(AuthBasicGuard)
 @Controller("sa/blogs")
 export class SABlogsController {
   constructor(
     private commandBus: CommandBus,
-    private blogsQueryRepository: BlogsQueryRepository
+    private blogsQueryRepository: BlogsQueryRepository,
+    private postQuerysRepository: PostsQueryRepository
   ) {}
 
   // get blogs
@@ -74,7 +83,6 @@ export class SABlogsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateBlog(
     @Param() params: { id: string },
-    @Req() request: Request,
     @Body() blogInputModel: CreateBlogInputModelType
   ): Promise<boolean> {
     const result = await this.commandBus.execute<unknown, UpdateBlogResultDTO>(
@@ -93,10 +101,7 @@ export class SABlogsController {
   // delete
   @Delete(":id")
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteBlog(
-    @Param() params: { id: string },
-    @Req() request: Request
-  ): Promise<boolean> {
+  async deleteBlog(@Param() params: { id: string }): Promise<boolean> {
     const result = await this.commandBus.execute<unknown, DeleteBlogResultDTO>(
       new DeleteBlogBySACommand({
         blogId: params.id,
@@ -131,31 +136,33 @@ export class SABlogsController {
   //     params.blogId
   //   );
   // }
-  // create post by blog id
-  // @Post(":blogId/posts")
-  // @HttpCode(201)
-  // async createPostByBlogId(
-  //   @Param() params: { blogId: string },
-  //   @Body() postInputModel: CreatePostByBlogIdInputType,
-  //   @Req() request: Request
-  // ): Promise<PostViewModel> {
-  //   const checkingResult =
-  //     await this.blogsService.checkBlockBeforeUpdateOrDelete({
-  //       blogId: params.blogId,
-  //       userId: request.body.userId,
-  //     });
-  //   if (!checkingResult.isBlogFound) throw new NotFoundException();
-  //   if (checkingResult.isForbidden) throw new ForbiddenException();
 
-  //   const postByBlogId = await this.postService.createPost({
-  //     ...postInputModel,
-  //     blogId: params.blogId,
-  //     userId: request.body.userId,
-  //   });
-  //   return await this.postQuerysRepository.getPostById(
-  //     postByBlogId._id.toString()
-  //   );
-  // }
+  //create post by blog id
+  @Post(":blogId/posts")
+  @HttpCode(201)
+  async createPostByBlogId(
+    @Param() params: { blogId: string },
+    @Body() postInputModel: CreatePostInputType
+  ): Promise<PostViewModel> {
+    const result = await this.commandBus.execute<unknown, ResultCreatePostDTO>(
+      new CreatePostBySACommand({
+        blogId: params.blogId,
+        title: postInputModel.title,
+        shortDescription: postInputModel.shortDescription,
+        content: postInputModel.content,
+      })
+    );
+
+    if (!result.isBlogFound) throw new NotFoundException();
+
+    if (result.isPostCreated) {
+      const postViewModel = this.postQuerysRepository.getPostById({
+        blogId: params.blogId,
+        postId: result.createdPostId,
+      });
+      return postViewModel;
+    }
+  }
 
   //update post by blog id
   // @HttpCode(204)

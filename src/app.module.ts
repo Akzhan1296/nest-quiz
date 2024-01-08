@@ -48,6 +48,11 @@ import { UpdateBlogBySAUseCase } from "./features/roles/sa/blogs/application/use
 import { BlogsRepository } from "./features/infrstructura/blogs/blogs.repository";
 import { BlogsQueryRepository } from "./features/infrstructura/blogs/blogs.query.repository";
 import { SABlogsController } from "./features/roles/sa/blogs/api/sa.blogs.controller";
+import { CreatePostBySAUseCase } from "./features/roles/sa/blogs/application/use-cases/posts/sa.create-post.use-case";
+import { DeletePostBySAUseCase } from "./features/roles/sa/blogs/application/use-cases/posts/sa.delete-post.use-case";
+import { UpdatePostBySAUseCase } from "./features/roles/sa/blogs/application/use-cases/posts/sa.update-post.use-case";
+import { PostsRepository } from "./features/infrstructura/posts/posts.repository";
+import { PostsQueryRepository } from "./features/infrstructura/posts/posts.query.repository";
 
 const userUseCases = [CreateUserUseCase, DeleteUserUseCase];
 const authUseCases = [
@@ -68,6 +73,11 @@ const saBlogs = [
   CreateBlogBySAUseCase,
   DeleteBlogBySAUseCase,
   UpdateBlogBySAUseCase,
+];
+const saPosts = [
+  CreatePostBySAUseCase,
+  DeletePostBySAUseCase,
+  UpdatePostBySAUseCase,
 ];
 
 @Module({
@@ -113,10 +123,13 @@ const saBlogs = [
     DeviceSessionsQueryRepository,
     BlogsRepository,
     BlogsQueryRepository,
+    PostsRepository,
+    PostsQueryRepository,
     ...userUseCases,
     ...authUseCases,
     ...deviceUseCases,
     ...saBlogs,
+    ...saPosts,
   ],
 })
 export class AppModule {}
