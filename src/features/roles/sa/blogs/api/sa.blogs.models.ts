@@ -20,7 +20,7 @@ export class CreateBlogInputModelType {
   description: string;
 }
 
-export class CreatePostByBlogIdInputType {
+export class CreatePostInputType {
   @Transform(({ value }) => value.trim())
   @IsNotEmpty()
   @MaxLength(30)
