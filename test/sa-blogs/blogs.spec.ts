@@ -2,8 +2,16 @@ import { HttpStatus, INestApplication } from "@nestjs/common";
 import request from "supertest";
 import { DeleteDataController } from "../../src/features/infrstructura/deleting-all-data";
 import { initTestApp } from "../init.app";
-import { creatingBlogMock, mockRequest, mockResponse } from "../__test-data__";
-import { CreateBlogInputModelType } from "../../src/features/roles/sa/blogs/api/sa.blogs.models";
+import {
+  createPostMock,
+  creatingBlogMock,
+  mockRequest,
+  mockResponse,
+} from "../__test-data__";
+import {
+  CreateBlogInputModelType,
+  CreatePostInputType,
+} from "../../src/features/roles/sa/blogs/api/sa.blogs.models";
 import { v4 as uuidv4 } from "uuid";
 
 describe("Blogs", () => {
@@ -224,53 +232,119 @@ describe("Blogs", () => {
     });
   });
 
-  describe("Posts by SA", () => {
-    it("Should create post successfully", () => {
-      // return request(app.getHttpServer())
-      //   .post("/sa/users")
-      //   .auth("admin", "qwerty", { type: "basic" })
-      //   .send(registrationUser as AuthRegistrationInputModal)
-      //   .expect(HttpStatus.CREATED);
+  describe("Create post by blogid", () => {
+    it("Should create post successfully", async () => {
+      let blogId = null;
+
+      await request(app.getHttpServer())
+        .post("/sa/blogs")
+        .auth("admin", "qwerty", { type: "basic" })
+        .send(creatingBlogMock as CreateBlogInputModelType)
+        .expect(HttpStatus.CREATED);
+
+      await request(app.getHttpServer())
+        .get("/sa/blogs")
+        .auth("admin", "qwerty", { type: "basic" })
+        .then(({ body }) => {
+          blogId = body.items[0].id;
+          expect(
+            body.items.some((item) => item.name === creatingBlogMock.name)
+          ).toBeTruthy();
+
+          expect(body).toEqual(
+            expect.objectContaining({
+              totalCount: 1,
+              page: 1,
+              pageSize: 10,
+              pagesCount: 1,
+            })
+          );
+        });
+
+      const result = await request(app.getHttpServer())
+        .post(`/sa/blogs/${blogId}/posts`)
+        .auth("admin", "qwerty", { type: "basic" })
+        .send(createPostMock as CreatePostInputType);
+
+      expect(result.status).toBe(HttpStatus.CREATED);
+      expect(result.body).toEqual(
+        expect.objectContaining({
+          title: "post title",
+          shortDescription: "shortDescription",
+          content: "content",
+          blogId,
+          blogName: "blog name",
+          extendedLikesInfo: {
+            likesCount: 0,
+            dislikesCount: 0,
+            myStatus: "None",
+            newestLikes: [],
+          },
+        })
+      );
     });
 
-    it("Should return 401 if no headers", () => {
-      // return request(app.getHttpServer())
-      //   .post("/sa/users")
-      //   .auth("admin", "qwerty", { type: "basic" })
-      //   .send(registrationUser as AuthRegistrationInputModal)
-      //   .expect(HttpStatus.CREATED);
+    it("Should return 401 if no headers", async () => {
+      const blogId = uuidv4();
+      await request(app.getHttpServer())
+        .post(`/sa/blogs/${blogId}/posts`)
+        .send(createPostMock as CreatePostInputType)
+        .expect(HttpStatus.UNAUTHORIZED);
+    });
+
+    it("Should return 404, if blog not found", async () => {
+      const blogId = uuidv4();
+      await request(app.getHttpServer())
+        .post(`/sa/blogs/${blogId}/posts`)
+        .auth("admin", "qwerty", { type: "basic" })
+        .send(createPostMock as CreatePostInputType)
+        .expect(HttpStatus.NOT_FOUND);
     });
 
     it("Should return 400 error, validation errors", async () => {
-      // return request(app.getHttpServer())
-      //   .post("/sa/users")
-      //   .auth("admin", "qwerty", { type: "basic" })
-      //   .send({
-      //     password: "           ",
-      //     email: "123",
-      //     login: "",
-      //   } as AuthRegistrationInputModal)
-      //   .expect(400)
-      //   .then(({ body }) => {
-      //     expect(body.errorsMessages).toHaveLength(3);
-      //     expect(body.errorsMessages).toEqual([
-      //       {
-      //         field: "login",
-      //         message: "login must be longer than or equal to 3 characters",
-      //       },
-      //       {
-      //         field: "password",
-      //         message: "not valid password",
-      //       },
-      //       {
-      //         field: "email",
-      //         message:
-      //           "email must match /^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$/ regular expression",
-      //       },
-      //     ]);
-      //   });
+      let blogId = null;
+
+      await request(app.getHttpServer())
+        .post("/sa/blogs")
+        .auth("admin", "qwerty", { type: "basic" })
+        .send(creatingBlogMock as CreateBlogInputModelType)
+        .expect(HttpStatus.CREATED);
+
+      await request(app.getHttpServer())
+        .get("/sa/blogs")
+        .auth("admin", "qwerty", { type: "basic" })
+        .then(({ body }) => {
+          blogId = body.items[0].id;
+          expect(
+            body.items.some((item) => item.name === creatingBlogMock.name)
+          ).toBeTruthy();
+        });
+
+      await request(app.getHttpServer())
+        .post(`/sa/blogs/${blogId}/posts`)
+        .auth("admin", "qwerty", { type: "basic" })
+        .send()
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.errorsMessages).toHaveLength(3);
+          expect(body.errorsMessages).toEqual([
+            {
+              field: "title",
+              message: "title must be shorter than or equal to 30 characters",
+            },
+            {
+              field: "shortDescription",
+              message:
+                "shortDescription must be shorter than or equal to 100 characters",
+            },
+            {
+              field: "content",
+              message:
+                "content must be shorter than or equal to 1000 characters",
+            },
+          ]);
+        });
     });
-    it("Should get posts list", () => {});
   });
 
   afterAll(async () => {

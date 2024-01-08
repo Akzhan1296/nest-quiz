@@ -142,9 +142,8 @@ export class SABlogsController {
   @HttpCode(201)
   async createPostByBlogId(
     @Param() params: { blogId: string },
-    @Body() postInputModel: CreatePostInputType,
-    @Req() request: Request // : Promise<PostViewModel>
-  ) {
+    @Body() postInputModel: CreatePostInputType
+  ): Promise<PostViewModel> {
     const result = await this.commandBus.execute<unknown, ResultCreatePostDTO>(
       new CreatePostBySACommand({
         blogId: params.blogId,
@@ -159,7 +158,7 @@ export class SABlogsController {
     if (result.isPostCreated) {
       const postViewModel = this.postQuerysRepository.getPostById({
         blogId: params.blogId,
-        postId: "",
+        postId: result.createdPostId,
       });
       return postViewModel;
     }

@@ -25,6 +25,9 @@ export class DeleteAllTestingData {
   async deleteIpsTableData() {
     await this.dataSource.query(`DELETE FROM public."Ips"`);
   }
+  async deletePostsTableData() {
+    await this.dataSource.query(`DELETE FROM public."Posts"`);
+  }
   async deleteBlogsTableData() {
     await this.dataSource.query(`DELETE FROM public."Blogs"`);
   }
@@ -41,8 +44,8 @@ export class DeleteDataController {
     await this.deleteRepository.deleteAuthSessionTableData();
     await this.deleteRepository.deleteUserTableData();
     await this.deleteRepository.deleteIpsTableData();
+    await this.deleteRepository.deletePostsTableData();
     await this.deleteRepository.deleteBlogsTableData();
-
 
     return response.status(HttpStatus.NO_CONTENT).send();
   }
