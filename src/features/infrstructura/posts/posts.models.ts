@@ -20,10 +20,19 @@ export type PostViewModel = {
   };
 };
 
-export type CreatePost = {
+export type OnlyPostDataView = Omit<
+  PostViewModel,
+  "blogId" | "blogName" | "extendedLikesInfo"
+>;
+
+export type CreatePostDTO = {
   title: string;
   shortDescription: string;
   content: string;
   blogId: string;
   createdAt: Date;
+};
+
+export type UpdatePostDTO = Omit<CreatePostDTO, "blogId" | "createdAt"> & {
+  postId: string;
 };

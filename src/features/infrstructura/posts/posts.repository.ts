@@ -1,11 +1,36 @@
 import { InjectDataSource } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
-import { CreatePost, PostViewModel } from "./posts.models";
+import {
+  CreatePostDTO,
+  OnlyPostDataView,
+  PostViewModel,
+  UpdatePostDTO,
+} from "./posts.models";
 
 export class PostsRepository {
   constructor(@InjectDataSource() protected dataSource: DataSource) {}
 
-  async createPost(createPostDTO: CreatePost): Promise<string> {
+  async findPostById(postId: string): Promise<OnlyPostDataView> {
+    let result = await this.dataSource.query(
+      `
+      SELECT *
+	  FROM public."Posts"
+	  WHERE "Id" = $1`,
+      [postId]
+    );
+
+    if (result.length === 0) return null;
+
+    return {
+      id: result[0].Id,
+      title: result[0].Title,
+      shortDescription: result[0].ShortDescription,
+      content: result[0].Content,
+      createdAt: result[0].CreatedAt,
+    };
+  }
+
+  async createPost(createPostDTO: CreatePostDTO): Promise<string> {
     const { createdAt, blogId, content, shortDescription, title } =
       createPostDTO;
 
@@ -19,5 +44,18 @@ export class PostsRepository {
     );
 
     return result[0].Id;
+  }
+
+  async updatePostById(updatePostDTO: UpdatePostDTO): Promise<boolean> {
+    const { content, postId, shortDescription, title } = updatePostDTO;
+
+    let result = await this.dataSource.query(
+      `UPDATE public."Posts"
+        SET "Content"= $2, "ShortDescription" = $3, "Title" = $4
+        WHERE "Id" = $1`,
+      [postId, content, shortDescription, title]
+    );
+    // result = [[], 1 | 0]
+    return !!result[1];
   }
 }

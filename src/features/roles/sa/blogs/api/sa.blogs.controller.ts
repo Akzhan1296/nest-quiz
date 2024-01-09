@@ -35,9 +35,13 @@ import { AuthBasicGuard } from "../../../../../guards/authBasic.guard";
 import { UpdateBlogBySACommand } from "../application/use-cases/sa.update-blog.use-case";
 import { DeleteBlogBySACommand } from "../application/use-cases/sa.delete-blog.use-case";
 import { PostViewModel } from "../../../../infrstructura/posts/posts.models";
-import { ResultCreatePostDTO } from "../application/sa.posts.dto";
+import {
+  ResultCreatePostDTO,
+  ResultUpdatePostDTO,
+} from "../application/sa.posts.dto";
 import { CreatePostBySACommand } from "../application/use-cases/posts/sa.create-post.use-case";
 import { PostsQueryRepository } from "../../../../infrstructura/posts/posts.query.repository";
+import { UpdatePostBySACommand } from "../application/use-cases/posts/sa.update-post.use-case";
 
 @UseGuards(AuthBasicGuard)
 @Controller("sa/blogs")
@@ -139,7 +143,7 @@ export class SABlogsController {
 
   //create post by blog id
   @Post(":blogId/posts")
-  @HttpCode(201)
+  @HttpCode(HttpStatus.CREATED)
   async createPostByBlogId(
     @Param() params: { blogId: string },
     @Body() postInputModel: CreatePostInputType
@@ -164,30 +168,28 @@ export class SABlogsController {
     }
   }
 
-  //update post by blog id
-  // @HttpCode(204)
-  // @Put(":blogId/posts/:postId")
-  // async updatePostByBlogId(
-  //   @Param() params: { blogId: string; postId: string },
-  //   @Body() postsInputModel: UpdatePostInputModel,
-  //   @Req() request: Request
-  // ) {
-  //   const checkingResult =
-  //     await this.blogsService.checkBlockBeforeUpdateOrDelete({
-  //       blogId: params.blogId,
-  //       postId: params.postId,
-  //       userId: request.body.userId,
-  //     });
+  // update post by blog id
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Put(":blogId/posts/:postId")
+  async updatePostByBlogId(
+    @Param() params: { blogId: string; postId: string },
+    @Body() postInputModel: CreatePostInputType
+  ) {
+    const result = await this.commandBus.execute<unknown, ResultUpdatePostDTO>(
+      new UpdatePostBySACommand({
+        blogId: params.blogId,
+        postId: params.postId,
+        title: postInputModel.title,
+        shortDescription: postInputModel.shortDescription,
+        content: postInputModel.content,
+      })
+    );
 
-  //   if (!checkingResult.isBlogFound) throw new NotFoundException();
-  //   if (!checkingResult.isPostFound) throw new NotFoundException();
-  //   if (checkingResult.isForbidden) throw new ForbiddenException();
-  //   return this.postService.updatePost(params.postId, {
-  //     ...postsInputModel,
-  //     blogId: params.blogId,
-  //     userId: request.body.userId,
-  //   });
-  // }
+    if (!result.isBlogFound) throw new NotFoundException();
+    if (!result.isPostFound) throw new NotFoundException();
+
+    return result.isPostUpdated;
+  }
 
   //delete post by blog id
   // @HttpCode(204)
