@@ -16,5 +16,11 @@ export type DeletePostDTO = {};
 export type ResultDeletePostDTO = {};
 
 // update post
-export type UpdatePostDTO = {};
-export type ResultUpdatePostDTO = {};
+export type UpdatePostDTO = CreatePostDTO & {
+  postId: string;
+};
+export type ResultUpdatePostDTO = {
+  isBlogFound: boolean;
+  isPostFound: boolean;
+  isPostUpdated: boolean;
+};

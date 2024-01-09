@@ -49,7 +49,7 @@ describe("Users", () => {
           email: "123",
           login: "",
         } as AuthRegistrationInputModal)
-        .expect(400)
+        .expect(HttpStatus.BAD_REQUEST)
         .then(({ body }) => {
           expect(body.errorsMessages).toHaveLength(3);
           expect(body.errorsMessages).toEqual([

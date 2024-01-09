@@ -87,7 +87,7 @@ describe("Auth", () => {
           email: "123",
           password: "1235678",
         } as AuthRegistrationInputModal)
-        .expect(400)
+        .expect(HttpStatus.BAD_REQUEST)
         .then(({ body }) => {
           expect(body.errorsMessages).toHaveLength(2);
           expect(body.errorsMessages).toEqual([
@@ -132,7 +132,7 @@ describe("Auth", () => {
         .send({
           code: uuidv4(), //should be different code
         } as AuthRegistrationConfirmInputModal)
-        .expect(404);
+        .expect(HttpStatus.NOT_FOUND);
     });
 
     it("Should return 400 error", async () => {
@@ -148,7 +148,7 @@ describe("Auth", () => {
         .send({
           code: "45dff427-ccdd-49df-9e9d-c6b407538137",
         } as AuthRegistrationConfirmInputModal)
-        .expect(400)
+        .expect(HttpStatus.BAD_REQUEST)
         .then(({ body }) => {
           expect(body.errorsMessages).toHaveLength(1);
           expect(body.errorsMessages).toEqual([
@@ -184,7 +184,7 @@ describe("Auth", () => {
         .send({
           email: "not-3real-email@test.com",
         } as AuthEmailResendingInputModal)
-        .expect(400);
+        .expect(HttpStatus.BAD_REQUEST);
     });
 
     it("Should return 400 error, if email already confirmed", () => {
@@ -200,7 +200,7 @@ describe("Auth", () => {
         .send({
           email: "not-real-email@test.com",
         } as AuthEmailResendingInputModal)
-        .expect(400)
+        .expect(HttpStatus.BAD_REQUEST)
         .then(({ body }) => {
           expect(body.errorsMessages).toHaveLength(1);
           expect(body.errorsMessages).toEqual([
