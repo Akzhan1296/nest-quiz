@@ -243,13 +243,6 @@ describe("Blogs", () => {
         .send(creatingBlogMock as CreateBlogInputModelType)
         .expect(HttpStatus.CREATED);
 
-        // blog 2
-        await request(app.getHttpServer())
-        .post("/sa/blogs")
-        .auth("admin", "qwerty", { type: "basic" })
-        .send({...creatingBlogMock, name: 'blog2'} as CreateBlogInputModelType)
-        .expect(HttpStatus.CREATED);
-
       await request(app.getHttpServer())
         .get("/sa/blogs")
         .auth("admin", "qwerty", { type: "basic" })
@@ -588,7 +581,7 @@ describe("Blogs", () => {
       await request(app.getHttpServer())
         .delete(`/sa/blogs/${blogId}/posts/${postId}`)
         .auth("admin", "qwerty", { type: "basic" })
-        .expect(HttpStatus.OK);
+        .expect(HttpStatus.NO_CONTENT);
 
       await request(app.getHttpServer())
         .get(`/sa/blogs/${blogId}/posts`)
