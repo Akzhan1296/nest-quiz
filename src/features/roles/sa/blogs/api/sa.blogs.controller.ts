@@ -21,7 +21,10 @@ import {
   CreateBlogInputModelType,
   CreatePostInputType,
 } from "./sa.blogs.models";
-import { PaginationViewModel } from "../../../../../common/types";
+import {
+  PageSizeQueryModel,
+  PaginationViewModel,
+} from "../../../../../common/types";
 import { BlogViewModel } from "../../../../infrstructura/blogs/blogs.models";
 import { BlogsQueryRepository } from "../../../../infrstructura/blogs/blogs.query.repository";
 import { CommandBus } from "@nestjs/cqrs";
@@ -121,27 +124,23 @@ export class SABlogsController {
 
   // POSTS
   // get blog posts
-  // @HttpCode(200)
-  // @UseGuards(UserIdGuard)
-  // @Get(":blogId/posts")
-  // async getBlogPosts(
-  //   @Req() request: Request,
-  //   @Query() pageSize: BlogsQueryType,
-  //   @Param() params: { blogId: string }
-  // ): Promise<PaginationViewModel<PostViewModel>> {
-  //   const blog = await this.blogsQueryRepository.getBlogById(params.blogId);
-  //   if (!blog) {
-  //     throw new NotFoundException("posts by blogid not found");
-  //   }
-  //   if (blog.isBanned) {
-  //     throw new NotFoundException("blog not found");
-  //   }
-  //   return await this.postsQueryService.getPostsWithLikeByblogId(
-  //     pageSize,
-  //     request.body.userId,
-  //     params.blogId
-  //   );
-  // }
+  @HttpCode(HttpStatus.OK)
+  @Get(":blogId/posts")
+  async getBlogPosts(
+    @Req() request: Request,
+    @Query() pageSize: BlogsQueryType,
+    @Param() params: { blogId: string }
+  ): Promise<PaginationViewModel<PostViewModel>> {
+    const blog = await this.blogsQueryRepository.getBlogById(params.blogId);
+    if (!blog) {
+      throw new NotFoundException("posts by blogid not found");
+    }
+    return await this.postQuerysRepository.getPosts({
+      ...pageSize,
+      skip: pageSize.skip,
+      blogId: params.blogId,
+    } as PageSizeQueryModel);
+  }
 
   //create post by blog id
   @Post(":blogId/posts")
@@ -194,7 +193,7 @@ export class SABlogsController {
   }
 
   //delete post by blog id
-  @HttpCode(HttpStatus.NO_CONTENT)
+  @HttpCode(HttpStatus.OK)
   @Delete(":blogId/posts/:postId")
   async deletePostByBlogId(
     @Param() params: { blogId: string; postId: string }
