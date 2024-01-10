@@ -53,6 +53,7 @@ import { DeletePostBySAUseCase } from "./features/roles/sa/blogs/application/use
 import { UpdatePostBySAUseCase } from "./features/roles/sa/blogs/application/use-cases/posts/sa.update-post.use-case";
 import { PostsRepository } from "./features/infrstructura/posts/posts.repository";
 import { PostsQueryRepository } from "./features/infrstructura/posts/posts.query.repository";
+import { PublicBlogs } from "./features/roles/public/auth/blogs/api/blogs.controller";
 
 const userUseCases = [CreateUserUseCase, DeleteUserUseCase];
 const authUseCases = [
@@ -109,6 +110,7 @@ const saPosts = [
     DevicesController,
     DeleteDataController,
     SABlogsController,
+    PublicBlogs,
   ],
   providers: [
     JwtService,
