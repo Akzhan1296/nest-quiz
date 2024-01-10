@@ -189,7 +189,7 @@ export class SABlogsController {
   }
 
   //delete post by blog id
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(":blogId/posts/:postId")
   async deletePostByBlogId(
     @Param() params: { blogId: string; postId: string }
