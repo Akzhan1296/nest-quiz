@@ -236,10 +236,18 @@ describe("Blogs", () => {
     it("Should create post successfully", async () => {
       let blogId = null;
 
+      // blog 1
       await request(app.getHttpServer())
         .post("/sa/blogs")
         .auth("admin", "qwerty", { type: "basic" })
         .send(creatingBlogMock as CreateBlogInputModelType)
+        .expect(HttpStatus.CREATED);
+
+        // blog 2
+        await request(app.getHttpServer())
+        .post("/sa/blogs")
+        .auth("admin", "qwerty", { type: "basic" })
+        .send({...creatingBlogMock, name: 'blog2'} as CreateBlogInputModelType)
         .expect(HttpStatus.CREATED);
 
       await request(app.getHttpServer())

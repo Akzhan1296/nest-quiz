@@ -134,7 +134,7 @@ export class SABlogsController {
     if (!blog) {
       throw new NotFoundException("posts by blogid not found");
     }
-    return await this.postQuerysRepository.getPosts({
+    return await this.postQuerysRepository.getPostsByBlogId({
       ...pageSize,
       skip: pageSize.skip,
       blogId: params.blogId,
@@ -160,10 +160,7 @@ export class SABlogsController {
     if (!result.isBlogFound) throw new NotFoundException();
 
     if (result.isPostCreated) {
-      const postViewModel = this.postQuerysRepository.getPostById({
-        blogId: params.blogId,
-        postId: result.createdPostId,
-      });
+      const postViewModel = this.postQuerysRepository.getPostByPostId(result.createdPostId);
       return postViewModel;
     }
   }
