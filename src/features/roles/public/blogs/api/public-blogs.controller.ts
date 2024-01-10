@@ -7,14 +7,14 @@ import {
   Param,
   Query,
 } from "@nestjs/common";
-import { BlogsQueryRepository } from "../../../../../infrstructura/blogs/blogs.query.repository";
-import { BlogsQueryType } from "../../../../sa/blogs/api/sa.blogs.models";
+import { BlogsQueryRepository } from "../../../../infrstructura/blogs/blogs.query.repository";
+import { BlogsQueryType } from "../../../sa/blogs/api/sa.blogs.models";
 import {
   PageSizeQueryModel,
   PaginationViewModel,
-} from "../../../../../../common/types";
-import { PostViewModel } from "../../../../../infrstructura/posts/posts.models";
-import { PostsQueryRepository } from "../../../../../infrstructura/posts/posts.query.repository";
+} from "../../../../../common/types";
+import { PostViewModel } from "../../../../infrstructura/posts/posts.models";
+import { PostsQueryRepository } from "../../../../infrstructura/posts/posts.query.repository";
 
 @Controller("blogs")
 export class PublicBlogs {
@@ -39,7 +39,7 @@ export class PublicBlogs {
     if (!blog) {
       throw new NotFoundException("posts by blogid not found");
     }
-    return await this.postQuerysRepository.getPosts({
+    return await this.postQuerysRepository.getPostsByBlogId({
       ...pageSize,
       skip: pageSize.skip,
       blogId: params.blogId,
