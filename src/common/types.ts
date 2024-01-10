@@ -12,6 +12,8 @@ export class PageSizeDTO {
   get skip(): number {
     return this.pageSize * (this.pageNumber - 1);
   }
+
+  
 }
 
 export class PageSizeQueryModel {
@@ -24,7 +26,9 @@ export class PageSizeQueryModel {
     searchLoginTerm?: string;
     searchEmailTerm?: string;
     banStatus?: string;
+    blogId?: string;
   }
+  
 
 export type PaginationViewModel<T> = {
   page: number;

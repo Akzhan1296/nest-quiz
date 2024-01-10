@@ -21,7 +21,10 @@ import {
   CreateBlogInputModelType,
   CreatePostInputType,
 } from "./sa.blogs.models";
-import { PaginationViewModel } from "../../../../../common/types";
+import {
+  PageSizeQueryModel,
+  PaginationViewModel,
+} from "../../../../../common/types";
 import { BlogViewModel } from "../../../../infrstructura/blogs/blogs.models";
 import { BlogsQueryRepository } from "../../../../infrstructura/blogs/blogs.query.repository";
 import { CommandBus } from "@nestjs/cqrs";
@@ -37,11 +40,13 @@ import { DeleteBlogBySACommand } from "../application/use-cases/sa.delete-blog.u
 import { PostViewModel } from "../../../../infrstructura/posts/posts.models";
 import {
   ResultCreatePostDTO,
+  ResultDeletePostDTO,
   ResultUpdatePostDTO,
 } from "../application/sa.posts.dto";
 import { CreatePostBySACommand } from "../application/use-cases/posts/sa.create-post.use-case";
 import { PostsQueryRepository } from "../../../../infrstructura/posts/posts.query.repository";
 import { UpdatePostBySACommand } from "../application/use-cases/posts/sa.update-post.use-case";
+import { DeletePostBySACommand } from "../application/use-cases/posts/sa.delete-post.use-case";
 
 @UseGuards(AuthBasicGuard)
 @Controller("sa/blogs")
@@ -119,27 +124,23 @@ export class SABlogsController {
 
   // POSTS
   // get blog posts
-  // @HttpCode(200)
-  // @UseGuards(UserIdGuard)
-  // @Get(":blogId/posts")
-  // async getBlogPosts(
-  //   @Req() request: Request,
-  //   @Query() pageSize: BlogsQueryType,
-  //   @Param() params: { blogId: string }
-  // ): Promise<PaginationViewModel<PostViewModel>> {
-  //   const blog = await this.blogsQueryRepository.getBlogById(params.blogId);
-  //   if (!blog) {
-  //     throw new NotFoundException("posts by blogid not found");
-  //   }
-  //   if (blog.isBanned) {
-  //     throw new NotFoundException("blog not found");
-  //   }
-  //   return await this.postsQueryService.getPostsWithLikeByblogId(
-  //     pageSize,
-  //     request.body.userId,
-  //     params.blogId
-  //   );
-  // }
+  @HttpCode(HttpStatus.OK)
+  @Get(":blogId/posts")
+  async getBlogPosts(
+    @Req() request: Request,
+    @Query() pageSize: BlogsQueryType,
+    @Param() params: { blogId: string }
+  ): Promise<PaginationViewModel<PostViewModel>> {
+    const blog = await this.blogsQueryRepository.getBlogById(params.blogId);
+    if (!blog) {
+      throw new NotFoundException("posts by blogid not found");
+    }
+    return await this.postQuerysRepository.getPosts({
+      ...pageSize,
+      skip: pageSize.skip,
+      blogId: params.blogId,
+    } as PageSizeQueryModel);
+  }
 
   //create post by blog id
   @Post(":blogId/posts")
@@ -192,22 +193,19 @@ export class SABlogsController {
   }
 
   //delete post by blog id
-  // @HttpCode(204)
-  // @Delete(":blogId/posts/:postId")
-  // async deletePostByBlogId(
-  //   @Param() params: { blogId: string; postId: string },
-  //   @Req() request: Request
-  // ) {
-  //   const checkingResult =
-  //     await this.blogsService.checkBlockBeforeUpdateOrDelete({
-  //       blogId: params.blogId,
-  //       postId: params.postId,
-  //       userId: request.body.userId,
-  //     });
-
-  //   if (!checkingResult.isBlogFound) throw new NotFoundException();
-  //   if (!checkingResult.isPostFound) throw new NotFoundException();
-  //   if (checkingResult.isForbidden) throw new ForbiddenException();
-  //   return await this.postService.deletePost(params.postId);
-  // }
+  @HttpCode(HttpStatus.OK)
+  @Delete(":blogId/posts/:postId")
+  async deletePostByBlogId(
+    @Param() params: { blogId: string; postId: string }
+  ) {
+    const result = await this.commandBus.execute<unknown, ResultDeletePostDTO>(
+      new DeletePostBySACommand({
+        blogId: params.blogId,
+        postId: params.postId,
+      })
+    );
+    if (!result.isBlogFound) throw new NotFoundException();
+    if (!result.isPostFound) throw new NotFoundException();
+    return result.isPostDeleted;
+  }
 }

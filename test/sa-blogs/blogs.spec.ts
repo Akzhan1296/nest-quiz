@@ -232,7 +232,7 @@ describe("Blogs", () => {
     });
   });
 
-  describe("Create post by blogid", () => {
+  describe("Create post by blogId", () => {
     it("Should create post successfully", async () => {
       let blogId = null;
 
@@ -506,6 +506,135 @@ describe("Blogs", () => {
             },
           ]);
         });
+    });
+  });
+
+  describe("Delete post by blog and post ids", () => {
+    it("Should delete post", async () => {
+      let blogId = null;
+      let postId = null;
+
+      await request(app.getHttpServer())
+        .post("/sa/blogs")
+        .auth("admin", "qwerty", { type: "basic" })
+        .send(creatingBlogMock as CreateBlogInputModelType)
+        .expect(HttpStatus.CREATED);
+
+      await request(app.getHttpServer())
+        .get("/sa/blogs")
+        .auth("admin", "qwerty", { type: "basic" })
+        .then(({ body }) => {
+          blogId = body.items[0].id;
+          expect(
+            body.items.some((item) => item.name === creatingBlogMock.name)
+          ).toBeTruthy();
+
+          expect(body).toEqual(
+            expect.objectContaining({
+              totalCount: 1,
+              page: 1,
+              pageSize: 10,
+              pagesCount: 1,
+            })
+          );
+        });
+
+      const result = await request(app.getHttpServer())
+        .post(`/sa/blogs/${blogId}/posts`)
+        .auth("admin", "qwerty", { type: "basic" })
+        .send(createPostMock as CreatePostInputType);
+
+      expect(result.status).toBe(HttpStatus.CREATED);
+      expect(result.body).toEqual(
+        expect.objectContaining({
+          title: "post title",
+          shortDescription: "shortDescription",
+          content: "content",
+          blogId,
+          blogName: "blog name",
+          extendedLikesInfo: {
+            likesCount: 0,
+            dislikesCount: 0,
+            myStatus: "None",
+            newestLikes: [],
+          },
+        })
+      );
+
+      postId = result.body.id;
+
+      await request(app.getHttpServer())
+        .get(`/sa/blogs/${blogId}/posts`)
+        .auth("admin", "qwerty", { type: "basic" })
+        .then(({ body }) => {
+          expect(body).toEqual(
+            expect.objectContaining({
+              totalCount: 1,
+              page: 1,
+              pageSize: 10,
+              pagesCount: 1,
+            })
+          );
+        });
+
+      await request(app.getHttpServer())
+        .delete(`/sa/blogs/${blogId}/posts/${postId}`)
+        .auth("admin", "qwerty", { type: "basic" })
+        .expect(HttpStatus.OK);
+
+      await request(app.getHttpServer())
+        .get(`/sa/blogs/${blogId}/posts`)
+        .auth("admin", "qwerty", { type: "basic" })
+        .then(({ body }) => {
+          expect(body).toEqual(
+            expect.objectContaining({
+              totalCount: 0,
+              page: 1,
+              pageSize: 10,
+              pagesCount: 0,
+            })
+          );
+        });
+    });
+    it("Should return 404, if post not found", async() => {
+      let blogId = null;
+
+      await request(app.getHttpServer())
+        .post("/sa/blogs")
+        .auth("admin", "qwerty", { type: "basic" })
+        .send(creatingBlogMock as CreateBlogInputModelType)
+        .expect(HttpStatus.CREATED);
+
+      await request(app.getHttpServer())
+        .get("/sa/blogs")
+        .auth("admin", "qwerty", { type: "basic" })
+        .then(({ body }) => {
+          blogId = body.items[0].id;
+          expect(
+            body.items.some((item) => item.name === creatingBlogMock.name)
+          ).toBeTruthy();
+
+          expect(body).toEqual(
+            expect.objectContaining({
+              totalCount: 1,
+              page: 1,
+              pageSize: 10,
+              pagesCount: 1,
+            })
+          );
+        });
+
+        await request(app.getHttpServer())
+        .delete(`/sa/blogs/${blogId}/posts/${uuidv4()}`)
+        .auth("admin", "qwerty", { type: "basic" })
+        .expect(HttpStatus.NOT_FOUND);
+
+    });
+    it("Should return 404, if blog not found", async() => {
+      await request(app.getHttpServer())
+      .delete(`/sa/blogs/${uuidv4()}/posts/${uuidv4()}`)
+      .auth("admin", "qwerty", { type: "basic" })
+      .expect(HttpStatus.NOT_FOUND);
     });
   });
 

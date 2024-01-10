@@ -58,4 +58,16 @@ export class PostsRepository {
     // result = [[], 1 | 0]
     return !!result[1];
   }
+
+  async deletePostById(postId: string): Promise<boolean> {
+    const result = await this.dataSource.query(
+      ` 
+	      DELETE FROM public."Posts"
+	      WHERE "Id" = $1
+        `,
+      [postId]
+    );
+
+    return !!result[1];
+  }
 }
