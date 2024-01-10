@@ -127,7 +127,6 @@ export class SABlogsController {
   @HttpCode(HttpStatus.OK)
   @Get(":blogId/posts")
   async getBlogPosts(
-    @Req() request: Request,
     @Query() pageSize: BlogsQueryType,
     @Param() params: { blogId: string }
   ): Promise<PaginationViewModel<PostViewModel>> {
