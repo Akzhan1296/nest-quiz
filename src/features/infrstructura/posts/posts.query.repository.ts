@@ -15,7 +15,7 @@ export class PostsQueryRepository {
       shortDescription: r.ShortDescription,
       content: r.Content,
       blogId: r.BlogId,
-      blogName: r.Name,
+      blogName: r.BlogName,
       createdAt: r.CreatedAt,
       extendedLikesInfo: {
         likesCount: 0,
@@ -28,7 +28,7 @@ export class PostsQueryRepository {
 
   async getPostByPostId(postId: string): Promise<PostViewModel | null> {
     const result = await this.dataSource.query(
-      `	SELECT p.*, b."Name"
+      `	SELECT p.*, b."BlogName"
       FROM public."Posts" p
       LEFT JOIN public."Blogs" b
       on p."BlogId" = b."Id"
@@ -44,7 +44,7 @@ export class PostsQueryRepository {
       shortDescription: result[0].ShortDescription,
       content: result[0].Content,
       blogId: result[0].BlogId,
-      blogName: result[0].Name,
+      blogName: result[0].BlogName,
       createdAt: result[0].CreatedAt,
       extendedLikesInfo: {
         likesCount: 0,
@@ -62,7 +62,7 @@ export class PostsQueryRepository {
     const orderBy = transformFirstLetter(sortBy);
 
     let result = await this.dataSource.query(
-      `	SELECT p.*, b."Name"
+      `	SELECT p.*, b."BlogName"
         FROM public."Posts" p
         LEFT JOIN public."Blogs" b
         ON p."BlogId" = b."Id"
@@ -98,7 +98,7 @@ export class PostsQueryRepository {
     const orderBy = transformFirstLetter(sortBy);
 
     let result = await this.dataSource.query(
-      `	SELECT p.*, b."Name"
+      `	SELECT p.*, b."BlogName"
         FROM public."Posts" p
         LEFT JOIN public."Blogs" b
         on p."BlogId" = b."Id"
