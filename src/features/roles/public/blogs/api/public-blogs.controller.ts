@@ -26,8 +26,6 @@ export class PublicBlogs {
   @Get("")
   @HttpCode(HttpStatus.OK)
   async getBlogs(@Query() pageSize: BlogsQueryType) {
-    console.log(pageSize)
-
     return await this.blogsQueryRepository.getBlogs(pageSize);
   }
 

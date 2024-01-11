@@ -16,7 +16,8 @@ This is my pet project where I used NestJS + TypeORM + Postgressql + unit tests 
 | Hometask #      | Period of implementing                |
 |-----------------|---------------------------------------|
 | Lesson 17       | 21.11.2023 - 23.12.2023               |
-| Lesson 18       | 23.12.2023 - ...                      |
+| Lesson 18       | 23.12.2023 - 11.01.2024               |
+| Lesson 19       | 11.01.2024 - ...                      |
 | ...             | ...                                   |
 
 
