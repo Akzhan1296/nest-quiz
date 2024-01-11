@@ -35,7 +35,11 @@ export class BlogsQueryRepository {
   ): Promise<PaginationViewModel<BlogViewModel>> {
     const { sortBy, sortDirection, skip, pageSize, searchNameTerm } =
       pageParams;
-    const orderBy = transformFirstLetter(sortBy);
+
+    const orderBy =
+      sortBy === "name"
+        ? transformFirstLetter("name")
+        : transformFirstLetter(sortBy);
     let result = await this.dataSource.query(
       `
         SELECT "Id", "BlogName", "WebsiteUrl", "Description", "IsMembership", "CreatedAt"
