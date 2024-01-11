@@ -8,7 +8,7 @@ export class BlogsRepository {
   async findBlogById(blogId: string): Promise<BlogViewModel | null> {
     let result = await this.dataSource.query(
       `
-      SELECT "Id", "Name", "WebsiteUrl", "Description", "IsMembership", "CreatedAt"
+      SELECT "Id", "BlogName", "WebsiteUrl", "Description", "IsMembership", "CreatedAt"
 	  FROM public."Blogs"
 	  WHERE "Id" = $1`,
       [blogId]
@@ -17,7 +17,7 @@ export class BlogsRepository {
     if (result.length === 0) return null;
 
     return {
-      name: result[0].Name,
+      name: result[0].BlogName,
       id: result[0].Id,
       websiteUrl: result[0].WebsiteUrl,
       createdAt: result[0].CreatedAt,
@@ -31,7 +31,7 @@ export class BlogsRepository {
       createBlogDTO;
     const result = await this.dataSource.query(
       `INSERT INTO public."Blogs"(
-        "Name", "WebsiteUrl", "Description", "IsMembership", "CreatedAt")
+        "BlogName", "WebsiteUrl", "Description", "IsMembership", "CreatedAt")
         VALUES ($1, $2, $3, $4, $5)
       RETURNING "Id"`,
       [name, websiteUrl, description, isMembership, createdAt]
@@ -45,7 +45,7 @@ export class BlogsRepository {
 
     let result = await this.dataSource.query(
       `UPDATE public."Blogs"
-        SET "Description"= $2, "Name" = $3, "WebsiteUrl" = $4
+        SET "Description"= $2, "BlogName" = $3, "WebsiteUrl" = $4
         WHERE "Id" = $1`,
       [blogId, description, name, websiteUrl]
     );

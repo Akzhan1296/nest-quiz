@@ -12,7 +12,7 @@ export class BlogsQueryRepository {
     // Blogs table
     const result = await this.dataSource.query(
       `
-      SELECT "Id", "Name", "WebsiteUrl", "Description", "IsMembership", "CreatedAt"
+      SELECT "Id", "BlogName", "WebsiteUrl", "Description", "IsMembership", "CreatedAt"
       FROM public."Blogs"
           WHERE "Id" = $1`,
       [blogId]
@@ -21,7 +21,7 @@ export class BlogsQueryRepository {
     if (result.length === 0) return null;
 
     return {
-      name: result[0].Name,
+      name: result[0].BlogName,
       id: result[0].Id,
       websiteUrl: result[0].WebsiteUrl,
       createdAt: result[0].CreatedAt,
@@ -38,9 +38,9 @@ export class BlogsQueryRepository {
     const orderBy = transformFirstLetter(sortBy);
     let result = await this.dataSource.query(
       `
-        SELECT "Id", "Name", "WebsiteUrl", "Description", "IsMembership", "CreatedAt"
+        SELECT "Id", "BlogName", "WebsiteUrl", "Description", "IsMembership", "CreatedAt"
         FROM public."Blogs"
-        WHERE "Name"  ILIKE $1
+        WHERE "BlogName"  ILIKE $1
         ORDER BY "${orderBy}" ${sortDirection}
         LIMIT $2 OFFSET $3
       `,
@@ -51,13 +51,13 @@ export class BlogsQueryRepository {
       `
       SELECT count (*)
       FROM public."Blogs"
-      WHERE "Name"  ILIKE $1
+      WHERE "BlogName"  ILIKE $1
     `,
       [`%${searchNameTerm}%`]
     );
 
     const mappedResult: BlogViewModel[] = result.map((r) => ({
-      name: r.Name,
+      name: r.BlogName,
       id: r.Id,
       websiteUrl: r.WebsiteUrl,
       createdAt: r.CreatedAt,
