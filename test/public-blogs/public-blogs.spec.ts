@@ -149,7 +149,6 @@ describe("Blogs", () => {
     await request(app.getHttpServer())
       .get(`/blogs/${blogId}/posts`)
       .then(({ body }) => {
-        console.log(body);
         expect(body).toEqual(
           expect.objectContaining({
             totalCount: 1,

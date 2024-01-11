@@ -25,6 +25,9 @@ export class PublicPosts {
   async getPosts(
     @Query() pageSize: BlogsQueryType
   ): Promise<PaginationViewModel<PostViewModel>> {
+
+    console.log(pageSize)
+
     return await this.postQuerysRepository.getPosts(pageSize);
   }
 
