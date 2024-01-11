@@ -63,6 +63,7 @@ export class SABlogsController {
   async getBlogs(
     @Query() pageSize: BlogsQueryType
   ): Promise<PaginationViewModel<BlogViewModel>> {
+    console.log(pageSize)
     return await this.blogsQueryRepository.getBlogs(pageSize);
   }
 
