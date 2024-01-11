@@ -38,7 +38,7 @@ export class BlogsQueryRepository {
 
     const orderBy =
       sortBy === "name"
-        ? transformFirstLetter("name")
+        ? transformFirstLetter("blogName")
         : transformFirstLetter(sortBy);
     let result = await this.dataSource.query(
       `
