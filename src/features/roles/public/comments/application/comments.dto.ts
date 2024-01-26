@@ -10,3 +10,14 @@ export type CreateCommentResult = {
   isCommentCreated: boolean;
   commentId: null | string;
 };
+
+export type HandleLikeCommentDTO = {
+  commentId: string;
+  commentLikeStatus: "Like" | "Dislike" | "None";
+  userId: string;
+};
+
+export type HandleCommentLikeResult = {
+  isCommentFound: boolean;
+  isLikeStatusUpdated: boolean;
+};

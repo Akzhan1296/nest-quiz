@@ -58,6 +58,8 @@ import { PublicPosts } from "./features/roles/public/posts/api/public-posts.cont
 import { CreateCommentUseCase } from "./features/roles/public/comments/application/use-cases/create-comment-use-case";
 import { CommentsRepository } from "./features/infrstructura/comments/comments.repository";
 import { CommentsQueryRepository } from "./features/infrstructura/comments/comments.query.repository";
+import { PublicComments } from "./features/roles/public/comments/api/public-comments.controller";
+import { LikeStatusCommentUseCase } from "./features/roles/public/comments/application/use-cases/like-status-comment-use-case";
 
 const userUseCases = [CreateUserUseCase, DeleteUserUseCase];
 const authUseCases = [
@@ -84,7 +86,7 @@ const saPosts = [
   DeletePostBySAUseCase,
   UpdatePostBySAUseCase,
 ];
-const commentsUseCases = [CreateCommentUseCase];
+const commentsUseCases = [CreateCommentUseCase, LikeStatusCommentUseCase];
 
 @Module({
   imports: [
@@ -117,6 +119,7 @@ const commentsUseCases = [CreateCommentUseCase];
     SABlogsController,
     PublicBlogs,
     PublicPosts,
+    PublicComments,
   ],
   providers: [
     JwtService,

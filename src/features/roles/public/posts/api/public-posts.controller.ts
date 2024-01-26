@@ -11,7 +11,6 @@ import {
   Req,
   UseGuards,
 } from "@nestjs/common";
-import { BlogsQueryRepository } from "../../../../infrstructura/blogs/blogs.query.repository";
 import { BlogsQueryType } from "../../../sa/blogs/api/sa.blogs.models";
 import { PaginationViewModel } from "../../../../../common/types";
 import { PostViewModel } from "../../../../infrstructura/posts/posts.models";
@@ -20,7 +19,7 @@ import { AuthGuard } from "../../../../../guards/auth.guard";
 import { CreateCommentInputModel } from "./input.models";
 import { CommandBus } from "@nestjs/cqrs";
 import { CreateCommentCommand } from "../../comments/application/use-cases/create-comment-use-case";
-import { Request, Response } from "express";
+import { Request } from "express";
 import { CommentsQueryRepository } from "../../../../infrstructura/comments/comments.query.repository";
 
 @Controller("posts")
@@ -73,7 +72,8 @@ export class PublicPosts {
 
     if (result.isCommentCreated) {
       const commentViewModel = this.commentsQueryRepository.getCommentById(
-        result.commentId
+        result.commentId,
+        request.body.userId
       );
       return commentViewModel;
     }

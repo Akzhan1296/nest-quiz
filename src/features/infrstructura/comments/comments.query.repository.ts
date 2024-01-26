@@ -5,19 +5,19 @@ import { CreateCommentType } from "./models/comments.models";
 export class CommentsQueryRepository {
   constructor(@InjectDataSource() protected dataSource: DataSource) {}
 
-  async getCommentById(commentId: string) {
+  async getCommentById(commentId: string, userId: string | null) {
     const result = await this.dataSource.query(
       `    
       SELECT "Id", "Content", "UserId", "UserLogin", "CreatedAt", "PostId",
       (SELECT "LikeStatus" FROM public."CommentLikesStatuses" 
-       WHERE public."CommentLikesStatuses"."CommentId" = $1) as "UserStatus",
+       WHERE public."CommentLikesStatuses"."UserId" = $2) as "UserStatus",
        (SELECT count(*) FROM public."CommentLikesStatuses" 
-       WHERE public."CommentLikesStatuses"."LikeStatus" = 'like') as "LikesCount",
+       WHERE public."CommentLikesStatuses"."LikeStatus" = 'Like') as "LikesCount",
        (SELECT count(*) FROM public."CommentLikesStatuses" 
-       WHERE public."CommentLikesStatuses"."LikeStatus" = 'dislike') as "DislikesCount"
+       WHERE public."CommentLikesStatuses"."LikeStatus" = 'Dislike') as "DislikesCount"
       FROM public."Comments" as c
       WHERE "Id" = $1`,
-      [commentId]
+      [commentId, userId]
     );
 
     return {
@@ -31,9 +31,7 @@ export class CommentsQueryRepository {
       likesInfo: {
         likesCount: result[0].LikesCount,
         dislikesCount: result[0].DislikesCount,
-        myStatus: result[0].CommentLikeStatus
-          ? result[0].CommentLikeStatus
-          : "none",
+        myStatus: result[0].UserStatus ? result[0].UserStatus : "None",
       },
     };
   }
