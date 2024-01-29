@@ -20,4 +20,5 @@ export type HandleLikeCommentDTO = {
 export type HandleCommentLikeResult = {
   isCommentFound: boolean;
   isLikeStatusUpdated: boolean;
+  isLikeStatusCreated: boolean;
 };

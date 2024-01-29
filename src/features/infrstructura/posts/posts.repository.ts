@@ -1,11 +1,6 @@
 import { InjectDataSource } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
-import {
-  CreatePostDTO,
-  OnlyPostDataView,
-  PostViewModel,
-  UpdatePostDTO,
-} from "./posts.models";
+import { CreatePostDTO, OnlyPostDataView, UpdatePostDTO } from "./posts.models";
 
 export class PostsRepository {
   constructor(@InjectDataSource() protected dataSource: DataSource) {}

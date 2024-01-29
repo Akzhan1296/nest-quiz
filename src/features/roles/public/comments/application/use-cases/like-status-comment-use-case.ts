@@ -18,10 +18,12 @@ export class LikeStatusCommentUseCase
     const result: HandleCommentLikeResult = {
       isCommentFound: false,
       isLikeStatusUpdated: false,
+      isLikeStatusCreated: false,
     };
 
     // if no comment return not found
-    const commentData = await this.commentsRepository.getCommentEntityById(commentId);
+    const commentData =
+      await this.commentsRepository.getCommentEntityById(commentId);
     if (!commentData) {
       return result;
     }
@@ -44,9 +46,13 @@ export class LikeStatusCommentUseCase
           postId: commentData.postId,
           createdAt: new Date(),
         });
+
+        result.isLikeStatusCreated = true;
       } catch (err) {
         throw new Error(`Something went product with like handle ${err}`);
       }
+
+      result.isLikeStatusCreated = true;
     } else {
       // if we have for current user comment like entity, just update like status
       const isUpdated = await this.commentsRepository.updateCommentLikeEntity({
@@ -59,5 +65,7 @@ export class LikeStatusCommentUseCase
         throw new Error(`Something went product with like handle ${err}`);
       }
     }
+
+    return result;
   }
 }
