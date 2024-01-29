@@ -25,7 +25,8 @@ export class CreateCommentUseCase
 
     const { userLogin, userId, content, postId } = command.createCommentDTO;
 
-    const postData = this.postsRepository.findPostById(postId);
+    const postData = await this.postsRepository.findPostById(postId);
+
     if (!postData) return result;
     result.isPostFound = true;
 
@@ -41,7 +42,7 @@ export class CreateCommentUseCase
       result.isCommentCreated = true;
       result.commentId = commentId;
     } catch (err) {
-      throw new Error("Something went wrong on comment creating");
+      throw new Error(`Something went wrong on comment creating ${err}`);
     }
 
     return result;

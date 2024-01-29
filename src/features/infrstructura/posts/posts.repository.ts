@@ -10,7 +10,7 @@ import {
 export class PostsRepository {
   constructor(@InjectDataSource() protected dataSource: DataSource) {}
 
-  async findPostById(postId: string): Promise<OnlyPostDataView> {
+  async findPostById(postId: string): Promise<OnlyPostDataView | null> {
     let result = await this.dataSource.query(
       `
       SELECT *
