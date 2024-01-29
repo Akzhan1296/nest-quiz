@@ -1,11 +1,11 @@
 import { InjectDataSource } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
-import { CreateCommentType } from "./models/comments.models";
+import { CommentViewModel, CreateCommentType } from "./models/comments.models";
 
 export class CommentsQueryRepository {
   constructor(@InjectDataSource() protected dataSource: DataSource) {}
 
-  async getCommentById(commentId: string, userId: string | null) {
+  async getCommentById(commentId: string, userId: string | null): Promise<CommentViewModel | null> {
     const result = await this.dataSource.query(
       `    
       SELECT "Id", "Content", "UserId", "UserLogin", "CreatedAt", "PostId",
@@ -20,6 +20,8 @@ export class CommentsQueryRepository {
       [commentId, userId]
     );
 
+    if (!result.length) return null;
+
     return {
       id: result[0].Id,
       content: result[0].Content,
@@ -29,8 +31,8 @@ export class CommentsQueryRepository {
       },
       createdAt: result[0].CreatedAt,
       likesInfo: {
-        likesCount: result[0].LikesCount,
-        dislikesCount: result[0].DislikesCount,
+        likesCount: +result[0].LikesCount,
+        dislikesCount: +result[0].DislikesCount,
         myStatus: result[0].UserStatus ? result[0].UserStatus : "None",
       },
     };

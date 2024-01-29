@@ -20,6 +20,7 @@ import { HandleCommentsLikesCommand } from "../application/use-cases/like-status
 import { CommentViewModel } from "../../../../infrstructura/comments/models/comments.models";
 import { CommentsQueryRepository } from "../../../../infrstructura/comments/comments.query.repository";
 import { UserIdGuard } from "../../../../../guards/userId.guard";
+import { HandleCommentLikeResult } from "../application/comments.dto";
 
 @Controller("comments")
 export class PublicComments {
@@ -34,10 +35,16 @@ export class PublicComments {
     @Req() request: Request,
     @Param() params: { commentId: string }
   ): Promise<CommentViewModel> {
-    return this.commentsQueryRepository.getCommentById(
+    const result = await this.commentsQueryRepository.getCommentById(
       params.commentId,
       request.body.userId
     );
+
+    if (!result) {
+      throw new NotFoundException();
+    }
+
+    return result;
   }
 
   @Put(":commentId/like-status")
@@ -48,15 +55,19 @@ export class PublicComments {
     @Param() params: { commentId: string },
     @Body() commentLikeStatus: CommentLikeStatus
   ) {
-    return this.commandBus.execute(
+    const result = await this.commandBus.execute<
+      unknown,
+      HandleCommentLikeResult
+    >(
       new HandleCommentsLikesCommand({
         commentId: params.commentId,
         commentLikeStatus: commentLikeStatus.likeStatus,
         userId: request.body.userId,
       })
     );
-  }
 
-  @Get(":commentId")
-  async getCommentLikeStatus() {}
+    if (!result.isCommentFound) {
+      throw new NotFoundException();
+    }
+  }
 }
