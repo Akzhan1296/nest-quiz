@@ -1,0 +1,97 @@
+import { InjectDataSource } from "@nestjs/typeorm";
+import { DataSource } from "typeorm";
+import {
+  CommentDataView,
+  GetCommentLikeDataDTO,
+  CreateCommentType,
+  SetCommentLikeEntityDto,
+  UpdateCommentLikeEntityDto,
+} from "./models/comments.models";
+
+export class CommentsRepository {
+  constructor(@InjectDataSource() protected dataSource: DataSource) {}
+
+  async createCommentForPost(
+    createCommentDTO: CreateCommentType
+  ): Promise<string> {
+    const { createdAt, content, postId, userId, userLogin } = createCommentDTO;
+
+    const result = await this.dataSource.query(
+      `INSERT INTO public."Comments"(
+        "Content", "UserId", "UserLogin", "CreatedAt",  "PostId")
+          VALUES ($1, $2, $3, $4, $5)
+        RETURNING "Id"`,
+      [content, userId, userLogin, createdAt, postId]
+    );
+
+    return result[0].Id;
+  }
+
+  async getCommentEntityById(commentId: string): Promise<CommentDataView | null> {
+    const result = await this.dataSource.query(
+      `    
+      SELECT "Id", "Content", "UserId", "UserLogin", "CreatedAt", "PostId"
+      FROM public."Comments"
+      WHERE "Id" = $1`,
+      [commentId]
+    );
+
+    if (result.length === 0) return null;
+
+    return {
+      id: result[0].Id,
+      content: result[0].Content,
+      userId: result[0].UserId,
+      userLogin: result[0].UserLogin,
+      createdAt: result[0].CreatedAt,
+      postId: result[0].PostId,
+    };
+  }
+
+  ///////////////////////
+
+  async getCommentLikeData(
+    commentLikeDto: GetCommentLikeDataDTO
+  ): Promise<null | string> {
+    const { commentId, userId } = commentLikeDto;
+    const result = await this.dataSource.query(
+      `    
+      SELECT "Id", "CommentId", "LikeStatus", "PostId", "UserId", "CreatedAt"
+      FROM public."CommentLikesStatuses"
+      WHERE "CommentId" = $1 AND "UserId" = $2`,
+      [commentId, userId]
+    );
+    if (result.length === 0) return null;
+    return result[0].Id;
+  }
+
+  async createCommentLikeEntity(
+    commentLikeEntityDto: SetCommentLikeEntityDto
+  ): Promise<string> {
+    const { commentId, createdAt, likeStatus, postId, userId } =
+      commentLikeEntityDto;
+
+    const result = await this.dataSource.query(
+      `INSERT INTO public."CommentLikesStatuses"(
+          "CommentId", "LikeStatus", "PostId", "UserId", "CreatedAt")
+            VALUES ($1, $2, $3, $4, $5)
+          RETURNING "Id"`,
+      [commentId, likeStatus, postId, userId, createdAt]
+    );
+
+    return result[0].Id;
+  }
+
+  async updateCommentLikeEntity(updateCommentLike: UpdateCommentLikeEntityDto) {
+    const { likeEntityId, likeStatus } = updateCommentLike;
+
+    let result = await this.dataSource.query(
+      `UPDATE public."CommentLikesStatuses"
+      SET "LikeStatus"= $2
+      WHERE "Id" = $1`,
+      [likeEntityId, likeStatus]
+    );
+    // result = [[], 1 | 0]
+    return !!result[1];
+  }
+}

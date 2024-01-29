@@ -31,6 +31,12 @@ export class DeleteAllTestingData {
   async deleteBlogsTableData() {
     await this.dataSource.query(`DELETE FROM public."Blogs"`);
   }
+  async deleteCommentsTableData() {
+    await this.dataSource.query(`DELETE FROM public."Comments"`);
+  }
+  async deleteCommentLikesTableData() {
+    await this.dataSource.query(`DELETE FROM public."CommentLikesStatuses"`);
+  }
 }
 
 @Controller("testing")
@@ -40,12 +46,15 @@ export class DeleteDataController {
   @Delete("/all-data")
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteTestData(@Req() request: Request, @Res() response: Response) {
+    await this.deleteRepository.deleteIpsTableData();
+
+    await this.deleteRepository.deleteCommentLikesTableData();
+    await this.deleteRepository.deleteCommentsTableData();
+    await this.deleteRepository.deletePostsTableData();
+    await this.deleteRepository.deleteBlogsTableData();
     await this.deleteRepository.deleteRegistrationTableData();
     await this.deleteRepository.deleteAuthSessionTableData();
     await this.deleteRepository.deleteUserTableData();
-    await this.deleteRepository.deleteIpsTableData();
-    await this.deleteRepository.deletePostsTableData();
-    await this.deleteRepository.deleteBlogsTableData();
 
     return response.status(HttpStatus.NO_CONTENT).send();
   }

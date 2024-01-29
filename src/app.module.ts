@@ -55,6 +55,11 @@ import { PostsRepository } from "./features/infrstructura/posts/posts.repository
 import { PostsQueryRepository } from "./features/infrstructura/posts/posts.query.repository";
 import { PublicBlogs } from "./features/roles/public/blogs/api/public-blogs.controller";
 import { PublicPosts } from "./features/roles/public/posts/api/public-posts.controller";
+import { CreateCommentUseCase } from "./features/roles/public/comments/application/use-cases/create-comment-use-case";
+import { CommentsRepository } from "./features/infrstructura/comments/comments.repository";
+import { CommentsQueryRepository } from "./features/infrstructura/comments/comments.query.repository";
+import { PublicComments } from "./features/roles/public/comments/api/public-comments.controller";
+import { LikeStatusCommentUseCase } from "./features/roles/public/comments/application/use-cases/like-status-comment-use-case";
 
 const userUseCases = [CreateUserUseCase, DeleteUserUseCase];
 const authUseCases = [
@@ -81,6 +86,7 @@ const saPosts = [
   DeletePostBySAUseCase,
   UpdatePostBySAUseCase,
 ];
+const commentsUseCases = [CreateCommentUseCase, LikeStatusCommentUseCase];
 
 @Module({
   imports: [
@@ -113,6 +119,7 @@ const saPosts = [
     SABlogsController,
     PublicBlogs,
     PublicPosts,
+    PublicComments,
   ],
   providers: [
     JwtService,
@@ -129,11 +136,14 @@ const saPosts = [
     BlogsQueryRepository,
     PostsRepository,
     PostsQueryRepository,
+    CommentsRepository,
+    CommentsQueryRepository,
     ...userUseCases,
     ...authUseCases,
     ...deviceUseCases,
     ...saBlogs,
     ...saPosts,
+    ...commentsUseCases,
   ],
 })
 export class AppModule {}

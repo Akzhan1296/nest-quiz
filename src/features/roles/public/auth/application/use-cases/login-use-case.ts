@@ -1,4 +1,4 @@
-import { CommandBus, CommandHandler, ICommandHandler } from "@nestjs/cqrs";
+import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { AuthDTO, AutoResultDTO } from "../auth.dto";
 import { AuthService } from "../auth.service";
 import { DeviceSessionsRepository } from "../../../../../infrstructura/deviceSessions/device-sessions.repository";
