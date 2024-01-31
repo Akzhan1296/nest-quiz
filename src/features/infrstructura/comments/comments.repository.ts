@@ -27,7 +27,9 @@ export class CommentsRepository {
     return result[0].Id;
   }
 
-  async getCommentEntityById(commentId: string): Promise<CommentDataView | null> {
+  async getCommentEntityById(
+    commentId: string
+  ): Promise<CommentDataView | null> {
     const result = await this.dataSource.query(
       `    
       SELECT "Id", "Content", "UserId", "UserLogin", "CreatedAt", "PostId"
@@ -48,8 +50,19 @@ export class CommentsRepository {
     };
   }
 
-  ///////////////////////
+  async deleteCommentById(commentId: string) {
+    const result = await this.dataSource.query(
+      ` 
+	      DELETE FROM public."Comments"
+	      WHERE "Id" = $1
+        `,
+      [commentId]
+    );
 
+    return !!result[1];
+  }
+
+  // comments likes
   async getCommentLikeData(
     commentLikeDto: GetCommentLikeDataDTO
   ): Promise<null | string> {
@@ -63,6 +76,17 @@ export class CommentsRepository {
     );
     if (result.length === 0) return null;
     return result[0].Id;
+  }
+
+  async isAnyCommentLikesData(commentId: string): Promise<boolean> {
+    const result = await this.dataSource.query(
+      `    
+      SELECT "Id", "CommentId", "LikeStatus", "PostId", "UserId", "CreatedAt"
+      FROM public."CommentLikesStatuses"
+      WHERE "CommentId" = $1`,
+      [commentId]
+    );
+    return result.length > 0 ? true : false;
   }
 
   async createCommentLikeEntity(
@@ -93,5 +117,15 @@ export class CommentsRepository {
     );
     // result = [[], 1 | 0]
     return !!result[1];
+  }
+
+  async deleteCommentLikeEntities(commentId: string) {
+    return await this.dataSource.query(
+      ` 
+	      DELETE FROM public."CommentLikesStatuses"
+	      WHERE "CommentId" = $1
+        `,
+      [commentId]
+    );
   }
 }

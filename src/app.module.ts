@@ -60,6 +60,7 @@ import { CommentsRepository } from "./features/infrstructura/comments/comments.r
 import { CommentsQueryRepository } from "./features/infrstructura/comments/comments.query.repository";
 import { PublicComments } from "./features/roles/public/comments/api/public-comments.controller";
 import { LikeStatusCommentUseCase } from "./features/roles/public/comments/application/use-cases/like-status-comment-use-case";
+import { DeleteCommentUseCase } from "./features/roles/public/comments/application/use-cases/delete-comment-use-case";
 
 const userUseCases = [CreateUserUseCase, DeleteUserUseCase];
 const authUseCases = [
@@ -86,7 +87,11 @@ const saPosts = [
   DeletePostBySAUseCase,
   UpdatePostBySAUseCase,
 ];
-const commentsUseCases = [CreateCommentUseCase, LikeStatusCommentUseCase];
+const commentsUseCases = [
+  CreateCommentUseCase,
+  LikeStatusCommentUseCase,
+  DeleteCommentUseCase,
+];
 
 @Module({
   imports: [
