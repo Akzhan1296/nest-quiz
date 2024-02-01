@@ -604,6 +604,214 @@ describe("Comments", () => {
     });
   });
 
+  describe("Delete comment", () => {
+    it("Should delete comment successfully", async () => {
+      let blogId = null;
+      let postId = null;
+      let accessToken: null | string = null;
+
+      // create blog
+      await request(app.getHttpServer())
+        .post("/sa/blogs")
+        .auth("admin", "qwerty", { type: "basic" })
+        .send(creatingBlogMock as CreateBlogInputModelType)
+        .expect(HttpStatus.CREATED);
+
+      // get blog id
+      await request(app.getHttpServer())
+        .get("/blogs")
+        .auth("admin", "qwerty", { type: "basic" })
+        .then(({ body }) => {
+          blogId = body.items[0].id;
+          expect(
+            body.items.some((item) => item.name === creatingBlogMock.name)
+          ).toBeTruthy();
+
+          expect(body).toEqual(
+            expect.objectContaining({
+              totalCount: 1,
+              page: 1,
+              pageSize: 10,
+              pagesCount: 1,
+            })
+          );
+        });
+
+      // create post
+      const result = await request(app.getHttpServer())
+        .post(`/sa/blogs/${blogId}/posts`)
+        .auth("admin", "qwerty", { type: "basic" })
+        .send(createPostMock as CreatePostInputType);
+
+      expect(result.status).toBe(HttpStatus.CREATED);
+      postId = result.body.id;
+
+      // add user
+      await request(app.getHttpServer())
+        .post("/sa/users")
+        .auth("admin", "qwerty", { type: "basic" })
+        .send({
+          password: "password",
+          login: "login12345",
+          email: "email@email.com",
+        } as AuthRegistrationInputModal)
+        .expect(HttpStatus.CREATED);
+
+      //auth user
+      const authResult = await request(app.getHttpServer())
+        .post("/auth/login")
+        .send({
+          loginOrEmail: "login12345",
+          password: "password",
+        } as AuthLoginInputModal)
+        .expect(HttpStatus.OK);
+
+      accessToken = authResult.body.accessToken as string;
+
+      let commentResult = await request(app.getHttpServer())
+        .post(`/posts/${postId}/comments`)
+        .set("Authorization", `Bearer ${accessToken}`)
+        .send({
+          content: "contentcontentcontentcontentcontentcontent",
+        })
+        .expect(HttpStatus.CREATED);
+
+      await request(app.getHttpServer())
+        .delete(`/comments/${commentResult.body.id}`)
+        .set("Authorization", `Bearer ${accessToken}`)
+        .expect(HttpStatus.NO_CONTENT);
+    });
+    it("Should return 403 error", async () => {
+      let blogId = null;
+      let postId = null;
+
+      // create blog
+      await request(app.getHttpServer())
+        .post("/sa/blogs")
+        .auth("admin", "qwerty", { type: "basic" })
+        .send(creatingBlogMock as CreateBlogInputModelType)
+        .expect(HttpStatus.CREATED);
+
+      // get blog id
+      await request(app.getHttpServer())
+        .get("/blogs")
+        .auth("admin", "qwerty", { type: "basic" })
+        .then(({ body }) => {
+          blogId = body.items[0].id;
+          expect(
+            body.items.some((item) => item.name === creatingBlogMock.name)
+          ).toBeTruthy();
+
+          expect(body).toEqual(
+            expect.objectContaining({
+              totalCount: 1,
+              page: 1,
+              pageSize: 10,
+              pagesCount: 1,
+            })
+          );
+        });
+
+      // create post
+      const result = await request(app.getHttpServer())
+        .post(`/sa/blogs/${blogId}/posts`)
+        .auth("admin", "qwerty", { type: "basic" })
+        .send(createPostMock as CreatePostInputType);
+
+      expect(result.status).toBe(HttpStatus.CREATED);
+      postId = result.body.id;
+
+      // add user
+      await request(app.getHttpServer())
+        .post("/sa/users")
+        .auth("admin", "qwerty", { type: "basic" })
+        .send({
+          password: "password",
+          login: "login12345",
+          email: "email@email.com",
+        } as AuthRegistrationInputModal)
+        .expect(HttpStatus.CREATED);
+
+      //auth user
+      const authResult = await request(app.getHttpServer())
+        .post("/auth/login")
+        .send({
+          loginOrEmail: "login12345",
+          password: "password",
+        } as AuthLoginInputModal)
+        .expect(HttpStatus.OK);
+
+      // add user 2
+      await request(app.getHttpServer())
+        .post("/sa/users")
+        .auth("admin", "qwerty", { type: "basic" })
+        .send({
+          password: "password",
+          login: "user2",
+          email: "email@email.com",
+        } as AuthRegistrationInputModal)
+        .expect(HttpStatus.CREATED);
+
+      const auth2Result = await request(app.getHttpServer())
+        .post("/auth/login")
+        .send({
+          loginOrEmail: "user2",
+          password: "password",
+        } as AuthLoginInputModal)
+        .expect(HttpStatus.OK);
+
+      let accessToken = authResult.body.accessToken as string;
+
+      let accessToken2 = auth2Result.body.accessToken as string;
+
+      let commentResult = await request(app.getHttpServer())
+        .post(`/posts/${postId}/comments`)
+        .set("Authorization", `Bearer ${accessToken}`)
+        .send({
+          content: "contentcontentcontentcontentcontentcontent",
+        })
+        .expect(HttpStatus.CREATED);
+
+      await request(app.getHttpServer())
+        .delete(`/comments/${commentResult.body.id}`)
+        .set("Authorization", `Bearer ${accessToken2}`)
+        .expect(HttpStatus.FORBIDDEN);
+    });
+    it("Should return 404 error", async () => {
+      // add user
+      await request(app.getHttpServer())
+        .post("/sa/users")
+        .auth("admin", "qwerty", { type: "basic" })
+        .send({
+          password: "password",
+          login: "login12345",
+          email: "email@email.com",
+        } as AuthRegistrationInputModal)
+        .expect(HttpStatus.CREATED);
+
+      //auth user
+      const authResult = await request(app.getHttpServer())
+        .post("/auth/login")
+        .send({
+          loginOrEmail: "login12345",
+          password: "password",
+        } as AuthLoginInputModal)
+        .expect(HttpStatus.OK);
+
+      let accessToken = authResult.body.accessToken as string;
+
+      await request(app.getHttpServer())
+        .delete(`/comments/${uuidv4()}`)
+        .set("Authorization", `Bearer ${accessToken}`)
+        .expect(HttpStatus.NOT_FOUND);
+    });
+    it("Should return 401 error", async () => {
+      await request(app.getHttpServer())
+        .delete(`/comments/${uuidv4()}`)
+        .expect(HttpStatus.UNAUTHORIZED);
+    });
+  });
+
   afterAll(async () => {
     await app.close();
   });

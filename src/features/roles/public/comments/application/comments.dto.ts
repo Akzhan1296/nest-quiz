@@ -22,3 +22,14 @@ export type HandleCommentLikeResult = {
   isLikeStatusUpdated: boolean;
   isLikeStatusCreated: boolean;
 };
+
+export type DeleteCommentDTO = {
+  userId: string;
+  commentId: string;
+};
+
+export type DeleteCommentResult = {
+  isCommentFound: boolean;
+  isForbidden: boolean;
+  isCommentDeleted: boolean;
+};
