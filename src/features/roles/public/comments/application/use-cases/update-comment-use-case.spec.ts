@@ -4,11 +4,12 @@ import { AppModule } from "../../../../../../app.module";
 import { DeleteCommentUseCase } from "./delete-comment-use-case";
 import { v4 as uuidv4 } from "uuid";
 import { CommentDataView } from "../../../../../infrstructura/comments/models/comments.models";
+import { UpdateCommentUseCase } from "./update-commen-use-case";
 
-describe("DeleteCommentUseCase", () => {
+describe("UpdateCommentUseCase", () => {
   let app: TestingModule;
   let commentsRepository: CommentsRepository;
-  let deleteCommentUseCase: DeleteCommentUseCase;
+  let updateCommentUseCase: UpdateCommentUseCase;
 
   beforeEach(async () => {
     app = await Test.createTestingModule({
@@ -17,16 +18,16 @@ describe("DeleteCommentUseCase", () => {
     await app.init();
 
     commentsRepository = app.get<CommentsRepository>(CommentsRepository);
-    deleteCommentUseCase = app.get<DeleteCommentUseCase>(DeleteCommentUseCase);
+    updateCommentUseCase = app.get<UpdateCommentUseCase>(UpdateCommentUseCase);
   });
 
   it("Should be defined", () => {
     expect(app).toBeDefined();
     expect(commentsRepository).toBeDefined();
-    expect(deleteCommentUseCase).toBeDefined();
+    expect(updateCommentUseCase).toBeDefined();
   });
 
-  it("Should delete comment", async () => {
+  it("Should update comment", async () => {
     let userId = uuidv4();
 
     jest
@@ -34,23 +35,20 @@ describe("DeleteCommentUseCase", () => {
       .mockImplementation(async () => ({ userId }) as CommentDataView);
 
     jest
-      .spyOn(commentsRepository, "deleteCommentById")
+      .spyOn(commentsRepository, "updateCommentById")
       .mockImplementation(async () => true);
 
-    jest
-      .spyOn(commentsRepository, "isAnyCommentLikesData")
-      .mockImplementation(async () => false);
-
-    const result = await deleteCommentUseCase.execute({
-      deleteCommentDTO: {
+    const result = await updateCommentUseCase.execute({
+      updateCommentDTO: {
         commentId: "",
         userId,
+        content: "",
       },
     });
 
     expect(result).toEqual({
       isCommentFound: true,
-      isCommentDeleted: true,
+      isCommentUpdated: true,
       isForbidden: false,
     });
   });
@@ -61,16 +59,17 @@ describe("DeleteCommentUseCase", () => {
         async () => ({ userId: uuidv4() }) as CommentDataView
       );
 
-    const result = await deleteCommentUseCase.execute({
-      deleteCommentDTO: {
+    const result = await updateCommentUseCase.execute({
+      updateCommentDTO: {
         commentId: "",
         userId: uuidv4(),
+        content: "",
       },
     });
 
     expect(result).toEqual({
       isCommentFound: true,
-      isCommentDeleted: false,
+      isCommentUpdated: false,
       isForbidden: true,
     });
   });
@@ -79,16 +78,17 @@ describe("DeleteCommentUseCase", () => {
       .spyOn(commentsRepository, "getCommentEntityById")
       .mockImplementation(async () => null);
 
-    const result = await deleteCommentUseCase.execute({
-      deleteCommentDTO: {
+    const result = await updateCommentUseCase.execute({
+      updateCommentDTO: {
         commentId: "",
         userId: "",
+        content: "",
       },
     });
 
     expect(result).toEqual({
       isCommentFound: false,
-      isCommentDeleted: false,
+      isCommentUpdated: false,
       isForbidden: false,
     });
   });

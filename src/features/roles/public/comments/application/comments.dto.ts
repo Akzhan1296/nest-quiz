@@ -23,13 +23,24 @@ export type HandleCommentLikeResult = {
   isLikeStatusCreated: boolean;
 };
 
-export type DeleteCommentDTO = {
+export interface DeleteCommentDTO {
   userId: string;
   commentId: string;
-};
+}
 
 export type DeleteCommentResult = {
   isCommentFound: boolean;
   isForbidden: boolean;
   isCommentDeleted: boolean;
+};
+
+export interface UpdateCommentDTO extends DeleteCommentDTO {
+  content: string;
+}
+
+export type UpdateCommentResult = Omit<
+  DeleteCommentResult,
+  "isCommentDeleted"
+> & {
+  isCommentUpdated: boolean;
 };
