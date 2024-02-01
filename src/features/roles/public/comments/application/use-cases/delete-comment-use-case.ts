@@ -31,8 +31,8 @@ export class DeleteCommentUseCase
       return result;
     }
 
-    const isAnyCommentLikesData =
-      this.commentsRepository.isAnyCommentLikesData(commentId);
+    const isAnyCommentLikesData = 
+      await this.commentsRepository.isAnyCommentLikesData(commentId);
 
     if (isAnyCommentLikesData) {
       try {
