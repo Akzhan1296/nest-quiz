@@ -14,7 +14,10 @@ import {
   Delete,
   ForbiddenException,
 } from "@nestjs/common";
-import { CommentLikeStatus } from "./comments.input.models";
+import {
+  CommentInputModelType,
+  CommentLikeStatus,
+} from "./comments.input.models";
 import { AuthGuard } from "../../../../../guards/auth.guard";
 import { CommandBus } from "@nestjs/cqrs";
 import { Request } from "express";
@@ -25,8 +28,10 @@ import { UserIdGuard } from "../../../../../guards/userId.guard";
 import {
   DeleteCommentResult,
   HandleCommentLikeResult,
+  UpdateCommentResult,
 } from "../application/comments.dto";
 import { DeleteCommentCommand } from "../application/use-cases/delete-comment-use-case";
+import { UpdateCommentCommand } from "../application/use-cases/update-commen-use-case";
 
 @Controller("comments")
 export class PublicComments {
@@ -82,7 +87,6 @@ export class PublicComments {
     @Req() request: Request,
     @Param() params: { commentId: string }
   ): Promise<boolean> {
-
     const result = await this.commandBus.execute<unknown, DeleteCommentResult>(
       new DeleteCommentCommand({
         userId: request.body.userId,
@@ -96,5 +100,30 @@ export class PublicComments {
       throw new NotFoundException();
     }
     return result.isCommentDeleted;
+  }
+
+  @Put(":commentId")
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async updateComment(
+    @Req() request: Request,
+    @Param() params: { commentId: string },
+    @Body() commentInputModel: CommentInputModelType
+  ): Promise<boolean> {
+    const result = await this.commandBus.execute<unknown, UpdateCommentResult>(
+      new UpdateCommentCommand({
+        commentId: params.commentId,
+        userId: request.body.userId,
+        content: commentInputModel.content,
+      })
+    );
+    if (result.isForbidden) {
+      throw new ForbiddenException();
+    }
+    if (!result.isCommentFound) {
+      throw new NotFoundException();
+    }
+
+    return result.isCommentUpdated;
   }
 }

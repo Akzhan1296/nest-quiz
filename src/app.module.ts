@@ -61,6 +61,7 @@ import { CommentsQueryRepository } from "./features/infrstructura/comments/comme
 import { PublicComments } from "./features/roles/public/comments/api/public-comments.controller";
 import { LikeStatusCommentUseCase } from "./features/roles/public/comments/application/use-cases/like-status-comment-use-case";
 import { DeleteCommentUseCase } from "./features/roles/public/comments/application/use-cases/delete-comment-use-case";
+import { UpdateCommentUseCase } from "./features/roles/public/comments/application/use-cases/update-commen-use-case";
 
 const userUseCases = [CreateUserUseCase, DeleteUserUseCase];
 const authUseCases = [
@@ -91,6 +92,7 @@ const commentsUseCases = [
   CreateCommentUseCase,
   LikeStatusCommentUseCase,
   DeleteCommentUseCase,
+  UpdateCommentUseCase,
 ];
 
 @Module({

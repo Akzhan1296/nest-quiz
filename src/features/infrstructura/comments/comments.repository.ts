@@ -6,6 +6,7 @@ import {
   CreateCommentType,
   SetCommentLikeEntityDto,
   UpdateCommentLikeEntityDto,
+  UpdateCommentType,
 } from "./models/comments.models";
 
 export class CommentsRepository {
@@ -59,6 +60,19 @@ export class CommentsRepository {
       [commentId]
     );
 
+    return !!result[1];
+  }
+
+  async updateCommentById(updateCommentDTO: UpdateCommentType) {
+    const { commentId, content } = updateCommentDTO;
+
+    let result = await this.dataSource.query(
+      `UPDATE public."Comments"
+        SET "Content"= $2
+        WHERE "Id" = $1`,
+      [commentId, content]
+    );
+    // result = [[], 1 | 0]
     return !!result[1];
   }
 

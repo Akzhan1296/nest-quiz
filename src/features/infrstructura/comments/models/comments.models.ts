@@ -48,3 +48,8 @@ export type CommentViewModel = {
   };
   postId?: string;
 };
+
+export type UpdateCommentType = {
+  commentId: string;
+  content: string;
+}
