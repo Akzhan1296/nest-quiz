@@ -6,6 +6,8 @@ import {
   NotFoundException,
   Param,
   Query,
+  Req,
+  UseGuards,
 } from "@nestjs/common";
 import { BlogsQueryRepository } from "../../../../infrstructura/blogs/blogs.query.repository";
 import { BlogsQueryType } from "../../../sa/blogs/api/sa.blogs.models";
@@ -15,6 +17,8 @@ import {
 } from "../../../../../common/types";
 import { PostViewModel } from "../../../../infrstructura/posts/posts.models";
 import { PostsQueryRepository } from "../../../../infrstructura/posts/posts.query.repository";
+import { UserIdGuard } from "../../../../../guards/userId.guard";
+import { Request } from "express";
 
 @Controller("blogs")
 export class PublicBlogs {
@@ -30,8 +34,10 @@ export class PublicBlogs {
   }
 
   @Get(":blogId/posts")
+  @UseGuards(UserIdGuard)
   @HttpCode(HttpStatus.OK)
   async getBlogPostsgetBlogById(
+    @Req() request: Request,
     @Query() pageSize: BlogsQueryType,
     @Param() params: { blogId: string }
   ): Promise<PaginationViewModel<PostViewModel>> {
@@ -39,11 +45,14 @@ export class PublicBlogs {
     if (!blog) {
       throw new NotFoundException("posts by blogid not found");
     }
-    return await this.postQuerysRepository.getPostsByBlogId({
-      ...pageSize,
-      skip: pageSize.skip,
-      blogId: params.blogId,
-    } as PageSizeQueryModel);
+    return await this.postQuerysRepository.getPostsByBlogId(
+      {
+        ...pageSize,
+        skip: pageSize.skip,
+        blogId: params.blogId,
+      } as PageSizeQueryModel,
+      request.body.userId
+    );
   }
 
   @Get(":blogId")

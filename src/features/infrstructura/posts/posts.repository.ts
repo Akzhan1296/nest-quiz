@@ -74,7 +74,6 @@ export class PostsRepository {
   }
 
   // like statuses
-
   async getPostLikeData(getPostLikeDto: GetPostLikeDataDTO): Promise<string> {
     const { postId, userId } = getPostLikeDto;
     const result = await this.dataSource.query(

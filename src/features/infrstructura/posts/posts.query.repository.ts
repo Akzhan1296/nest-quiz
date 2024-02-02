@@ -18,22 +18,40 @@ export class PostsQueryRepository {
       blogName: r.BlogName,
       createdAt: r.CreatedAt,
       extendedLikesInfo: {
-        likesCount: 0,
-        dislikesCount: 0,
-        myStatus: "None",
+        likesCount: +result[0].LikesCount,
+        dislikesCount: +result[0].DislikesCount,
+        myStatus: result[0].UserLikeStatus ? result[0].UserLikeStatus : "None",
         newestLikes: [],
       },
     }));
   }
 
-  async getPostByPostId(postId: string): Promise<PostViewModel | null> {
+  async getPostByPostId(
+    postId: string,
+    userId: string | null
+  ): Promise<PostViewModel | null> {
     const result = await this.dataSource.query(
-      `	SELECT p.*, b."BlogName"
-      FROM public."Posts" p
-      LEFT JOIN public."Blogs" b
-      on p."BlogId" = b."Id"
-      WHERE p."Id" = $1`,
-      [postId]
+      `	SELECT
+      p.*,
+      b."BlogName",
+      (SELECT COUNT(*)
+       FROM public."PostsLikesStatuses" postLikes
+       WHERE postLikes."PostId" = p."Id" AND postLikes."LikeStatus" = 'Like') AS "LikesCount",
+       (SELECT COUNT(*)
+       FROM public."PostsLikesStatuses" postLikes
+       WHERE postLikes."PostId" = p."Id" AND postLikes."LikeStatus" = 'Dislike') AS "DislikesCount",
+       (SELECT "LikeStatus"
+        FROM public."PostsLikesStatuses"
+        WHERE "PostId" = p."Id" AND "UserId" = $2) AS "UserLikeStatus"
+        FROM
+         public."Posts" p
+        LEFT JOIN
+          public."Blogs" b ON p."BlogId" = b."Id"
+       WHERE
+      p."Id" = $1;
+    
+      `,
+      [postId, userId]
     );
 
     if (!result.length) return null;
@@ -47,22 +65,32 @@ export class PostsQueryRepository {
       blogName: result[0].BlogName,
       createdAt: result[0].CreatedAt,
       extendedLikesInfo: {
-        likesCount: 0,
-        dislikesCount: 0,
-        myStatus: "None",
+        likesCount: +result[0].LikesCount,
+        dislikesCount: +result[0].DislikesCount,
+        myStatus: result[0].UserLikeStatus ? result[0].UserLikeStatus : "None",
         newestLikes: [],
       },
     };
   }
 
   async getPostsByBlogId(
-    pageParams: PageSizeQueryModel
+    pageParams: PageSizeQueryModel,
+    userId: string | null
   ): Promise<PaginationViewModel<PostViewModel>> {
     const { sortBy, sortDirection, skip, pageSize, blogId } = pageParams;
     const orderBy = transformFirstLetter(sortBy);
 
     let result = await this.dataSource.query(
-      `	SELECT p.*, b."BlogName"
+      `	SELECT p.*, b."BlogName",
+      (SELECT COUNT(*)
+      FROM public."PostsLikesStatuses" postLikes
+      WHERE postLikes."PostId" = p."Id" AND postLikes."LikeStatus" = 'Like') AS "LikesCount",
+      (SELECT COUNT(*)
+      FROM public."PostsLikesStatuses" postLikes
+      WHERE postLikes."PostId" = p."Id" AND postLikes."LikeStatus" = 'Dislike') AS "DislikesCount",
+      (SELECT "LikeStatus"
+      FROM public."PostsLikesStatuses"
+      WHERE "PostId" = p."Id" AND "UserId" = $4) AS "UserLikeStatus"
         FROM public."Posts" p
         LEFT JOIN public."Blogs" b
         ON p."BlogId" = b."Id"
@@ -70,7 +98,7 @@ export class PostsQueryRepository {
         ORDER BY "${orderBy}" ${sortDirection}
         LIMIT $1 OFFSET $2
       `,
-      [pageSize, skip, blogId]
+      [pageSize, skip, blogId, userId]
     );
 
     let count = await this.dataSource.query(
@@ -92,20 +120,31 @@ export class PostsQueryRepository {
   }
 
   async getPosts(
-    pageParams: PageSizeQueryModel
+    pageParams: PageSizeQueryModel,
+    userId: string | null
   ): Promise<PaginationViewModel<PostViewModel>> {
     const { sortBy, sortDirection, skip, pageSize } = pageParams;
     const orderBy = transformFirstLetter(sortBy);
 
     let result = await this.dataSource.query(
-      `	SELECT p.*, b."BlogName"
+      `	SELECT p.*, 
+        b."BlogName", 
+        (SELECT COUNT(*)
+        FROM public."PostsLikesStatuses" postLikes
+        WHERE postLikes."PostId" = p."Id" AND postLikes."LikeStatus" = 'Like') AS "LikesCount",
+        (SELECT COUNT(*)
+        FROM public."PostsLikesStatuses" postLikes
+        WHERE postLikes."PostId" = p."Id" AND postLikes."LikeStatus" = 'Dislike') AS "DislikesCount",
+        (SELECT "LikeStatus"
+        FROM public."PostsLikesStatuses"
+        WHERE "PostId" = p."Id" AND "UserId" = $3) AS "UserLikeStatus"
         FROM public."Posts" p
         LEFT JOIN public."Blogs" b
         on p."BlogId" = b."Id"
         ORDER BY "${orderBy}" ${sortDirection}
         LIMIT $1 OFFSET $2
       `,
-      [pageSize, skip]
+      [pageSize, skip, userId]
     );
 
     let count = await this.dataSource.query(
