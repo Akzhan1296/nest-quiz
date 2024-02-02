@@ -160,7 +160,10 @@ export class SABlogsController {
     if (!result.isBlogFound) throw new NotFoundException();
 
     if (result.isPostCreated) {
-      const postViewModel = this.postQuerysRepository.getPostByPostId(result.createdPostId);
+      const postViewModel = this.postQuerysRepository.getPostByPostId(
+        result.createdPostId,
+        null
+      );
       return postViewModel;
     }
   }

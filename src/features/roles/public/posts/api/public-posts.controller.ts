@@ -24,6 +24,7 @@ import { CreateCommentCommand } from "../../comments/application/use-cases/creat
 import { Request } from "express";
 import { CommentsQueryRepository } from "../../../../infrstructura/comments/comments.query.repository";
 import { HandlePostLikesCommand } from "../application/use-cases/handle-post-like-use-case";
+import { UserIdGuard } from "../../../../../guards/userId.guard";
 
 @Controller("posts")
 export class PublicPosts {
@@ -42,9 +43,16 @@ export class PublicPosts {
   }
 
   @Get(":postId")
+  @UseGuards(UserIdGuard)
   @HttpCode(HttpStatus.OK)
-  async getPostById(@Param() params: { postId: string }) {
-    const post = await this.postQuerysRepository.getPostByPostId(params.postId);
+  async getPostById(
+    @Req() request: Request,
+    @Param() params: { postId: string }
+  ) {
+    const post = await this.postQuerysRepository.getPostByPostId(
+      params.postId,
+      request.body.userId
+    );
     if (!post) {
       throw new NotFoundException("post by id not found");
     }
