@@ -47,6 +47,7 @@ import { CreatePostBySACommand } from "../application/use-cases/posts/sa.create-
 import { PostsQueryRepository } from "../../../../infrstructura/posts/posts.query.repository";
 import { UpdatePostBySACommand } from "../application/use-cases/posts/sa.update-post.use-case";
 import { DeletePostBySACommand } from "../application/use-cases/posts/sa.delete-post.use-case";
+import { UserIdGuard } from "../../../../../guards/userId.guard";
 
 @UseGuards(AuthBasicGuard)
 @Controller("sa/blogs")
@@ -126,7 +127,9 @@ export class SABlogsController {
   // get blog posts
   @HttpCode(HttpStatus.OK)
   @Get(":blogId/posts")
+  @UseGuards(UserIdGuard)
   async getBlogPosts(
+    @Req() request: Request,
     @Query() pageSize: BlogsQueryType,
     @Param() params: { blogId: string }
   ): Promise<PaginationViewModel<PostViewModel>> {
@@ -134,11 +137,14 @@ export class SABlogsController {
     if (!blog) {
       throw new NotFoundException("posts by blogid not found");
     }
-    return await this.postQuerysRepository.getPostsByBlogId({
-      ...pageSize,
-      skip: pageSize.skip,
-      blogId: params.blogId,
-    } as PageSizeQueryModel);
+    return await this.postQuerysRepository.getPostsByBlogId(
+      {
+        ...pageSize,
+        skip: pageSize.skip,
+        blogId: params.blogId,
+      } as PageSizeQueryModel,
+      request.body.userId
+    );
   }
 
   //create post by blog id

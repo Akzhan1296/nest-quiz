@@ -35,11 +35,16 @@ export class PublicPosts {
   ) {}
 
   @Get("")
+  @UseGuards(UserIdGuard)
   @HttpCode(HttpStatus.OK)
   async getPosts(
+    @Req() request: Request,
     @Query() pageSize: BlogsQueryType
   ): Promise<PaginationViewModel<PostViewModel>> {
-    return await this.postQuerysRepository.getPosts(pageSize);
+    return await this.postQuerysRepository.getPosts(
+      pageSize,
+      request.body.userId
+    );
   }
 
   @Get(":postId")
