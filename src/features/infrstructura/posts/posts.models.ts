@@ -36,3 +36,20 @@ export type CreatePostDTO = {
 export type UpdatePostDTO = Omit<CreatePostDTO, "blogId" | "createdAt"> & {
   postId: string;
 };
+
+export type GetPostLikeDataDTO = {
+  userId: string;
+  postId: string;
+};
+
+export type SetPostLikeEntityDto = {
+  userId: string;
+  likeStatus: string;
+  postId: string;
+  createdAt: Date;
+};
+
+export type UpdatePostLikeEntityDto = {
+  postLikeEntityId: string;
+  postLikeStatus: string;
+};

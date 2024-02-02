@@ -78,12 +78,12 @@ export class CommentsRepository {
 
   // comments likes
   async getCommentLikeData(
-    commentLikeDto: GetCommentLikeDataDTO
+    getCommentLikeDto: GetCommentLikeDataDTO
   ): Promise<null | string> {
-    const { commentId, userId } = commentLikeDto;
+    const { commentId, userId } = getCommentLikeDto;
     const result = await this.dataSource.query(
       `    
-      SELECT "Id", "CommentId", "LikeStatus", "PostId", "UserId", "CreatedAt"
+      SELECT "Id"
       FROM public."CommentLikesStatuses"
       WHERE "CommentId" = $1 AND "UserId" = $2`,
       [commentId, userId]
@@ -104,10 +104,10 @@ export class CommentsRepository {
   }
 
   async createCommentLikeEntity(
-    commentLikeEntityDto: SetCommentLikeEntityDto
+    setCommentLikeEntityDto: SetCommentLikeEntityDto
   ): Promise<string> {
     const { commentId, createdAt, likeStatus, postId, userId } =
-      commentLikeEntityDto;
+      setCommentLikeEntityDto;
 
     const result = await this.dataSource.query(
       `INSERT INTO public."CommentLikesStatuses"(
@@ -120,7 +120,9 @@ export class CommentsRepository {
     return result[0].Id;
   }
 
-  async updateCommentLikeEntity(updateCommentLike: UpdateCommentLikeEntityDto) {
+  async updateCommentLikeEntity(
+    updateCommentLike: UpdateCommentLikeEntityDto
+  ): Promise<boolean> {
     const { likeEntityId, likeStatus } = updateCommentLike;
 
     let result = await this.dataSource.query(

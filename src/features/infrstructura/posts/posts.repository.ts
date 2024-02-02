@@ -1,6 +1,13 @@
 import { InjectDataSource } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
-import { CreatePostDTO, OnlyPostDataView, UpdatePostDTO } from "./posts.models";
+import {
+  CreatePostDTO,
+  GetPostLikeDataDTO,
+  OnlyPostDataView,
+  SetPostLikeEntityDto,
+  UpdatePostDTO,
+  UpdatePostLikeEntityDto,
+} from "./posts.models";
 
 export class PostsRepository {
   constructor(@InjectDataSource() protected dataSource: DataSource) {}
@@ -64,5 +71,72 @@ export class PostsRepository {
     );
 
     return !!result[1];
+  }
+
+  // like statuses
+
+  async getPostLikeData(getPostLikeDto: GetPostLikeDataDTO): Promise<string> {
+    const { postId, userId } = getPostLikeDto;
+    const result = await this.dataSource.query(
+      `    
+      SELECT "Id"
+      FROM public."PostsLikesStatuses"
+      WHERE "PostId" = $1 AND "UserId" = $2`,
+      [postId, userId]
+    );
+    if (result.length === 0) return null;
+    return result[0].Id;
+  }
+
+  async isAnyPostLikesData(postId: string): Promise<boolean> {
+    const result = await this.dataSource.query(
+      `    
+      SELECT "Id", "CommentId", "LikeStatus", "PostId", "UserId", "CreatedAt"
+      FROM public."PostsLikesStatuses"
+      WHERE "PostId" = $1`,
+      [postId]
+    );
+    return result.length > 0 ? true : false;
+  }
+
+  async createPostLikeData(
+    setPostLikeEntityDto: SetPostLikeEntityDto
+  ): Promise<string> {
+    const { createdAt, likeStatus, postId, userId } = setPostLikeEntityDto;
+
+    const result = await this.dataSource.query(
+      `INSERT INTO public."PostsLikesStatuses"(
+        "PostId", "UserId", "CreatedAt", "LikeStatus")
+          VALUES ($1, $2, $3, $4)
+          RETURNING "Id"`,
+      [postId, userId, createdAt, likeStatus]
+    );
+
+    return result[0].Id;
+  }
+
+  async updatePostLikeEntity(
+    updatePostLikeDto: UpdatePostLikeEntityDto
+  ): Promise<boolean> {
+    const { postLikeEntityId, postLikeStatus } = updatePostLikeDto;
+
+    let result = await this.dataSource.query(
+      `UPDATE public."PostsLikesStatuses"
+      SET "LikeStatus"= $2
+      WHERE "Id" = $1`,
+      [postLikeEntityId, postLikeStatus]
+    );
+    // result = [[], 1 | 0]
+    return !!result[1];
+  }
+
+  async deletePostLikeEntities(postId: string) {
+    return await this.dataSource.query(
+      ` 
+	      DELETE FROM public."PostsLikesStatuses"
+	      WHERE "PostId" = $1
+        `,
+      [postId]
+    );
   }
 }

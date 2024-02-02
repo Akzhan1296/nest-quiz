@@ -51,8 +51,6 @@ export class LikeStatusCommentUseCase
       } catch (err) {
         throw new Error(`Something went product with like handle ${err}`);
       }
-
-      result.isLikeStatusCreated = true;
     } else {
       // if we have for current user comment like entity, just update like status
       const isUpdated = await this.commentsRepository.updateCommentLikeEntity({

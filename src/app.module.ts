@@ -62,6 +62,7 @@ import { PublicComments } from "./features/roles/public/comments/api/public-comm
 import { LikeStatusCommentUseCase } from "./features/roles/public/comments/application/use-cases/like-status-comment-use-case";
 import { DeleteCommentUseCase } from "./features/roles/public/comments/application/use-cases/delete-comment-use-case";
 import { UpdateCommentUseCase } from "./features/roles/public/comments/application/use-cases/update-commen-use-case";
+import { LikeStatusPostUseCase } from "./features/roles/public/posts/application/use-cases/handle-post-like-use-case";
 
 const userUseCases = [CreateUserUseCase, DeleteUserUseCase];
 const authUseCases = [
@@ -78,16 +79,17 @@ const deviceUseCases = [
   DeleteCurrentDeviceUseCase,
   DeleteDevicesExceptCurrentUseCase,
 ];
-const saBlogs = [
+const saBlogsUseCases = [
   CreateBlogBySAUseCase,
   DeleteBlogBySAUseCase,
   UpdateBlogBySAUseCase,
 ];
-const saPosts = [
+const saPostsUseCases = [
   CreatePostBySAUseCase,
   DeletePostBySAUseCase,
   UpdatePostBySAUseCase,
 ];
+const publicPostsUseCases = [LikeStatusPostUseCase];
 const commentsUseCases = [
   CreateCommentUseCase,
   LikeStatusCommentUseCase,
@@ -148,9 +150,10 @@ const commentsUseCases = [
     ...userUseCases,
     ...authUseCases,
     ...deviceUseCases,
-    ...saBlogs,
-    ...saPosts,
+    ...saBlogsUseCases,
+    ...saPostsUseCases,
     ...commentsUseCases,
+    ...publicPostsUseCases,
   ],
 })
 export class AppModule {}
