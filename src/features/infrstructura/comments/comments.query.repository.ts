@@ -9,9 +9,6 @@ export class CommentsQueryRepository {
     commentId: string,
     userId: string | null
   ): Promise<CommentViewModel | null> {
-    console.log("commentId", commentId);
-    console.log("userId", userId);
-
     const result = await this.dataSource.query(
       `    
       SELECT "Id", "Content", "UserId", "UserLogin", "CreatedAt", "PostId",
@@ -44,5 +41,9 @@ export class CommentsQueryRepository {
         myStatus: result[0].UserStatus ? result[0].UserStatus : "None",
       },
     };
+  }
+
+  async getCommentsByPostId(postId: string, userId: string) {
+    return [];
   }
 }
