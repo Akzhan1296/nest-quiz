@@ -67,10 +67,6 @@ export class PostsQueryRepository {
       [postId, userId]
     );
 
-    console.log(!!result[0].NewestLikeCreatedAt
-      ? result[0].NewestLikeCreatedAt
-      : [],)
-
     if (!result.length) return null;
 
     return {
