@@ -21,7 +21,7 @@ export class PostsQueryRepository {
         likesCount: +r.LikesCount,
         dislikesCount: +r.DislikesCount,
         myStatus: r.UserLikeStatus ? r.UserLikeStatus : "None",
-        newestLikes: r.NewestLikeCreatedAt,
+        newestLikes: !!r.NewestLikeCreatedAt ? r.NewestLikeCreatedAt : [],
       },
     }));
   }
@@ -50,8 +50,8 @@ export class PostsQueryRepository {
     ))
    FROM (
      SELECT *
-     FROM public."PostsLikesStatuses"
-     WHERE "PostId" = p."Id"
+     FROM public."PostsLikesStatuses" postLikes
+     WHERE postLikes."PostId" = p."Id" AND postLikes."LikeStatus" = 'Like'
      ORDER BY "CreatedAt" DESC
      LIMIT 3
    ) AS posts_likes
@@ -67,6 +67,10 @@ export class PostsQueryRepository {
       [postId, userId]
     );
 
+    console.log(!!result[0].NewestLikeCreatedAt
+      ? result[0].NewestLikeCreatedAt
+      : [],)
+
     if (!result.length) return null;
 
     return {
@@ -81,7 +85,9 @@ export class PostsQueryRepository {
         likesCount: +result[0].LikesCount,
         dislikesCount: +result[0].DislikesCount,
         myStatus: result[0].UserLikeStatus ? result[0].UserLikeStatus : "None",
-        newestLikes: result[0].NewestLikeCreatedAt,
+        newestLikes: !!result[0].NewestLikeCreatedAt
+          ? result[0].NewestLikeCreatedAt
+          : [],
       },
     };
   }
@@ -111,8 +117,8 @@ export class PostsQueryRepository {
       ))
      FROM (
        SELECT *
-       FROM public."PostsLikesStatuses"
-       WHERE "PostId" = p."Id"
+       FROM public."PostsLikesStatuses" postLikes
+       WHERE postLikes."PostId" = p."Id" AND postLikes."LikeStatus" = 'Like'
        ORDER BY "CreatedAt" DESC
        LIMIT 3
      ) AS posts_likes
@@ -171,8 +177,8 @@ export class PostsQueryRepository {
         ))
        FROM (
          SELECT *
-         FROM public."PostsLikesStatuses"
-         WHERE "PostId" = p."Id"
+         FROM public."PostsLikesStatuses" postLikes
+         WHERE postLikes."PostId" = p."Id" AND postLikes."LikeStatus" = 'Like'
          ORDER BY "CreatedAt" DESC
          LIMIT 3
        ) AS posts_likes
