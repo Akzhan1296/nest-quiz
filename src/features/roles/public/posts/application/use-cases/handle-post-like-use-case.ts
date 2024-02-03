@@ -14,7 +14,7 @@ export class LikeStatusPostUseCase
   constructor(private postsRepository: PostsRepository) {}
 
   async execute(command: HandlePostLikesCommand) {
-    const { postId, userId, postLikeStatus } = command.likePostDto;
+    const { postId, userId, postLikeStatus, userLogin } = command.likePostDto;
 
     const result: HandlePostLikeResult = {
       isPostFound: false,
@@ -43,6 +43,7 @@ export class LikeStatusPostUseCase
           likeStatus: postLikeStatus,
           postId: postData.id,
           createdAt: new Date(),
+          userLogin: userLogin
         });
 
         result.isLikeStatusCreated = true;

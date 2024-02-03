@@ -64,6 +64,24 @@ export class PublicPosts {
     return post;
   }
 
+  @Get(":postId")
+  @UseGuards(UserIdGuard)
+  @HttpCode(HttpStatus.OK)
+  async getCommentsPostById(
+    @Req() request: Request,
+    @Param() params: { postId: string }
+  ) {
+    const comments = await this.commentsQueryRepository.getCommentsByPostId(
+      params.postId,
+      request.body.userId
+    );
+    if (!comments) {
+      throw new NotFoundException("comment by id not found");
+    }
+    return comments;
+  }
+
+
   // like-status
   @Put(":postId/like-status")
   @UseGuards(AuthGuard)
@@ -78,6 +96,7 @@ export class PublicPosts {
         postId: params.postId,
         postLikeStatus: postLikeStatus.likeStatus,
         userId: request.body.userId,
+        userLogin: request.body.userLogin
       })
     );
 

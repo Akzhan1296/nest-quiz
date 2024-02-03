@@ -101,14 +101,14 @@ export class PostsRepository {
   async createPostLikeData(
     setPostLikeEntityDto: SetPostLikeEntityDto
   ): Promise<string> {
-    const { createdAt, likeStatus, postId, userId } = setPostLikeEntityDto;
+    const { createdAt, likeStatus, postId, userId, userLogin } = setPostLikeEntityDto;
 
     const result = await this.dataSource.query(
       `INSERT INTO public."PostsLikesStatuses"(
-        "PostId", "UserId", "CreatedAt", "LikeStatus")
-          VALUES ($1, $2, $3, $4)
+        "PostId", "UserId", "CreatedAt", "LikeStatus", "UserLogin")
+          VALUES ($1, $2, $3, $4, $5)
           RETURNING "Id"`,
-      [postId, userId, createdAt, likeStatus]
+      [postId, userId, createdAt, likeStatus, userLogin]
     );
 
     return result[0].Id;
