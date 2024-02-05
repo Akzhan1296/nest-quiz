@@ -166,19 +166,20 @@ export class PostsQueryRepository {
         (SELECT "LikeStatus"
         FROM public."PostsLikesStatuses"
         WHERE "PostId" = p."Id" AND "UserId" = $3) AS "UserLikeStatus",
-        (SELECT json_agg(json_build_object(
-          'addedAt', posts_likes."CreatedAt",
-          'userId', posts_likes."UserId",
-          'login', posts_likes."UserLogin"
-        ))
-       FROM (
-         SELECT *
-         FROM public."PostsLikesStatuses" postLikes
-         WHERE postLikes."PostId" = p."Id" AND postLikes."LikeStatus" = 'Like'
-         ORDER BY "CreatedAt" DESC
-         LIMIT 3
-       ) AS posts_likes
-      ) AS "NewestLikeCreatedAt"
+        (
+          SELECT json_agg(json_build_object(
+            'addedAt', posts_likes."CreatedAt",
+            'userId', posts_likes."UserId",
+            'login', posts_likes."UserLogin"
+          ))
+          FROM (
+            SELECT *
+            FROM public."PostsLikesStatuses" postLikes
+            WHERE postLikes."PostId" = p."Id" AND postLikes."LikeStatus" = 'Like'
+            ORDER BY postLikes."CreatedAt" DESC
+            LIMIT 3
+          ) AS posts_likes
+        ) AS "NewestLikeCreatedAt"        
         FROM public."Posts" p
         LEFT JOIN public."Blogs" b
         on p."BlogId" = b."Id"
