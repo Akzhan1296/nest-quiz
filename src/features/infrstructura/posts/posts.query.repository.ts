@@ -8,8 +8,7 @@ import { Paginated } from "../../../common/paginated";
 export class PostsQueryRepository {
   constructor(@InjectDataSource() protected dataSource: DataSource) {}
 
-  private getMappedPostItems(result, newestLikes): PostViewModel[] {
-    console.log(newestLikes);
+  private getMappedPostItems(result): PostViewModel[] {
     return result.map((r) => ({
       id: r.Id,
       title: r.Title,
@@ -22,13 +21,7 @@ export class PostsQueryRepository {
         likesCount: +r.LikesCount,
         dislikesCount: +r.DislikesCount,
         myStatus: r.UserLikeStatus ? r.UserLikeStatus : "None",
-        newestLikes: !!newestLikes
-          ? newestLikes.map((likeEntity) => ({
-              addedAt: likeEntity.CreatedAt,
-              userId: likeEntity.UserId,
-              login: likeEntity.UserLogin,
-            }))
-          : [],
+        newestLikes: !!r.NewestLikeCreatedAt ? r.NewestLikeCreatedAt : [],
       },
     }));
   }
@@ -102,83 +95,48 @@ FROM (
     const { sortBy, sortDirection, skip, pageSize, blogId } = pageParams;
     const orderBy = transformFirstLetter(sortBy);
 
-    // let result = await this.dataSource.query(
-    //   `	SELECT p.*, b."BlogName",
-    //   (SELECT COUNT(*)
-    //   FROM public."PostsLikesStatuses" postLikes
-    //   WHERE postLikes."PostId" = p."Id" AND postLikes."LikeStatus" = 'Like') AS "LikesCount",
-    //   (SELECT COUNT(*)
-    //   FROM public."PostsLikesStatuses" postLikes
-    //   WHERE postLikes."PostId" = p."Id" AND postLikes."LikeStatus" = 'Dislike') AS "DislikesCount",
-    //   (SELECT "LikeStatus"
-    //   FROM public."PostsLikesStatuses"
-    //   WHERE "PostId" = p."Id" AND "UserId" = $4) AS "UserLikeStatus",
-    //   (SELECT json_agg(json_build_object(
-    //     (SELECT json_agg(json_build_object(
-    //       'addedAt', "CreatedAt",
-    //       'userId', "UserId",
-    //       'login', "UserLogin"
-    //   ))
-    //   FROM (
-    //       SELECT DISTINCT ON ("UserId", "CreatedAt") "CreatedAt", "UserId", "UserLogin"
-    //       FROM public."PostsLikesStatuses"
-    //       WHERE "PostId" = p."Id" AND "LikeStatus" = 'Like'
-    //       ORDER BY "CreatedAt" DESC
-    //       LIMIT 3
-    //   ) AS subquery
-    //   ) AS "NewestLikeCreatedAt"
-    //     FROM public."Posts" p
-    //     LEFT JOIN public."Blogs" b
-    //     ON p."BlogId" = b."Id"
-    //     WHERE p."BlogId" = $3
-    //     ORDER BY "${orderBy}" ${sortDirection}
-    //     LIMIT $1 OFFSET $2
-    //   `,
-    //   [pageSize, skip, blogId, userId]
-    // );
-
     let result = await this.dataSource.query(
-      `	SELECT 
-      p.*, 
-      b."BlogName",
-      -- Количество лайков для каждого поста
-      (SELECT COUNT(*)
-       FROM public."PostsLikesStatuses" postLikes
-       WHERE postLikes."PostId" = p."Id" AND postLikes."LikeStatus" = 'Like') AS "LikesCount",
-      -- Количество дизлайков для каждого поста
-      (SELECT COUNT(*)
-       FROM public."PostsLikesStatuses" postLikes
-       WHERE postLikes."PostId" = p."Id" AND postLikes."LikeStatus" = 'Dislike') AS "DislikesCount",
-      -- Статус лайка от конкретного пользователя
-      (SELECT "LikeStatus"
-       FROM public."PostsLikesStatuses"
-       WHERE "PostId" = p."Id" AND "UserId" = $4) AS "UserLikeStatus",
-      -- Три последних лайка в виде массива объектов
-      (SELECT json_agg(json_build_object(
-              'addedAt', "CreatedAt",
-              'userId', "UserId",
-              'login', "UserLogin"
-          ))
-      FROM (
-          SELECT DISTINCT ON ("UserId", "CreatedAt") "CreatedAt", "UserId", "UserLogin"
-          FROM public."PostsLikesStatuses"
-          WHERE "PostId" = p."Id" AND "LikeStatus" = 'Like'
-          ORDER BY "CreatedAt" DESC
-          LIMIT 3
-      ) AS subquery
-      ) AS "NewestLikeCreatedAt"
-  FROM 
-      public."Posts" p
-  LEFT JOIN 
-      public."Blogs" b ON p."BlogId" = b."Id"
-  WHERE 
-      p."BlogId" = $3
-  ORDER BY 
-      "${orderBy}" ${sortDirection}
-  LIMIT 
-      $1 OFFSET $2
-  
-      `,
+      `	SELECT
+        p.*,
+        b."BlogName",
+        -- Количество лайков для каждого поста
+        (SELECT COUNT(*)
+         FROM public."PostsLikesStatuses" postLikes
+         WHERE postLikes."PostId" = p."Id" AND postLikes."LikeStatus" = 'Like') AS "LikesCount",
+        -- Количество дизлайков для каждого поста
+        (SELECT COUNT(*)
+         FROM public."PostsLikesStatuses" postLikes
+         WHERE postLikes."PostId" = p."Id" AND postLikes."LikeStatus" = 'Dislike') AS "DislikesCount",
+        -- Статус лайка от конкретного пользователя
+        (SELECT "LikeStatus"
+         FROM public."PostsLikesStatuses"
+         WHERE "PostId" = p."Id" AND "UserId" = $4) AS "UserLikeStatus",
+        -- Три последних лайка в виде массива объектов
+        (SELECT json_agg(json_build_object(
+                'addedAt', "CreatedAt",
+                'userId', "UserId",
+                'login', "UserLogin"
+            ))
+        FROM (
+            SELECT DISTINCT ON ("UserId", "CreatedAt") "CreatedAt", "UserId", "UserLogin"
+            FROM public."PostsLikesStatuses"
+            WHERE "PostId" = p."Id" AND "LikeStatus" = 'Like'
+            ORDER BY "CreatedAt" DESC
+            LIMIT 3
+        ) AS subquery
+        ) AS "NewestLikeCreatedAt"
+    FROM
+        public."Posts" p
+    LEFT JOIN
+        public."Blogs" b ON p."BlogId" = b."Id"
+    WHERE
+        p."BlogId" = $3
+    ORDER BY
+        "${orderBy}" ${sortDirection}
+    LIMIT
+        $1 OFFSET $2
+
+        `,
       [pageSize, skip, blogId, userId]
     );
 
@@ -196,7 +154,7 @@ FROM (
         ...pageParams,
         totalCount: +count[0].count,
       },
-      this.getMappedPostItems(result, [])
+      this.getMappedPostItems(result)
     );
   }
 
@@ -218,7 +176,20 @@ FROM (
         WHERE postLikes."PostId" = p."Id" AND postLikes."LikeStatus" = 'Dislike') AS "DislikesCount",
         (SELECT "LikeStatus"
         FROM public."PostsLikesStatuses"
-        WHERE "PostId" = p."Id" AND "UserId" = $3) AS "UserLikeStatus"
+        WHERE "PostId" = p."Id" AND "UserId" = $3) AS "UserLikeStatus",
+        (SELECT json_agg(json_build_object(
+          'addedAt', "CreatedAt",
+          'userId', "UserId",
+          'login', "UserLogin"
+      ))
+  FROM (
+      SELECT DISTINCT ON ("UserId", "CreatedAt") "CreatedAt", "UserId", "UserLogin"
+      FROM public."PostsLikesStatuses"
+      WHERE "PostId" = p."Id" AND "LikeStatus" = 'Like'
+      ORDER BY "CreatedAt" DESC
+      LIMIT 3
+  ) AS subquery
+  ) AS "NewestLikeCreatedAt"
         FROM public."Posts" p
         LEFT JOIN public."Blogs" b
         on p."BlogId" = b."Id"
@@ -235,20 +206,12 @@ FROM (
     `
     );
 
-    const newestLikes = await this.dataSource.query(`SELECT r.*, u.*
-    FROM public."Posts" r
-    LEFT JOIN public."PostsLikesStatuses" u
-    on r."Id" = u."PostId"
-    WHERE "LikeStatus" = 'Like'
-    ORDER BY u."CreatedAt" DESC
-    LIMIT 3`);
-
     return Paginated.transformPagination<PostViewModel>(
       {
         ...pageParams,
         totalCount: +count[0].count,
       },
-      this.getMappedPostItems(result, newestLikes)
+      this.getMappedPostItems(result)
     );
   }
 }
