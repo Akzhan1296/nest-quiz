@@ -76,14 +76,21 @@ export class PublicPosts {
     @Query() pageSize: CommentsQueryType,
     @Param() params: { postId: string }
   ) {
+    let post = await this.postQuerysRepository.getPostByPostId(
+      params.postId,
+      request.body.userId
+    );
+
+    if (!post) {
+      throw new NotFoundException("comment by id not found");
+    }
+
     const comments = await this.commentsQueryRepository.getCommentsByPostId(
       params.postId,
       request.body.userId,
       pageSize
     );
-    if (!comments) {
-      throw new NotFoundException("comment by id not found");
-    }
+
     return comments;
   }
 
