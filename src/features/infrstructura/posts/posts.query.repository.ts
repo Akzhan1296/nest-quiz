@@ -177,6 +177,8 @@ FROM (
         (SELECT "LikeStatus"
         FROM public."PostsLikesStatuses"
         WHERE "PostId" = p."Id" AND "UserId" = $3) AS "UserLikeStatus",
+
+
         (SELECT json_agg(json_build_object(
           'addedAt', "CreatedAt",
           'userId', "UserId",
@@ -190,6 +192,9 @@ FROM (
       LIMIT 3
   ) AS subquery
   ) AS "NewestLikeCreatedAt"
+
+
+
         FROM public."Posts" p
         LEFT JOIN public."Blogs" b
         on p."BlogId" = b."Id"
@@ -215,3 +220,5 @@ FROM (
     );
   }
 }
+
+// nest -> typeORM  (object relation mapper (JSON convert to object)) -> postgress (СУБД) -> postgressSQL (DB)

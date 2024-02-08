@@ -1,4 +1,5 @@
 import { IsIn, MaxLength, MinLength } from "class-validator";
+import { PageSizeDTO } from "../../../../../common/types";
 
 export class CreateCommentInputModel {
   @MinLength(20)
@@ -10,4 +11,9 @@ export type Likes = (typeof likes)[number];
 export class PostLikeStatus {
   @IsIn(likes)
   likeStatus: Likes;
+}
+
+export class CommentsQueryType extends PageSizeDTO {
+  sortBy = "createdAt";
+  sortDirection = "desc";
 }
