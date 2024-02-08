@@ -1,6 +1,9 @@
 import { InjectDataSource } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
 import { CommentViewModel, CreateCommentType } from "./models/comments.models";
+import { PageSizeQueryModel } from "../../../common/types";
+import { transformFirstLetter } from "../../../utils/upperFirstLetter";
+import { Paginated } from "../../../common/paginated";
 
 export class CommentsQueryRepository {
   constructor(@InjectDataSource() protected dataSource: DataSource) {}
@@ -43,7 +46,63 @@ export class CommentsQueryRepository {
     };
   }
 
-  async getCommentsByPostId(postId: string, userId: string) {
-    return [];
+  async getCommentsByPostId(
+    postId: string,
+    userId: string | null,
+    pageParams: PageSizeQueryModel
+  ) {
+    const { sortBy, sortDirection, skip, pageSize } = pageParams;
+    const orderBy = transformFirstLetter(sortBy);
+
+    const result = await this.dataSource.query(
+      `    
+      SELECT c.*,
+      (SELECT COUNT(*)
+      FROM public."CommentLikesStatuses" commentsikes
+      WHERE commentsikes."CommentId" = c."Id" AND commentsikes."LikeStatus" = 'Like') AS "LikesCount",
+      (SELECT COUNT(*)
+      FROM public."CommentLikesStatuses" commentsikes
+      WHERE commentsikes."CommentId" = c."Id" AND commentsikes."LikeStatus" = 'Dislike') AS "DislikesCount",
+      (SELECT "LikeStatus" 
+      FROM public."CommentLikesStatuses" commentsikes
+      WHERE commentsikes."CommentId" = c."Id" AND commentsikes."UserId" = $4 AND commentsikes."PostId" = $1) as "UserStatus"
+  FROM public."Comments" as c
+  WHERE c."PostId" = $1
+  ORDER BY "${orderBy}" ${sortDirection}
+  LIMIT $2 OFFSET $3`,
+      [postId, pageSize, skip, userId]
+    );
+
+    let count = await this.dataSource.query(
+      `
+      SELECT count (*)
+      FROM public."Comments"
+      WHERE "PostId" = $1
+    `,
+      [postId]
+    );
+
+    const mappedComments = result.map((comment) => ({
+      id: comment.Id,
+      content: comment.Content,
+      commentatorInfo: {
+        userId: comment.UserId,
+        userLogin: comment.UserLogin,
+      },
+      createdAt: comment.CreatedAt,
+      likesInfo: {
+        likesCount: +comment.LikesCount,
+        dislikesCount: +comment.DislikesCount,
+        myStatus: comment.UserStatus ? comment.UserStatus : "None",
+      },
+    }));
+
+    return Paginated.transformPagination(
+      {
+        ...pageParams,
+        totalCount: +count[0].count,
+      },
+      mappedComments
+    );
   }
 }

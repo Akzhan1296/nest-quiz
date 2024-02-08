@@ -18,7 +18,11 @@ import { PaginationViewModel } from "../../../../../common/types";
 import { PostViewModel } from "../../../../infrstructura/posts/posts.models";
 import { PostsQueryRepository } from "../../../../infrstructura/posts/posts.query.repository";
 import { AuthGuard } from "../../../../../guards/auth.guard";
-import { CreateCommentInputModel, PostLikeStatus } from "./input.models";
+import {
+  CommentsQueryType,
+  CreateCommentInputModel,
+  PostLikeStatus,
+} from "./input.models";
 import { CommandBus } from "@nestjs/cqrs";
 import { CreateCommentCommand } from "../../comments/application/use-cases/create-comment-use-case";
 import { Request } from "express";
@@ -64,23 +68,24 @@ export class PublicPosts {
     return post;
   }
 
-  @Get(":postId")
+  @Get(":postId/comments")
   @UseGuards(UserIdGuard)
   @HttpCode(HttpStatus.OK)
   async getCommentsPostById(
     @Req() request: Request,
+    @Query() pageSize: CommentsQueryType,
     @Param() params: { postId: string }
   ) {
     const comments = await this.commentsQueryRepository.getCommentsByPostId(
       params.postId,
-      request.body.userId
+      request.body.userId,
+      pageSize
     );
     if (!comments) {
       throw new NotFoundException("comment by id not found");
     }
     return comments;
   }
-
 
   // like-status
   @Put(":postId/like-status")
@@ -96,7 +101,7 @@ export class PublicPosts {
         postId: params.postId,
         postLikeStatus: postLikeStatus.likeStatus,
         userId: request.body.userId,
-        userLogin: request.body.userLogin
+        userLogin: request.body.userLogin,
       })
     );
 
