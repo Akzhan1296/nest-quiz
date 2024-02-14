@@ -1,3 +1,5 @@
+import { Likes } from "../../../../../common/types";
+
 export type CreateCommentDTO = {
   userLogin: string;
   userId: string;
@@ -13,7 +15,7 @@ export type CreateCommentResult = {
 
 export type HandleLikeCommentDTO = {
   commentId: string;
-  commentLikeStatus: "Like" | "Dislike" | "None";
+  commentLikeStatus: Likes
   userId: string;
 };
 

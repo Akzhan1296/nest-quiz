@@ -1,8 +1,5 @@
 import { IsIn, MaxLength, MinLength } from "class-validator";
-
-const likes = ["None", "Like", "Dislike"] as const;
-export type Likes = (typeof likes)[number];
-
+import { Likes, likes } from "../../../../../common/types";
 export class CommentLikeStatus {
   @IsIn(likes)
   likeStatus: Likes;

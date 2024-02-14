@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  ForbiddenException,
   Get,
   HttpCode,
   HttpStatus,
@@ -14,7 +13,7 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { BlogsQueryType } from "../../../sa/blogs/api/sa.blogs.models";
-import { PaginationViewModel } from "../../../../../common/types";
+import { PaginationViewModel, ValidId } from "../../../../../common/types";
 import { PostViewModel } from "../../../../infrstructura/posts/posts.models";
 import { PostsQueryRepository } from "../../../../infrstructura/posts/posts.query.repository";
 import { AuthGuard } from "../../../../../guards/auth.guard";
@@ -29,6 +28,7 @@ import { Request } from "express";
 import { CommentsQueryRepository } from "../../../../infrstructura/comments/comments.query.repository";
 import { HandlePostLikesCommand } from "../application/use-cases/handle-post-like-use-case";
 import { UserIdGuard } from "../../../../../guards/userId.guard";
+import { CommentViewModel } from "../../../../infrstructura/comments/models/comments.models";
 
 @Controller("posts")
 export class PublicPosts {
@@ -51,15 +51,13 @@ export class PublicPosts {
     );
   }
 
-  @Get(":postId")
+  // postId
+  @Get(":id")
   @UseGuards(UserIdGuard)
   @HttpCode(HttpStatus.OK)
-  async getPostById(
-    @Req() request: Request,
-    @Param() params: { postId: string }
-  ) {
+  async getPostById(@Req() request: Request, @Param() params: ValidId) {
     const post = await this.postQuerysRepository.getPostByPostId(
-      params.postId,
+      params.id,
       request.body.userId
     );
     if (!post) {
@@ -68,16 +66,17 @@ export class PublicPosts {
     return post;
   }
 
-  @Get(":postId/comments")
+  // postId
+  @Get(":id/comments")
   @UseGuards(UserIdGuard)
   @HttpCode(HttpStatus.OK)
   async getCommentsPostById(
     @Req() request: Request,
     @Query() pageSize: CommentsQueryType,
-    @Param() params: { postId: string }
+    @Param() params: ValidId
   ) {
     let post = await this.postQuerysRepository.getPostByPostId(
-      params.postId,
+      params.id,
       request.body.userId
     );
 
@@ -86,7 +85,7 @@ export class PublicPosts {
     }
 
     const comments = await this.commentsQueryRepository.getCommentsByPostId(
-      params.postId,
+      params.id,
       request.body.userId,
       pageSize
     );
@@ -95,17 +94,18 @@ export class PublicPosts {
   }
 
   // like-status
-  @Put(":postId/like-status")
+  // postId
+  @Put(":id/like-status")
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async postStatus(
     @Req() request: Request,
-    @Param() params: { postId: string },
+    @Param() params: ValidId,
     @Body() postLikeStatus: PostLikeStatus
   ) {
     const result = await this.commandBus.execute(
       new HandlePostLikesCommand({
-        postId: params.postId,
+        postId: params.id,
         postLikeStatus: postLikeStatus.likeStatus,
         userId: request.body.userId,
         userLogin: request.body.userLogin,
@@ -115,24 +115,23 @@ export class PublicPosts {
     if (!result.isPostFound) {
       throw new NotFoundException();
     }
-
     return;
   }
 
   // comments
-  @Post(":postId/comments")
+  @Post(":id/comments")
   @UseGuards(AuthGuard)
   @HttpCode(201)
   async createCommentForSelectedPost(
     @Req() request: Request,
-    @Param() params: { postId: string },
-    @Body() commentInputModel: CreateCommentInputModel // : Promise<CommentViewModel>
-  ) {
+    @Param() params: ValidId,
+    @Body() commentInputModel: CreateCommentInputModel
+  ): Promise<CommentViewModel> {
     const result = await this.commandBus.execute(
       new CreateCommentCommand({
         userId: request.body.userId,
         userLogin: request.body.userLogin,
-        postId: params.postId,
+        postId: params.id,
         content: commentInputModel.content,
       })
     );

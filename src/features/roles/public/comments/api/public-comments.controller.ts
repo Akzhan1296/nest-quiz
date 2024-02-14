@@ -7,8 +7,6 @@ import {
   HttpStatus,
   NotFoundException,
   Param,
-  Post,
-  Query,
   Req,
   UseGuards,
   Delete,
@@ -32,6 +30,7 @@ import {
 } from "../application/comments.dto";
 import { DeleteCommentCommand } from "../application/use-cases/delete-comment-use-case";
 import { UpdateCommentCommand } from "../application/use-cases/update-commen-use-case";
+import { ValidId } from "../../../../../common/types";
 
 @Controller("comments")
 export class PublicComments {
@@ -40,14 +39,15 @@ export class PublicComments {
     private readonly commentsQueryRepository: CommentsQueryRepository
   ) {}
 
+  // commentId
   @UseGuards(UserIdGuard)
-  @Get(":commentId")
+  @Get(":id")
   async getCommentById(
     @Req() request: Request,
-    @Param() params: { commentId: string }
+    @Param() params: ValidId
   ): Promise<CommentViewModel> {
     const result = await this.commentsQueryRepository.getCommentById(
-      params.commentId,
+      params.id,
       request.body.userId
     );
     if (!result) {
@@ -56,12 +56,13 @@ export class PublicComments {
     return result;
   }
 
-  @Put(":commentId/like-status")
+  // commentId
+  @Put(":id/like-status")
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async handleCommentLikeStatus(
     @Req() request: Request,
-    @Param() params: { commentId: string },
+    @Param() params: ValidId,
     @Body() commentLikeStatus: CommentLikeStatus
   ) {
     const result = await this.commandBus.execute<
@@ -69,7 +70,7 @@ export class PublicComments {
       HandleCommentLikeResult
     >(
       new HandleCommentsLikesCommand({
-        commentId: params.commentId,
+        commentId: params.id,
         commentLikeStatus: commentLikeStatus.likeStatus,
         userId: request.body.userId,
       })
@@ -80,17 +81,18 @@ export class PublicComments {
     }
   }
 
-  @Delete(":commentId")
+  // commentId
+  @Delete(":id")
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteComment(
     @Req() request: Request,
-    @Param() params: { commentId: string }
+    @Param() params: ValidId
   ): Promise<boolean> {
     const result = await this.commandBus.execute<unknown, DeleteCommentResult>(
       new DeleteCommentCommand({
         userId: request.body.userId,
-        commentId: params.commentId,
+        commentId: params.id,
       })
     );
     if (result.isForbidden) {
@@ -102,17 +104,18 @@ export class PublicComments {
     return result.isCommentDeleted;
   }
 
-  @Put(":commentId")
+  // commentId
+  @Put(":id")
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateComment(
     @Req() request: Request,
-    @Param() params: { commentId: string },
+    @Param() params: ValidId,
     @Body() commentInputModel: CommentInputModelType
   ): Promise<boolean> {
     const result = await this.commandBus.execute<unknown, UpdateCommentResult>(
       new UpdateCommentCommand({
-        commentId: params.commentId,
+        commentId: params.id,
         userId: request.body.userId,
         content: commentInputModel.content,
       })
@@ -123,7 +126,6 @@ export class PublicComments {
     if (!result.isCommentFound) {
       throw new NotFoundException();
     }
-
     return result.isCommentUpdated;
   }
 }

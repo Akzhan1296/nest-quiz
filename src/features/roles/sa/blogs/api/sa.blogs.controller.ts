@@ -2,11 +2,9 @@ import {
   Body,
   Controller,
   Delete,
-  ForbiddenException,
   Get,
   HttpCode,
   HttpStatus,
-  Inject,
   NotFoundException,
   Param,
   Post,
@@ -24,6 +22,7 @@ import {
 import {
   PageSizeQueryModel,
   PaginationViewModel,
+  ValidId,
 } from "../../../../../common/types";
 import { BlogViewModel } from "../../../../infrstructura/blogs/blogs.models";
 import { BlogsQueryRepository } from "../../../../infrstructura/blogs/blogs.query.repository";
@@ -89,10 +88,11 @@ export class SABlogsController {
   }
 
   // update blog
+  // blogId
   @Put(":id")
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateBlog(
-    @Param() params: { id: string },
+    @Param() params: ValidId,
     @Body() blogInputModel: CreateBlogInputModelType
   ): Promise<boolean> {
     const result = await this.commandBus.execute<unknown, UpdateBlogResultDTO>(
@@ -109,9 +109,10 @@ export class SABlogsController {
   }
 
   // delete
+  // blogId
   @Delete(":id")
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteBlog(@Param() params: { id: string }): Promise<boolean> {
+  async deleteBlog(@Param() params: ValidId): Promise<boolean> {
     const result = await this.commandBus.execute<unknown, DeleteBlogResultDTO>(
       new DeleteBlogBySACommand({
         blogId: params.id,
@@ -125,15 +126,16 @@ export class SABlogsController {
 
   // POSTS
   // get blog posts
+  // blogId
   @HttpCode(HttpStatus.OK)
-  @Get(":blogId/posts")
+  @Get(":id/posts")
   @UseGuards(UserIdGuard)
   async getBlogPosts(
     @Req() request: Request,
     @Query() pageSize: BlogsQueryType,
-    @Param() params: { blogId: string }
+    @Param() params: ValidId
   ): Promise<PaginationViewModel<PostViewModel>> {
-    const blog = await this.blogsQueryRepository.getBlogById(params.blogId);
+    const blog = await this.blogsQueryRepository.getBlogById(params.id);
     if (!blog) {
       throw new NotFoundException("posts by blogid not found");
     }
@@ -141,22 +143,22 @@ export class SABlogsController {
       {
         ...pageSize,
         skip: pageSize.skip,
-        blogId: params.blogId,
+        blogId: params.id,
       } as PageSizeQueryModel,
       request.body.userId
     );
   }
 
   //create post by blog id
-  @Post(":blogId/posts")
+  @Post(":id/posts")
   @HttpCode(HttpStatus.CREATED)
   async createPostByBlogId(
-    @Param() params: { blogId: string },
+    @Param() params: ValidId,
     @Body() postInputModel: CreatePostInputType
   ): Promise<PostViewModel> {
     const result = await this.commandBus.execute<unknown, ResultCreatePostDTO>(
       new CreatePostBySACommand({
-        blogId: params.blogId,
+        blogId: params.id,
         title: postInputModel.title,
         shortDescription: postInputModel.shortDescription,
         content: postInputModel.content,

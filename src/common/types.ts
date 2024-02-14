@@ -42,3 +42,6 @@ export class ValidId {
   @IsUUID(undefined, { each: true })
   id: string;
 }
+
+export const likes = ["None", "Like", "Dislike"] as const;
+export type Likes = (typeof likes)[number];
