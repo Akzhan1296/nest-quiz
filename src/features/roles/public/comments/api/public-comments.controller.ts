@@ -29,7 +29,7 @@ import {
   UpdateCommentResult,
 } from "../application/comments.dto";
 import { DeleteCommentCommand } from "../application/use-cases/delete-comment-use-case";
-import { UpdateCommentCommand } from "../application/use-cases/update-commen-use-case";
+import { UpdateCommentCommand } from "../application/use-cases/update-comment-use-case";
 import { ValidId } from "../../../../../common/types";
 
 @Controller("comments")
