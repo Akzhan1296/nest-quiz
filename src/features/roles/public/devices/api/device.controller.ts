@@ -18,6 +18,7 @@ import { DevicesViewModel } from "../../../../infrstructura/deviceSessions/model
 import { DeleteCurrentDeviceCommand } from "../application/use-cases/delete-current-device-use-case";
 import { DeleteDeviceResultDTO } from "../application/devices.dto";
 import { DeleteDevicesExceptCurrentCommand } from "../application/use-cases/delete-all-devices-use-case";
+import { ValidId } from "../../../../../common/types";
 
 @Controller("security/devices")
 export class DevicesController {
@@ -49,17 +50,18 @@ export class DevicesController {
     );
   }
 
-  @Delete(":deviceId")
+  // deviceId
+  @Delete(":id")
   @UseGuards(RefreshTokenGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteSelectedDevice(
     @Req() request: Request,
-    @Param() params: { deviceId: string }
+    @Param() params: ValidId
   ): Promise<boolean> {
     const { isDeviceFound, canDeleteDevice, isDeviceDeleted } =
       await this.commandBus.execute<unknown, DeleteDeviceResultDTO>(
         new DeleteCurrentDeviceCommand({
-          deviceId: params.deviceId,
+          deviceId: params.id,
           userId: request.body.userId,
         })
       );

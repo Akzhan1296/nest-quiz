@@ -29,7 +29,6 @@ import {
   AutoResultDTO,
   NewPasswordResultDTO,
   RecoveryPasswordResultDTO,
-  RegistrationConfirmationDTO,
   RegistrationConfirmationResultDTO,
   RegistrationEmailResendingResultDTO,
 } from "../application/auth.dto";
