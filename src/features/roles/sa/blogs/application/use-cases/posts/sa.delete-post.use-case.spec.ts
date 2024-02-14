@@ -3,7 +3,6 @@ import { AppModule } from "../../../../../../../app.module";
 import { v4 as uuidv4 } from "uuid";
 import { BlogsRepository } from "../../../../../../infrstructura/blogs/blogs.repository";
 import { PostsRepository } from "../../../../../../infrstructura/posts/posts.repository";
-import { UpdatePostBySAUseCase } from "./sa.update-post.use-case";
 import { DeletePostBySAUseCase } from "./sa.delete-post.use-case";
 
 describe("Delete post use case", () => {

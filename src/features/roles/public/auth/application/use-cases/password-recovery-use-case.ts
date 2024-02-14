@@ -58,7 +58,6 @@ export class PasswordRecoveryUseCase
         code: confirmCode,
         letterTitle: "Password recovery",
         letterText: "Recovery Code",
-        // codeText: "recoveryCode",
       });
     } catch (err) {
       throw new Error(err);

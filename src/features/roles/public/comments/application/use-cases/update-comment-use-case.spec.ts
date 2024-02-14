@@ -1,10 +1,9 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { CommentsRepository } from "../../../../../infrstructura/comments/comments.repository";
 import { AppModule } from "../../../../../../app.module";
-import { DeleteCommentUseCase } from "./delete-comment-use-case";
 import { v4 as uuidv4 } from "uuid";
 import { CommentDataView } from "../../../../../infrstructura/comments/models/comments.models";
-import { UpdateCommentUseCase } from "./update-commen-use-case";
+import { UpdateCommentUseCase } from "./update-comment-use-case";
 
 describe("UpdateCommentUseCase", () => {
   let app: TestingModule;
