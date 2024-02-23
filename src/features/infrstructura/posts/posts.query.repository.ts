@@ -21,7 +21,7 @@ export class PostsQueryRepository {
         likesCount: +r.LikesCount,
         dislikesCount: +r.DislikesCount,
         myStatus: r.UserLikeStatus ? r.UserLikeStatus : "None",
-        newestLikes: !!r.NewestLikeCreatedAt ? r.NewestLikeCreatedAt : [],
+        newestLikes: r.NewestLikeCreatedAt ? r.NewestLikeCreatedAt : [],
       },
     }));
   }
@@ -81,7 +81,7 @@ FROM (
         likesCount: +result[0].LikesCount,
         dislikesCount: +result[0].DislikesCount,
         myStatus: result[0].UserLikeStatus ? result[0].UserLikeStatus : "None",
-        newestLikes: !!result[0].NewestLikeCreatedAt
+        newestLikes: result[0].NewestLikeCreatedAt
           ? result[0].NewestLikeCreatedAt
           : [],
       },
@@ -95,7 +95,7 @@ FROM (
     const { sortBy, sortDirection, skip, pageSize, blogId } = pageParams;
     const orderBy = transformFirstLetter(sortBy);
 
-    let result = await this.dataSource.query(
+    const result = await this.dataSource.query(
       `	SELECT
         p.*,
         b."BlogName",
@@ -140,7 +140,7 @@ FROM (
       [pageSize, skip, blogId, userId]
     );
 
-    let count = await this.dataSource.query(
+    const count = await this.dataSource.query(
       `
       SELECT count (*)
       FROM public."Posts"
@@ -165,7 +165,7 @@ FROM (
     const { sortBy, sortDirection, skip, pageSize } = pageParams;
     const orderBy = transformFirstLetter(sortBy);
 
-    let result = await this.dataSource.query(
+    const result = await this.dataSource.query(
       `	SELECT p.*, 
         b."BlogName", 
         (SELECT COUNT(*)
@@ -204,7 +204,7 @@ FROM (
       [pageSize, skip, userId]
     );
 
-    let count = await this.dataSource.query(
+    const count = await this.dataSource.query(
       `
       SELECT count (*)
       FROM public."Posts"

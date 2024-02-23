@@ -22,6 +22,7 @@ import {
     @MaxLength(20)
     password: string;
     @IsString()
+    // eslint-disable-next-line no-useless-escape
     @Matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
     email: string;
   }
@@ -31,6 +32,7 @@ import {
     code: string;
   }
   export class AuthEmailResendingInputModal {
+    // eslint-disable-next-line no-useless-escape
     @Matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
     email: string;
   }

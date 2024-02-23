@@ -1,4 +1,3 @@
-import { ForbiddenException, NotFoundException } from "@nestjs/common";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { UsersRepository } from "../../../../../infrstructura/users/users.repository";
 import { DeviceSessionsRepository } from "../../../../../infrstructura/deviceSessions/device-sessions.repository";

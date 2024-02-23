@@ -19,6 +19,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
         errorsMessages: [],
       };
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const responseBody: any = exception.getResponse();
       if (Array.isArray(responseBody.message)) {
         responseBody.message.forEach((m) => {

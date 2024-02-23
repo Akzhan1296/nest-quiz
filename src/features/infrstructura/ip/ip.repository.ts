@@ -11,7 +11,7 @@ export class BlockIpsRepository {
   }): Promise<string> {
     const { ip, path, date } = dto;
 
-    let result = await this.dataSource.query(
+    const result = await this.dataSource.query(
       `INSERT INTO public."Ips"(
       "Ip", "RequestPath", "DateNumber")
       VALUES ($1, $2, $3)
@@ -21,7 +21,7 @@ export class BlockIpsRepository {
     return result[0].Id;
   }
   async findIp(ip: string, path: string, dateLeft: number, dateRight: number) {
-    let result = await this.dataSource.query(
+    const result = await this.dataSource.query(
       `  SELECT *
         FROM public."Ips"
         WHERE "Ip" = $1

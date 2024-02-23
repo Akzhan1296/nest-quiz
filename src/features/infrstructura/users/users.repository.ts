@@ -18,7 +18,7 @@ export class UsersRepository {
   // user table
   async findUserByEmail(email: string): Promise<UserViewDTO | null> {
     // Users table
-    let result = await this.dataSource.query(
+    const result = await this.dataSource.query(
       `
     SELECT "Id", "Login", "Password", "Email"
 	  FROM public."Users"
@@ -38,7 +38,7 @@ export class UsersRepository {
   // user table
   async findUserByLogin(login: string): Promise<UserViewDTO | null> {
     // Users table
-    let result = await this.dataSource.query(
+    const result = await this.dataSource.query(
       `
     SELECT "Id", "Login", "Password", "Email"
 	  FROM public."Users"
@@ -58,7 +58,7 @@ export class UsersRepository {
   // user table
   async findUserById(id: string): Promise<UserViewDTO | null> {
     // Users table
-    let result = await this.dataSource.query(
+    const result = await this.dataSource.query(
       `
     SELECT "Id", "Login", "Password", "Email"
 	  FROM public."Users"
@@ -80,7 +80,7 @@ export class UsersRepository {
     code: string
   ): Promise<RegistrationViewDTO | null> {
     // registration table
-    let result = await this.dataSource.query(
+    const result = await this.dataSource.query(
       ` SELECT "Id", "ConfirmCode", "IsConfirmed", "EmailExpDate", "CreatedAt", "UserId"
 	      FROM public."Registration"
 	      WHERE "ConfirmCode" like $1`,
@@ -127,7 +127,7 @@ export class UsersRepository {
 
   // registration table
   async findRegistrationDataByUserId(userId: string): Promise<string | null> {
-    let result = await this.dataSource.query(
+    const result = await this.dataSource.query(
       `
     SELECT "Id"
 	  FROM public."Registration"
@@ -145,7 +145,7 @@ export class UsersRepository {
   ): Promise<CreatedUserViewModel> {
     const { login, passwordHash, email, createdAt } = creationUser;
 
-    let result = await this.dataSource.query(
+    const result = await this.dataSource.query(
       `INSERT INTO public."Users"(
       "Login", "Password", "Email", "CreatedAt")
       VALUES ($1, $2, $3, $4)
@@ -184,7 +184,7 @@ export class UsersRepository {
   ): Promise<boolean> {
     const { confirmCode, isConfirmed } = registrationConfirmation;
 
-    let result = await this.dataSource.query(
+    const result = await this.dataSource.query(
       `UPDATE public."Registration"
         SET "IsConfirmed"= $2
         WHERE "ConfirmCode" = $1`,
@@ -200,7 +200,7 @@ export class UsersRepository {
   ): Promise<boolean> {
     const { confirmCode, emailExpDate, registrationId } = newConfirmCode;
 
-    let result = await this.dataSource.query(
+    const result = await this.dataSource.query(
       `UPDATE public."Registration"
         SET "ConfirmCode"= $1, "EmailExpDate"= $2
         WHERE "Id" = $3`,
@@ -213,7 +213,7 @@ export class UsersRepository {
   async setNewPassword(newPasswordDTO: NewPasswordDTO): Promise<boolean> {
     const { passwordHash, userId } = newPasswordDTO;
 
-    let result = await this.dataSource.query(
+    const result = await this.dataSource.query(
       `UPDATE public."Users"
         SET "Password"= $1
         WHERE "Id" = $2`,

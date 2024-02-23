@@ -1,6 +1,6 @@
 import { InjectDataSource } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
-import { CommentViewModel, CreateCommentType } from "./models/comments.models";
+import { CommentViewModel } from "./models/comments.models";
 import { PageSizeQueryModel } from "../../../common/types";
 import { transformFirstLetter } from "../../../utils/upperFirstLetter";
 import { Paginated } from "../../../common/paginated";
@@ -73,7 +73,7 @@ export class CommentsQueryRepository {
       [postId, pageSize, skip, userId]
     );
 
-    let count = await this.dataSource.query(
+    const count = await this.dataSource.query(
       `
       SELECT count (*)
       FROM public."Comments"

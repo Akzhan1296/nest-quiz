@@ -31,7 +31,7 @@ export class CreateCommentUseCase
     result.isPostFound = true;
 
     try {
-      let commentId = await this.commentsRepository.createCommentForPost({
+      const commentId = await this.commentsRepository.createCommentForPost({
         createdAt: new Date(),
         userLogin,
         userId,

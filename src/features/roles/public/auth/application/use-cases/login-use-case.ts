@@ -19,9 +19,9 @@ export class LoginUseCase implements ICommandHandler<LoginCommand> {
     const createdAtRefreshToken: Date = new Date();
 
     let authSessionMetaData = null;
-    let deviceId = uuidv4();
+    const deviceId = uuidv4();
 
-    let result: AutoResultDTO = {
+    const result: AutoResultDTO = {
       accessToken: null,
       refreshToken: null,
       isCorrectPassword: false,

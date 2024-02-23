@@ -75,7 +75,7 @@ export class PublicPosts {
     @Query() pageSize: CommentsQueryType,
     @Param() params: ValidId
   ) {
-    let post = await this.postQuerysRepository.getPostByPostId(
+    const post = await this.postQuerysRepository.getPostByPostId(
       params.id,
       request.body.userId
     );

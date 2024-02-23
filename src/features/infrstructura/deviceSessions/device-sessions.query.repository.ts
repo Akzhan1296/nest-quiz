@@ -5,7 +5,7 @@ import { DevicesViewModel } from "./models/device.models";
 export class DeviceSessionsQueryRepository {
   constructor(@InjectDataSource() protected dataSource: DataSource) {}
   async getDevicesByUserId(userId: string): Promise<DevicesViewModel[]> {
-    let result = await this.dataSource.query(
+    const result = await this.dataSource.query(
       `
       SELECT "Id", "Email", "Login", "DeviceIp", "DeviceId", "DeviceName", "CreatedAt", "UserId"
       FROM public."AuthSessionsMetaData"

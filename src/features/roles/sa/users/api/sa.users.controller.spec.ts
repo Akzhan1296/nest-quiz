@@ -49,7 +49,7 @@ describe("UsersController", () => {
       jest.spyOn(commandBus, "execute").mockImplementation(mockExecute);
 
       // act
-      let result = await usersController.createUser(createUserMock);
+      const result = await usersController.createUser(createUserMock);
 
       //results
       expect(result).toBeTruthy();
@@ -75,7 +75,7 @@ describe("UsersController", () => {
       jest.spyOn(commandBus, "execute").mockImplementation(mockExecute);
 
       // act
-      let result = await usersController.deleteUser({
+      const result = await usersController.deleteUser({
         id: mockDeleteUserId,
       });
 

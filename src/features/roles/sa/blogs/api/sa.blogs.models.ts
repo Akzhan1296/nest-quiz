@@ -1,10 +1,8 @@
 import { Transform } from "class-transformer";
 import {
-  IsBoolean,
   IsNotEmpty,
   Matches,
   MaxLength,
-  MinLength,
 } from "class-validator";
 import { PageSizeDTO } from "../../../../../common/types";
 
