@@ -1,7 +1,4 @@
-import {
-  HttpStatus,
-  INestApplication,
-} from "@nestjs/common";
+import { HttpStatus, INestApplication } from "@nestjs/common";
 import request from "supertest";
 import { AuthRegistrationInputModal } from "../../src/features/roles/public/auth/api/auth.models";
 import { DeleteDataController } from "../../src/features/infrstructura/deleting-all-data";
@@ -16,7 +13,6 @@ describe("Users", () => {
     app = await initTestApp();
     await app.init();
     deleteDataController = app.get<DeleteDataController>(DeleteDataController);
-
   });
 
   beforeEach(async () => {
@@ -110,6 +106,7 @@ describe("Users", () => {
   });
 
   afterAll(async () => {
+    await deleteDataController.deleteTestData(mockRequest, mockResponse);
     await app.close();
   });
 });

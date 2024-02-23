@@ -169,6 +169,7 @@ describe("Blogs", () => {
   });
 
   afterAll(async () => {
+    await deleteDataController.deleteTestData(mockRequest, mockResponse);
     await app.close();
   });
 });
