@@ -597,7 +597,7 @@ describe("Blogs", () => {
           );
         });
     });
-    it("Should return 404, if post not found", async() => {
+    it("Should return 404, if post not found", async () => {
       let blogId = null;
 
       await request(app.getHttpServer())
@@ -625,21 +625,21 @@ describe("Blogs", () => {
           );
         });
 
-        await request(app.getHttpServer())
+      await request(app.getHttpServer())
         .delete(`/sa/blogs/${blogId}/posts/${uuidv4()}`)
         .auth("admin", "qwerty", { type: "basic" })
         .expect(HttpStatus.NOT_FOUND);
-
     });
-    it("Should return 404, if blog not found", async() => {
+    it("Should return 404, if blog not found", async () => {
       await request(app.getHttpServer())
-      .delete(`/sa/blogs/${uuidv4()}/posts/${uuidv4()}`)
-      .auth("admin", "qwerty", { type: "basic" })
-      .expect(HttpStatus.NOT_FOUND);
+        .delete(`/sa/blogs/${uuidv4()}/posts/${uuidv4()}`)
+        .auth("admin", "qwerty", { type: "basic" })
+        .expect(HttpStatus.NOT_FOUND);
     });
   });
 
   afterAll(async () => {
+    await deleteDataController.deleteTestData(mockRequest, mockResponse);
     await app.close();
   });
 });
