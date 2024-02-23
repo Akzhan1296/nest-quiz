@@ -668,7 +668,7 @@ describe("Comments", () => {
 
       accessToken = authResult.body.accessToken as string;
 
-      let commentResult = await request(app.getHttpServer())
+      const commentResult = await request(app.getHttpServer())
         .post(`/posts/${postId}/comments`)
         .set("Authorization", `Bearer ${accessToken}`)
         .send({
@@ -760,11 +760,11 @@ describe("Comments", () => {
         } as AuthLoginInputModal)
         .expect(HttpStatus.OK);
 
-      let accessToken = authResult.body.accessToken as string;
+      const accessToken = authResult.body.accessToken as string;
 
-      let accessToken2 = auth2Result.body.accessToken as string;
+      const accessToken2 = auth2Result.body.accessToken as string;
 
-      let commentResult = await request(app.getHttpServer())
+      const commentResult = await request(app.getHttpServer())
         .post(`/posts/${postId}/comments`)
         .set("Authorization", `Bearer ${accessToken}`)
         .send({
@@ -798,7 +798,7 @@ describe("Comments", () => {
         } as AuthLoginInputModal)
         .expect(HttpStatus.OK);
 
-      let accessToken = authResult.body.accessToken as string;
+      const accessToken = authResult.body.accessToken as string;
 
       await request(app.getHttpServer())
         .delete(`/comments/${uuidv4()}`)
@@ -876,7 +876,7 @@ describe("Comments", () => {
 
       accessToken = authResult.body.accessToken as string;
 
-      let commentResult = await request(app.getHttpServer())
+      const commentResult = await request(app.getHttpServer())
         .post(`/posts/${postId}/comments`)
         .set("Authorization", `Bearer ${accessToken}`)
         .send({
@@ -979,11 +979,11 @@ describe("Comments", () => {
         } as AuthLoginInputModal)
         .expect(HttpStatus.OK);
 
-      let accessToken = authResult.body.accessToken as string;
+      const accessToken = authResult.body.accessToken as string;
 
-      let accessToken2 = auth2Result.body.accessToken as string;
+      const accessToken2 = auth2Result.body.accessToken as string;
 
-      let commentResult = await request(app.getHttpServer())
+      const commentResult = await request(app.getHttpServer())
         .post(`/posts/${postId}/comments`)
         .set("Authorization", `Bearer ${accessToken}`)
         .send({
@@ -1018,7 +1018,7 @@ describe("Comments", () => {
         } as AuthLoginInputModal)
         .expect(HttpStatus.OK);
 
-      let accessToken = authResult.body.accessToken as string;
+      const accessToken = authResult.body.accessToken as string;
 
       await request(app.getHttpServer())
         .delete(`/comments/${uuidv4()}`)
@@ -1093,7 +1093,7 @@ describe("Comments", () => {
 
       accessToken = authResult.body.accessToken as string;
 
-      let commentResult = await request(app.getHttpServer())
+      const commentResult = await request(app.getHttpServer())
         .post(`/posts/${postId}/comments`)
         .set("Authorization", `Bearer ${accessToken}`)
         .send({
