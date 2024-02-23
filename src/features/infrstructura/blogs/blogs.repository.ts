@@ -6,7 +6,7 @@ export class BlogsRepository {
   constructor(@InjectDataSource() protected dataSource: DataSource) {}
 
   async findBlogById(blogId: string): Promise<BlogViewModel | null> {
-    let result = await this.dataSource.query(
+    const result = await this.dataSource.query(
       `
       SELECT "Id", "BlogName", "WebsiteUrl", "Description", "IsMembership", "CreatedAt"
 	  FROM public."Blogs"
@@ -43,7 +43,7 @@ export class BlogsRepository {
   async updateBlogById(updateBlogDTO: UpdateBlogDTO): Promise<boolean> {
     const { blogId, description, name, websiteUrl } = updateBlogDTO;
 
-    let result = await this.dataSource.query(
+    const result = await this.dataSource.query(
       `UPDATE public."Blogs"
         SET "Description"= $2, "BlogName" = $3, "WebsiteUrl" = $4
         WHERE "Id" = $1`,

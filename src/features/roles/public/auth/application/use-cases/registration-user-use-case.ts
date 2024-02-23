@@ -72,7 +72,7 @@ export class RegistrationUserUseCase
     if (result.isUserCreated) {
       confirmCode = uuidv4();
       try {
-        let registrationId = await this.usersRepository.registrationUser({
+        const registrationId = await this.usersRepository.registrationUser({
           userId,
           confirmCode,
           isConfirmed: false,

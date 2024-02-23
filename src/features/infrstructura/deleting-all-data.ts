@@ -49,6 +49,7 @@ export class DeleteDataController {
   @Delete("/all-data")
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteTestData(@Req() request: Request, @Res() response: Response) {
+
     await this.deleteRepository.deleteIpsTableData();
 
     await this.deleteRepository.deleteCommentLikesTableData();

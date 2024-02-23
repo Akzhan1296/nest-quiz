@@ -13,7 +13,7 @@ export class PostsRepository {
   constructor(@InjectDataSource() protected dataSource: DataSource) {}
 
   async findPostById(postId: string): Promise<OnlyPostDataView | null> {
-    let result = await this.dataSource.query(
+    const result = await this.dataSource.query(
       `
       SELECT *
 	  FROM public."Posts"
@@ -51,7 +51,7 @@ export class PostsRepository {
   async updatePostById(updatePostDTO: UpdatePostDTO): Promise<boolean> {
     const { content, postId, shortDescription, title } = updatePostDTO;
 
-    let result = await this.dataSource.query(
+    const result = await this.dataSource.query(
       `UPDATE public."Posts"
         SET "Content"= $2, "ShortDescription" = $3, "Title" = $4
         WHERE "Id" = $1`,
@@ -119,7 +119,7 @@ export class PostsRepository {
   ): Promise<boolean> {
     const { postLikeEntityId, postLikeStatus } = updatePostLikeDto;
 
-    let result = await this.dataSource.query(
+    const result = await this.dataSource.query(
       `UPDATE public."PostsLikesStatuses"
       SET "LikeStatus"= $2
       WHERE "Id" = $1`,

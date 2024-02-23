@@ -40,6 +40,7 @@ describe("AuthController", () => {
         transform: true,
         transformOptions: { enableImplicitConversion: true },
         exceptionFactory: (errors) => {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const errorsForProperty: any[] = [];
 
           errors.forEach((e) => {
@@ -78,7 +79,7 @@ describe("AuthController", () => {
       jest.spyOn(commandBus, "execute").mockImplementation(mockExecute);
 
       // act
-      let result = await authController.registration(registrationUserMock);
+      const result = await authController.registration(registrationUserMock);
 
       // results
       expect(result).toBeTruthy();
@@ -123,7 +124,7 @@ describe("AuthController", () => {
       jest.spyOn(commandBus, "execute").mockImplementation(mockExecute);
 
       // act
-      let result = await authController.registrationConfirmation({
+      const result = await authController.registrationConfirmation({
         code: "45dff467-ccdd-49df-9e9d-c6b407538137",
       });
 
@@ -202,7 +203,7 @@ describe("AuthController", () => {
       jest.spyOn(commandBus, "execute").mockImplementation(mockExecute);
 
       // act
-      let result = await authController.registrationEmailResending({
+      const result = await authController.registrationEmailResending({
         email: "test@test.com",
       });
 
@@ -280,7 +281,7 @@ describe("AuthController", () => {
       } as unknown as Response;
 
       // act
-      let result = await authController.login(mockRequest, mockResponse, "1", {
+      const result = await authController.login(mockRequest, mockResponse, "1", {
         loginOrEmail: "login",
         password: "password",
       });

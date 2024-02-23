@@ -66,7 +66,7 @@ export class CommentsRepository {
   async updateCommentById(updateCommentDTO: UpdateCommentType) {
     const { commentId, content } = updateCommentDTO;
 
-    let result = await this.dataSource.query(
+    const result = await this.dataSource.query(
       `UPDATE public."Comments"
         SET "Content"= $2
         WHERE "Id" = $1`,
@@ -125,7 +125,7 @@ export class CommentsRepository {
   ): Promise<boolean> {
     const { likeEntityId, likeStatus } = updateCommentLike;
 
-    let result = await this.dataSource.query(
+    const result = await this.dataSource.query(
       `UPDATE public."CommentLikesStatuses"
       SET "LikeStatus"= $2
       WHERE "Id" = $1`,

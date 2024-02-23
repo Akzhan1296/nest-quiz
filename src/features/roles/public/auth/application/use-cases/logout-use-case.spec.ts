@@ -25,6 +25,7 @@ describe("Logout use case", () => {
 
   it("Should be defined", () => {
     expect(app).toBeDefined();
+    expect(logOutUseCase).toBeDefined();
     expect(deviceSessionRepository).toBeDefined();
     expect(usersRepository).toBeDefined();
   });

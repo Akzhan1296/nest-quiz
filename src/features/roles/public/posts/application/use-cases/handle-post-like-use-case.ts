@@ -1,5 +1,4 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { CommentsRepository } from "../../../../../infrstructura/comments/comments.repository";
 import { HandlePostCommentDTO, HandlePostLikeResult } from "../posts.dto";
 import { PostsRepository } from "../../../../../infrstructura/posts/posts.repository";
 
@@ -43,7 +42,7 @@ export class LikeStatusPostUseCase
           likeStatus: postLikeStatus,
           postId: postData.id,
           createdAt: new Date(),
-          userLogin: userLogin
+          userLogin: userLogin,
         });
 
         result.isLikeStatusCreated = true;
@@ -51,13 +50,13 @@ export class LikeStatusPostUseCase
         throw new Error(`Something went product with post like handle ${err}`);
       }
     } else {
-      // if we have for current user post like entity, just update like status
-      const isUpdated = await this.postsRepository.updatePostLikeEntity({
-        postLikeEntityId,
-        postLikeStatus,
-      });
-      result.isLikeStatusUpdated = isUpdated;
       try {
+        // if we have for current user post like entity, just update like status
+        const isUpdated = await this.postsRepository.updatePostLikeEntity({
+          postLikeEntityId,
+          postLikeStatus,
+        });
+        result.isLikeStatusUpdated = isUpdated;
       } catch (err) {
         throw new Error(`Something went product with like handle ${err}`);
       }

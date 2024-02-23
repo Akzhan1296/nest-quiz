@@ -27,7 +27,7 @@ describe("DeleteCommentUseCase", () => {
   });
 
   it("Should delete comment", async () => {
-    let userId = uuidv4();
+    const userId = uuidv4();
 
     jest
       .spyOn(commentsRepository, "getCommentEntityById")

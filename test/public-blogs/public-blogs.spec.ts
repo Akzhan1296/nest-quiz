@@ -12,7 +12,6 @@ import {
   CreateBlogInputModelType,
   CreatePostInputType,
 } from "../../src/features/roles/sa/blogs/api/sa.blogs.models";
-import { v4 as uuidv4 } from "uuid";
 
 describe("Blogs", () => {
   let app: INestApplication;

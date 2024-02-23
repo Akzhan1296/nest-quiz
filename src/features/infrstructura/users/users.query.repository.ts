@@ -23,7 +23,7 @@ export class UsersQueryRepository {
 
     const orderBy = transformFirstLetter(sortBy);
 
-    let result = await this.dataSource.query(
+    const result = await this.dataSource.query(
       `
         SELECT "Id", "Login", "CreatedAt", "Email"
         FROM public."Users"
@@ -34,7 +34,7 @@ export class UsersQueryRepository {
       [`%${searchLoginTerm}%`, `%${searchEmailTerm}%`, pageSize, skip]
     );
 
-    let count = await this.dataSource.query(
+    const count = await this.dataSource.query(
       `
       SELECT count (*)
       FROM public."Users"
@@ -62,7 +62,7 @@ export class UsersQueryRepository {
   // user table
   async findUserById(id: string): Promise<UserQueryViewDTO | null> {
     // Users table
-    let result = await this.dataSource.query(
+    const result = await this.dataSource.query(
       `
       SELECT "Id", "Login", "Password", "Email"
       FROM public."Users"

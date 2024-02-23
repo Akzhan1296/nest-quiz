@@ -15,7 +15,7 @@ export class DeviceSessionsRepository {
   }): Promise<AuthMetaDataViewModel | null> {
     const { userId, deviceId } = dto;
 
-    let result = await this.dataSource.query(
+    const result = await this.dataSource.query(
       `
     SELECT "Id", "Email", "Login", "DeviceIp", "DeviceId", "DeviceName", "CreatedAt", "UserId"
 	  FROM public."AuthSessionsMetaData"
@@ -43,7 +43,7 @@ export class DeviceSessionsRepository {
   }): Promise<AuthMetaDataViewModel | null> {
     const { userId, deviceName } = dto;
 
-    let result = await this.dataSource.query(
+    const result = await this.dataSource.query(
       `
     SELECT "Id", "Email", "Login", "DeviceIp", "DeviceId", "DeviceName", "CreatedAt", "UserId"
 	  FROM public."AuthSessionsMetaData"
@@ -70,7 +70,7 @@ export class DeviceSessionsRepository {
   }): Promise<AuthMetaDataViewModel | null> {
     const { deviceId } = dto;
 
-    let result = await this.dataSource.query(
+    const result = await this.dataSource.query(
       `
     SELECT "Id", "Email", "Login", "DeviceIp", "DeviceId", "DeviceName", "CreatedAt", "UserId"
 	  FROM public."AuthSessionsMetaData"
@@ -98,7 +98,7 @@ export class DeviceSessionsRepository {
   }): Promise<boolean> {
     const { authSessionId, createdAt } = dto;
 
-    let result = await this.dataSource.query(
+    const result = await this.dataSource.query(
       `UPDATE public."AuthSessionsMetaData"
         SET "CreatedAt"= $2
         WHERE "Id" = $1`,

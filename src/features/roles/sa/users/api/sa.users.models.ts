@@ -17,6 +17,7 @@ export class AddUserInputModel {
   @MaxLength(20)
   @Matches(/^[a-zA-Z0-9_-]*$/, { message: "not valid password" })
   password: string;
+  // eslint-disable-next-line no-useless-escape
   @Matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
   email: string;
 }

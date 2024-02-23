@@ -52,13 +52,15 @@ export class LikeStatusCommentUseCase
         throw new Error(`Something went product with like handle ${err}`);
       }
     } else {
-      // if we have for current user comment like entity, just update like status
-      const isUpdated = await this.commentsRepository.updateCommentLikeEntity({
-        likeEntityId: commentLikeEntityId,
-        likeStatus: commentLikeStatus,
-      });
-      result.isLikeStatusUpdated = isUpdated;
       try {
+        // if we have for current user comment like entity, just update like status
+        const isUpdated = await this.commentsRepository.updateCommentLikeEntity(
+          {
+            likeEntityId: commentLikeEntityId,
+            likeStatus: commentLikeStatus,
+          }
+        );
+        result.isLikeStatusUpdated = isUpdated;
       } catch (err) {
         throw new Error(`Something went product with like handle ${err}`);
       }

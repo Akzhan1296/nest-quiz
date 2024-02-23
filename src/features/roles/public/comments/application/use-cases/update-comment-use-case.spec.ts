@@ -27,7 +27,7 @@ describe("UpdateCommentUseCase", () => {
   });
 
   it("Should update comment", async () => {
-    let userId = uuidv4();
+    const userId = uuidv4();
 
     jest
       .spyOn(commentsRepository, "getCommentEntityById")

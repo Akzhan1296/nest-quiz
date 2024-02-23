@@ -40,7 +40,7 @@ export class BlogsQueryRepository {
       sortBy === "name"
         ? transformFirstLetter("blogName")
         : transformFirstLetter(sortBy);
-    let result = await this.dataSource.query(
+    const result = await this.dataSource.query(
       `
         SELECT "Id", "BlogName", "WebsiteUrl", "Description", "IsMembership", "CreatedAt"
         FROM public."Blogs"
@@ -51,7 +51,7 @@ export class BlogsQueryRepository {
       [`%${searchNameTerm}%`, pageSize, skip]
     );
 
-    let count = await this.dataSource.query(
+    const count = await this.dataSource.query(
       `
       SELECT count (*)
       FROM public."Blogs"
