@@ -10,13 +10,11 @@ import { useContainer } from "class-validator";
 import cookieParser from "cookie-parser";
 
 export const initTestApp = async (): Promise<INestApplication> => {
-  let app: INestApplication;
-
   const moduleFixture: TestingModule = await Test.createTestingModule({
     imports: [AppModule],
   }).compile();
 
-  app = moduleFixture.createNestApplication();
+  const app: INestApplication = moduleFixture.createNestApplication();
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
   app.use(cookieParser());
   app.enableCors();
@@ -27,6 +25,7 @@ export const initTestApp = async (): Promise<INestApplication> => {
       transform: true,
       transformOptions: { enableImplicitConversion: true },
       exceptionFactory: (errors) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const errorsForProperty: any[] = [];
 
         errors.forEach((e) => {
