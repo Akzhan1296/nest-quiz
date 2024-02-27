@@ -12,8 +12,6 @@ export class PageSizeDTO {
   get skip(): number {
     return this.pageSize * (this.pageNumber - 1);
   }
-
-  
 }
 
 export class PageSizeQueryModel {

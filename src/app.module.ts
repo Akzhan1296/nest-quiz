@@ -64,6 +64,17 @@ import { DeleteCommentUseCase } from "./features/roles/public/comments/applicati
 import { UpdateCommentUseCase } from "./features/roles/public/comments/application/use-cases/update-comment-use-case";
 import { LikeStatusPostUseCase } from "./features/roles/public/posts/application/use-cases/handle-post-like-use-case";
 
+// entity
+import { User } from "./features/entity/users-entity";
+import { Registration } from "./features/entity/registration-entity";
+import { AuthSession } from "./features/entity/auth-session-entity";
+import { Ips } from "./features/entity/ips-entity";
+import { Post } from "./features/entity/posts-entity";
+import { Comment } from "./features/entity/comments-entity";
+import { Blog } from "./features/entity/blogs-entity";
+import { CommentLike } from "./features/entity/comment-likes-entity";
+import { PostLike } from "./features/entity/post-likes-entity";
+
 const userUseCases = [CreateUserUseCase, DeleteUserUseCase];
 const authUseCases = [
   RegistrationUserUseCase,
@@ -107,17 +118,34 @@ const commentsUseCases = [
     TypeOrmModule.forRootAsync({
       useFactory: (configService: ConfigService) => {
         const env = process.env.ENV;
+        if (env === "TYPEORM") {
+          console.log(configService.get("typeorm"));
+          return configService.get("typeorm");
+        }
 
         if (env === "TESTING") {
           console.log(configService.get("localDB"));
           return configService.get("localDB");
-        } else {
+        }
+
+        if (env === "DEV") {
           console.log(configService.get("remoteDB"));
           return configService.get("remoteDB");
         }
       },
       inject: [ConfigService],
     }),
+    TypeOrmModule.forFeature([
+      User,
+      Registration,
+      AuthSession,
+      Ips,
+      Post,
+      Comment,
+      Blog,
+      CommentLike,
+      PostLike,
+    ]),
   ],
   controllers: [
     AppController,
