@@ -26,7 +26,7 @@ describe("Blogs", () => {
 
   beforeEach(async () => {
     jest.clearAllMocks();
-    await deleteDataController.deleteTestData(mockRequest, mockResponse);
+    // await deleteDataController.deleteTestData(mockRequest, mockResponse);
   });
 
   describe("Create blogs by SA", () => {

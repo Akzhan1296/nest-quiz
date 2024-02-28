@@ -75,6 +75,7 @@ import { Blog } from "./features/entity/blogs-entity";
 import { CommentLike } from "./features/entity/comment-likes-entity";
 import { PostLike } from "./features/entity/post-likes-entity";
 import { BlogsRepo } from "./features/infrstructura/blogs/blogs.adapter";
+import { BlogsQueryRepo } from "./features/infrstructura/blogs/blogs.query.adapter";
 
 const userUseCases = [CreateUserUseCase, DeleteUserUseCase];
 const authUseCases = [
@@ -122,6 +123,11 @@ const commentsUseCases = [
         if (env === "TYPEORM") {
           console.log(configService.get("typeorm"));
           return configService.get("typeorm");
+        }
+
+        if (env === "TYPEORM-TESTING") {
+          console.log(configService.get("typeormTesting"));
+          return configService.get("typeormTesting");
         }
 
         if (env === "TESTING") {
@@ -177,6 +183,7 @@ const commentsUseCases = [
     CommentsRepository,
     CommentsQueryRepository,
     BlogsRepo,
+    BlogsQueryRepo,
     ...userUseCases,
     ...authUseCases,
     ...deviceUseCases,

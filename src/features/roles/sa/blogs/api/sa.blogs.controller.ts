@@ -47,6 +47,7 @@ import { PostsQueryRepository } from "../../../../infrstructura/posts/posts.quer
 import { UpdatePostBySACommand } from "../application/use-cases/posts/sa.update-post.use-case";
 import { DeletePostBySACommand } from "../application/use-cases/posts/sa.delete-post.use-case";
 import { UserIdGuard } from "../../../../../guards/userId.guard";
+import { BlogsQueryRepo } from "../../../../infrstructura/blogs/blogs.query.adapter";
 
 @UseGuards(AuthBasicGuard)
 @Controller("sa/blogs")
@@ -54,7 +55,8 @@ export class SABlogsController {
   constructor(
     private commandBus: CommandBus,
     private blogsQueryRepository: BlogsQueryRepository,
-    private postQuerysRepository: PostsQueryRepository
+    private postQuerysRepository: PostsQueryRepository,
+    private blogsQueryRepo: BlogsQueryRepo
   ) {}
 
   // get blogs
@@ -83,12 +85,7 @@ export class SABlogsController {
       })
     );
 
-    // const blogViewModel = this.blogsQueryRepository.getBlogById(createdBlogId);
-    // return blogViewModel;
-
-    console.log("createdBlogId", createdBlogId);
-
-    return {} as BlogViewModel;
+    return this.blogsQueryRepo.getBlogById(createdBlogId);
   }
 
   // update blog

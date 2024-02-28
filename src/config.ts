@@ -9,6 +9,16 @@ export default () => ({
     autoLoadEntities: true,
     synchronize: true,
   },
+  typeormTesting: {
+    type: "postgres", 
+    host: "127.0.0.1",
+    port: 5432,
+    username: "postgres",
+    password: "postgres ",
+    database: "typeorm-testing",
+    autoLoadEntities: true,
+    synchronize: true,
+  },
   localDB: {
     type: "postgres", 
     host: "127.0.0.1",
