@@ -83,8 +83,12 @@ export class SABlogsController {
       })
     );
 
-    const blogViewModel = this.blogsQueryRepository.getBlogById(createdBlogId);
-    return blogViewModel;
+    // const blogViewModel = this.blogsQueryRepository.getBlogById(createdBlogId);
+    // return blogViewModel;
+
+    console.log("createdBlogId", createdBlogId);
+
+    return {} as BlogViewModel;
   }
 
   // update blog

@@ -74,6 +74,7 @@ import { Comment } from "./features/entity/comments-entity";
 import { Blog } from "./features/entity/blogs-entity";
 import { CommentLike } from "./features/entity/comment-likes-entity";
 import { PostLike } from "./features/entity/post-likes-entity";
+import { BlogsRepo } from "./features/infrstructura/blogs/blogs.adapter";
 
 const userUseCases = [CreateUserUseCase, DeleteUserUseCase];
 const authUseCases = [
@@ -175,6 +176,7 @@ const commentsUseCases = [
     PostsQueryRepository,
     CommentsRepository,
     CommentsQueryRepository,
+    BlogsRepo,
     ...userUseCases,
     ...authUseCases,
     ...deviceUseCases,

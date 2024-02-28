@@ -1,6 +1,7 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { CreateBlogDTO, ResultCreateBlogDTO } from "../sa.blogs.dto";
-import { BlogsRepository } from "../../../../../infrstructura/blogs/blogs.repository";
+import { BlogsRepo } from "../../../../../infrstructura/blogs/blogs.adapter";
+import { Blog } from "../../../../../entity/blogs-entity";
 
 export class CreateBlogBySACommand {
   constructor(public createBlogDTO: CreateBlogDTO) {}
@@ -10,7 +11,9 @@ export class CreateBlogBySACommand {
 export class CreateBlogBySAUseCase
   implements ICommandHandler<CreateBlogBySACommand>
 {
-  constructor(private blogsRepository: BlogsRepository) {}
+  constructor(
+    private blogsRepo: BlogsRepo
+  ) {}
 
   async execute(command: CreateBlogBySACommand): Promise<ResultCreateBlogDTO> {
     const { description, websiteUrl, name } = command.createBlogDTO;
@@ -21,14 +24,16 @@ export class CreateBlogBySAUseCase
     };
 
     try {
-      const blogId = await this.blogsRepository.createBlog({
-        description,
-        websiteUrl,
-        name,
-        createdAt: new Date(),
-        isMembership: false,
-      });
-      result.createdBlogId = blogId;
+      const newBlog = new Blog();
+      newBlog.blogName = name;
+      newBlog.websiteUrl = websiteUrl;
+      newBlog.description = description;
+      newBlog.createdAt = new Date();
+      newBlog.isMembership = false;
+
+      const savedBlog = await this.blogsRepo.saveBlog(newBlog);
+
+      result.createdBlogId = savedBlog.id;
       result.isBlogCreated = true;
     } catch (err) {
       throw new Error(err);
