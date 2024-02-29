@@ -45,8 +45,6 @@ import configuration from "./config";
 import { CreateBlogBySAUseCase } from "./features/roles/sa/blogs/application/use-cases/sa.create-blog.use-case";
 import { DeleteBlogBySAUseCase } from "./features/roles/sa/blogs/application/use-cases/sa.delete-blog.use-case";
 import { UpdateBlogBySAUseCase } from "./features/roles/sa/blogs/application/use-cases/sa.update-blog.use-case";
-import { BlogsRepository } from "./features/infrstructura/blogs/blogs.repository";
-import { BlogsQueryRepository } from "./features/infrstructura/blogs/blogs.query.repository";
 import { SABlogsController } from "./features/roles/sa/blogs/api/sa.blogs.controller";
 import { CreatePostBySAUseCase } from "./features/roles/sa/blogs/application/use-cases/posts/sa.create-post.use-case";
 import { DeletePostBySAUseCase } from "./features/roles/sa/blogs/application/use-cases/posts/sa.delete-post.use-case";
@@ -76,6 +74,8 @@ import { CommentLike } from "./features/entity/comment-likes-entity";
 import { PostLike } from "./features/entity/post-likes-entity";
 import { BlogsRepo } from "./features/infrstructura/blogs/blogs.adapter";
 import { BlogsQueryRepo } from "./features/infrstructura/blogs/blogs.query.adapter";
+import { UsersRepo } from "./features/infrstructura/users/users.adapter";
+import { BlogsRepository } from "./features/infrstructura/blogs/blogs.repository";
 
 const userUseCases = [CreateUserUseCase, DeleteUserUseCase];
 const authUseCases = [
@@ -176,13 +176,14 @@ const commentsUseCases = [
     DeviceSessionsRepository,
     DeleteAllTestingData,
     DeviceSessionsQueryRepository,
-    BlogsRepository,
     PostsRepository,
     PostsQueryRepository,
     CommentsRepository,
     CommentsQueryRepository,
+    BlogsRepository,
     BlogsRepo,
     BlogsQueryRepo,
+    UsersRepo,
     ...userUseCases,
     ...authUseCases,
     ...deviceUseCases,

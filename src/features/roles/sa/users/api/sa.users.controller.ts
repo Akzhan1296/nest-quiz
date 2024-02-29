@@ -42,14 +42,14 @@ export class UsersController {
   async createUser(
     @Body() inputModel: AddUserInputModel
   ): Promise<CreatedUserViewModel> {
-    const user = await this.commandBus.execute(
+    const { email, login, id, createdAt } = await this.commandBus.execute(
       new CreateUserCommand({
         login: inputModel.login,
         email: inputModel.email,
         password: inputModel.password,
       })
     );
-    return user;
+    return { email, login, id, createdAt };
   }
 
   // delete user by SA

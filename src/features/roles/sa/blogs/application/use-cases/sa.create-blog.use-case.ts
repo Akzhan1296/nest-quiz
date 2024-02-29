@@ -11,9 +11,7 @@ export class CreateBlogBySACommand {
 export class CreateBlogBySAUseCase
   implements ICommandHandler<CreateBlogBySACommand>
 {
-  constructor(
-    private blogsRepo: BlogsRepo
-  ) {}
+  constructor(private readonly blogsRepo: BlogsRepo) {}
 
   async execute(command: CreateBlogBySACommand): Promise<ResultCreateBlogDTO> {
     const { description, websiteUrl, name } = command.createBlogDTO;
