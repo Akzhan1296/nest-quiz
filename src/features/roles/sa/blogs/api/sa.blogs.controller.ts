@@ -25,7 +25,6 @@ import {
   ValidId,
 } from "../../../../../common/types";
 import { BlogViewModel } from "../../../../infrstructura/blogs/blogs.models";
-import { BlogsQueryRepository } from "../../../../infrstructura/blogs/blogs.query.repository";
 import { CommandBus } from "@nestjs/cqrs";
 import { CreateBlogBySACommand } from "../application/use-cases/sa.create-blog.use-case";
 import {
@@ -54,7 +53,6 @@ import { BlogsQueryRepo } from "../../../../infrstructura/blogs/blogs.query.adap
 export class SABlogsController {
   constructor(
     private commandBus: CommandBus,
-    private blogsQueryRepository: BlogsQueryRepository,
     private postQuerysRepository: PostsQueryRepository,
     private blogsQueryRepo: BlogsQueryRepo
   ) {}
@@ -65,7 +63,7 @@ export class SABlogsController {
   async getBlogs(
     @Query() pageSize: BlogsQueryType
   ): Promise<PaginationViewModel<BlogViewModel>> {
-    return await this.blogsQueryRepository.getBlogs(pageSize);
+    return await this.blogsQueryRepo.getBlogs(pageSize);
   }
 
   // create new blog
@@ -136,7 +134,7 @@ export class SABlogsController {
     @Query() pageSize: BlogsQueryType,
     @Param() params: ValidId
   ): Promise<PaginationViewModel<PostViewModel>> {
-    const blog = await this.blogsQueryRepository.getBlogById(params.id);
+    const blog = await this.blogsQueryRepo.getBlogById(params.id);
     if (!blog) {
       throw new NotFoundException("posts by blogid not found");
     }

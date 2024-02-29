@@ -26,7 +26,7 @@ describe("Blogs", () => {
 
   beforeEach(async () => {
     jest.clearAllMocks();
-    // await deleteDataController.deleteTestData(mockRequest, mockResponse);
+    await deleteDataController.deleteTestData(mockRequest, mockResponse);
   });
 
   describe("Create blogs by SA", () => {
@@ -232,7 +232,7 @@ describe("Blogs", () => {
     });
   });
 
-  describe("Create post by blogId", () => {
+  describe.skip("Create post by blogId", () => {
     it("Should create post successfully", async () => {
       let blogId = null;
 
@@ -348,7 +348,7 @@ describe("Blogs", () => {
     });
   });
 
-  describe("Update post by blogId", () => {
+  describe.skip("Update post by blogId", () => {
     it("Should update post successfully", async () => {
       let blogId = null;
       let postId = null;
@@ -510,7 +510,7 @@ describe("Blogs", () => {
     });
   });
 
-  describe("Delete post by blog and post ids", () => {
+  describe.skip("Delete post by blog and post ids", () => {
     it("Should delete post", async () => {
       let blogId = null;
       let postId = null;

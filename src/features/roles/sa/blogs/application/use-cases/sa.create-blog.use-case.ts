@@ -25,7 +25,7 @@ export class CreateBlogBySAUseCase
 
     try {
       const newBlog = new Blog();
-      newBlog.blogName = name;
+      newBlog.name = name;
       newBlog.websiteUrl = websiteUrl;
       newBlog.description = description;
       newBlog.createdAt = new Date();

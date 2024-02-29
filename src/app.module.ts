@@ -177,7 +177,6 @@ const commentsUseCases = [
     DeleteAllTestingData,
     DeviceSessionsQueryRepository,
     BlogsRepository,
-    BlogsQueryRepository,
     PostsRepository,
     PostsQueryRepository,
     CommentsRepository,

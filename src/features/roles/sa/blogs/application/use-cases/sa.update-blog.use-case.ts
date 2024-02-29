@@ -27,7 +27,7 @@ export class UpdateBlogBySAUseCase
 
     try {
       blogData.description = description;
-      blogData.blogName = name;
+      blogData.name = name;
       blogData.websiteUrl = websiteUrl;
 
       await this.blogsRepo.saveBlog(blogData);
