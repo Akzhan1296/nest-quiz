@@ -15,7 +15,7 @@ export class BlogsQueryRepo {
     let resultView: null | BlogViewModel = null;
 
     const builder = await this.blogsRepository
-      .createQueryBuilder("b")
+      .createQueryBuilder()
       .where({ id: blogId })
       .getOne();
 

@@ -19,9 +19,9 @@ export class DeleteAllTestingData {
   // async deleteAuthSessionTableData() {
   //   await this.dataSource.query(`DELETE FROM public."AuthSessionsMetaData"`);
   // }
-  // async deleteUserTableData() {
-  //   await this.dataSource.query(`DELETE FROM public."Users"`);
-  // }
+  async deleteUserTableData() {
+    await this.dataSource.query(`DELETE FROM public."user"`);
+  }
   // async deleteIpsTableData() {
   //   await this.dataSource.query(`DELETE FROM public."Ips"`);
   // }
@@ -62,7 +62,7 @@ export class DeleteDataController {
     // await this.deleteRepository.deleteBlogsTableData();
     // await this.deleteRepository.deleteRegistrationTableData();
     // await this.deleteRepository.deleteAuthSessionTableData();
-    // await this.deleteRepository.deleteUserTableData();
+    await this.deleteRepository.deleteUserTableData();
 
     await this.deleteRepository.deleteBlogsTableData();
 
