@@ -120,7 +120,7 @@ export class AuthController {
   }
 
   @Post("registration")
-  @UseGuards(BlockIpGuard)
+  // @UseGuards(BlockIpGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async registration(
     @Body() inputModel: AuthRegistrationInputModal

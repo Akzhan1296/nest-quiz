@@ -9,7 +9,8 @@ import { RegistrationUserResultDTO, RegistrationUserDTO } from "../auth.dto";
 import { CreateUserCommand } from "../../../../sa/users/application/use-cases/create-user-use-case";
 
 //repo
-import { UsersRepository } from "../../../../../infrstructura/users/users.repository";
+import { UsersRepo } from "../../../../../infrstructura/users/users.adapter";
+import { Registration } from "../../../../../entity/registration-entity";
 
 export class RegistrationUserCommand {
   constructor(public registrationUser: RegistrationUserDTO) {}
@@ -21,7 +22,7 @@ export class RegistrationUserUseCase
   constructor(
     private readonly commandBus: CommandBus,
     private readonly authService: AuthService,
-    private readonly usersRepository: UsersRepository
+    private readonly usersRepo: UsersRepo
   ) {}
 
   async execute(
@@ -40,7 +41,7 @@ export class RegistrationUserUseCase
 
     // check login
     const isLoginAlreadyExist =
-      await this.usersRepository.findUserByLogin(login);
+      await this.usersRepo.findUserByLogin(login);
 
     if (isLoginAlreadyExist) {
       result.isLoginAlreadyExist = true;
@@ -49,7 +50,8 @@ export class RegistrationUserUseCase
 
     // check email
     const isEmailAlreadyExist =
-      await this.usersRepository.findUserByEmail(email);
+      await this.usersRepo.findUserByEmail(email);
+
     if (isEmailAlreadyExist) {
       result.isEmailAlreadyExist = true;
       return result;
@@ -72,19 +74,20 @@ export class RegistrationUserUseCase
     if (result.isUserCreated) {
       confirmCode = uuidv4();
       try {
-        const registrationId = await this.usersRepository.registrationUser({
-          userId,
-          confirmCode,
-          isConfirmed: false,
-          emailExpDate: add(new Date(), {
-            minutes: 100,
-          }),
-          createdAt: new Date(),
+        const registrationData = new Registration();
+        registrationData.userId = userId;
+        registrationData.confirmCode = confirmCode;
+        registrationData.isConfirmed = false;
+        registrationData.emailExpDate = add(new Date(), {
+          minutes: 100,
         });
+        registrationData.createdAt = new Date();
 
-        result.isUserRegistered = !!registrationId;
+        await this.usersRepo.saveRegistration(registrationData);
+
+        result.isUserRegistered = true;
       } catch (err) {
-        this.usersRepository.deleteUser(userId);
+        this.usersRepo.deleteUser(userId);
         throw new Error(err);
       }
     }
