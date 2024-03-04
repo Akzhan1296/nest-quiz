@@ -2,8 +2,9 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { CommandBus } from "@nestjs/cqrs";
 import { AppModule } from "../../../../../../app.module";
 import { AuthService } from "../auth.service";
-import { UsersRepository } from "../../../../../infrstructura/users/users.repository";
 import { RegistrationUserUseCase } from "./registration-user-use-case";
+import { UsersRepo } from "../../../../../infrstructura/users/users.adapter";
+import { User } from "../../../../../entity/users-entity";
 
 const userViewMock = {
   id: "123",
@@ -21,7 +22,7 @@ const registrateUserInputMock = {
 describe("Registration use-case", () => {
   let commandBus: CommandBus;
   let authService: AuthService;
-  let usersRepository: UsersRepository;
+  let usersRepo: UsersRepo;
   let app: TestingModule;
   let registrationUserUseCase: RegistrationUserUseCase;
 
@@ -33,7 +34,7 @@ describe("Registration use-case", () => {
 
     commandBus = app.get<CommandBus>(CommandBus);
     authService = app.get<AuthService>(AuthService);
-    usersRepository = app.get<UsersRepository>(UsersRepository);
+    usersRepo = app.get<UsersRepo>(UsersRepo);
     registrationUserUseCase = app.get<RegistrationUserUseCase>(
       RegistrationUserUseCase
     );
@@ -42,16 +43,16 @@ describe("Registration use-case", () => {
   it("Should be defined", () => {
     expect(commandBus).toBeDefined();
     expect(authService).toBeDefined();
-    expect(usersRepository).toBeDefined();
+    expect(usersRepo).toBeDefined();
     expect(registrationUserUseCase).toBeDefined();
   });
   it("Should registrate a user", async () => {
     jest
-      .spyOn(usersRepository, "findUserByLogin")
+      .spyOn(usersRepo, "findUserByLogin")
       .mockImplementation(async () => null);
 
     jest
-      .spyOn(usersRepository, "findUserByEmail")
+      .spyOn(usersRepo, "findUserByEmail")
       .mockImplementation(async () => null);
 
     const result = await registrationUserUseCase.execute({
@@ -68,11 +69,11 @@ describe("Registration use-case", () => {
 
   it("Should not registrate a user if isLoginAlreadyExist", async () => {
     jest
-      .spyOn(usersRepository, "findUserByLogin")
-      .mockImplementation(async () => userViewMock);
+      .spyOn(usersRepo, "findUserByLogin")
+      .mockImplementation(async () => userViewMock as User);
 
     jest
-      .spyOn(usersRepository, "findUserByEmail")
+      .spyOn(usersRepo, "findUserByEmail")
       .mockImplementation(async () => null);
 
     const result = await registrationUserUseCase.execute({
@@ -89,12 +90,12 @@ describe("Registration use-case", () => {
 
   it("Should not registrate a user if isEmailAlreadyExist", async () => {
     jest
-      .spyOn(usersRepository, "findUserByLogin")
+      .spyOn(usersRepo, "findUserByLogin")
       .mockImplementation(async () => null);
 
     jest
-      .spyOn(usersRepository, "findUserByEmail")
-      .mockImplementation(async () => userViewMock);
+      .spyOn(usersRepo, "findUserByEmail")
+      .mockImplementation(async () => userViewMock as User);
 
     const result = await registrationUserUseCase.execute({
       registrationUser: registrateUserInputMock,

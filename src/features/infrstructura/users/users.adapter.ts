@@ -13,6 +13,7 @@ export class UsersRepo {
     private registrationRepository: Repository<Registration>
   ) {}
 
+  // user
   async findUserByEmail(email: string): Promise<User | null> {
     return this.usersRepository.findOneBy({ email });
   }
@@ -31,6 +32,23 @@ export class UsersRepo {
 
   async deleteUser(userId: string): Promise<DeleteResult> {
     return this.usersRepository.delete(userId);
+  }
+
+  // registration
+  async findUserRegistrationDataByEmail(email: string) {
+    return await this.registrationRepository
+      .createQueryBuilder("r")
+      .leftJoin("user", "u", `"r"."userId" = "u"."id"`)
+      .where("u.email = :email", { email: email })
+      .getOne();
+  }
+
+  async findRegistrationDataById(id: string) {
+    return this.registrationRepository.findOneBy({ id });
+  }
+
+  async findRegistrationDataByConfirmCode(confirmCode: string) {
+    return this.registrationRepository.findOneBy({ confirmCode });
   }
 
   async saveRegistration(registration: Registration): Promise<Registration> {

@@ -13,9 +13,9 @@ import { Request, Response } from "express";
 export class DeleteAllTestingData {
   constructor(@InjectDataSource() protected dataSource: DataSource) {}
 
-  // async deleteRegistrationTableData() {
-  //   await this.dataSource.query(`DELETE FROM public."Registration"`);
-  // }
+  async deleteRegistrationTableData() {
+    await this.dataSource.query(`DELETE FROM public."registration"`);
+  }
   // async deleteAuthSessionTableData() {
   //   await this.dataSource.query(`DELETE FROM public."AuthSessionsMetaData"`);
   // }
@@ -59,12 +59,10 @@ export class DeleteDataController {
     // await this.deleteRepository.deleteCommentsTableData();
     // await this.deleteRepository.deletePostsLikesTableData();
     // await this.deleteRepository.deletePostsTableData();
-    // await this.deleteRepository.deleteBlogsTableData();
-    // await this.deleteRepository.deleteRegistrationTableData();
+    await this.deleteRepository.deleteBlogsTableData();
+    await this.deleteRepository.deleteRegistrationTableData();
     // await this.deleteRepository.deleteAuthSessionTableData();
     await this.deleteRepository.deleteUserTableData();
-
-    await this.deleteRepository.deleteBlogsTableData();
 
     return response.status(HttpStatus.NO_CONTENT).send();
   }

@@ -27,7 +27,7 @@ export class UsersQueryRepo {
       .getOne();
 
     if (builder) {
-      return this.getUserViewModel(builder)
+      return this.getUserViewModel(builder);
     }
 
     return null;
@@ -62,16 +62,15 @@ export class UsersQueryRepo {
       .take(pageSize)
       .getMany();
 
-    const { count } = await this.usersRepository
+    const count = await this.usersRepository
       .createQueryBuilder()
-      .select("COUNT(*)", "count")
       .where('"login" ILIKE :searchLoginTerm', {
         searchLoginTerm: `%${searchLoginTerm}%`,
       })
       .andWhere('"email" ILIKE :searchEmailTerm', {
         searchEmailTerm: `%${searchEmailTerm}%`,
       })
-      .getRawOne();
+      .getCount();
 
     return Paginated.transformPagination<CreatedUserViewModel>(
       {

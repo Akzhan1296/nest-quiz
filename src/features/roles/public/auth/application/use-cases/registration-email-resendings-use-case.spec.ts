@@ -1,8 +1,9 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { AppModule } from "../../../../../../app.module";
-import { UsersRepository } from "../../../../../infrstructura/users/users.repository";
 import { add } from "date-fns";
 import { EmailResendingUseCase } from "./registration-email-resendings-use-case";
+import { UsersRepo } from "../../../../../infrstructura/users/users.adapter";
+import { Registration } from "../../../../../entity/registration-entity";
 
 const userByEmailMock = {
   createdAt: new Date(),
@@ -12,13 +13,13 @@ const userByEmailMock = {
   isConfirmed: false,
   confirmCode: "a8904469-3781-49a1-a5d7-56007c27ee77",
   registrationId: "123",
-  userId: '123',
+  userId: "123",
   email: "test@test.com",
 } as const;
 
 describe("Registration email resending use-case", () => {
   let app: TestingModule;
-  let usersRepository: UsersRepository;
+  let usersRepository: UsersRepo;
   let emailResendingUseCase: EmailResendingUseCase;
 
   beforeEach(async () => {
@@ -27,7 +28,7 @@ describe("Registration email resending use-case", () => {
     }).compile();
     await app.init();
 
-    usersRepository = app.get<UsersRepository>(UsersRepository);
+    usersRepository = app.get<UsersRepo>(UsersRepo);
     emailResendingUseCase = app.get<EmailResendingUseCase>(
       EmailResendingUseCase
     );
@@ -40,11 +41,9 @@ describe("Registration email resending use-case", () => {
   it("Should resend code", async () => {
     jest
       .spyOn(usersRepository, "findUserRegistrationDataByEmail")
-      .mockImplementation(async () => userByEmailMock);
-
-    jest
-      .spyOn(usersRepository, "setNewConfirmCode")
-      .mockImplementation(async () => true);
+      .mockImplementation(
+        async () => userByEmailMock as unknown as Registration
+      );
 
     const result = await emailResendingUseCase.execute({
       email: "test@test.com",
@@ -60,10 +59,13 @@ describe("Registration email resending use-case", () => {
   it("Should return isEmailAlreadyConfirmed: true, if email already confirmed", async () => {
     jest
       .spyOn(usersRepository, "findUserRegistrationDataByEmail")
-      .mockImplementation(async () => ({
-        ...userByEmailMock,
-        isConfirmed: true,
-      }));
+      .mockImplementation(
+        async () =>
+          ({
+            ...userByEmailMock,
+            isConfirmed: true,
+          }) as unknown as Registration
+      );
 
     const result = await emailResendingUseCase.execute({
       email: "test@test.com",

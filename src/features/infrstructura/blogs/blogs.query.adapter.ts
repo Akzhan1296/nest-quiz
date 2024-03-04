@@ -56,13 +56,12 @@ export class BlogsQueryRepo {
       .take(pageSize)
       .getMany();
 
-    const { count } = await this.blogsRepository
+    const count = await this.blogsRepository
       .createQueryBuilder()
-      .select("COUNT(*)", "count")
       .where('"name" ILIKE :searchNameTerm', {
         searchNameTerm: `%${searchNameTerm}%`,
       })
-      .getRawOne();
+      .getCount();
 
     return Paginated.transformPagination<BlogViewModel>(
       {

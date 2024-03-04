@@ -1,9 +1,9 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { UsersRepository } from "../../../../../infrstructura/users/users.repository";
 import {
   RegistrationConfirmationDTO,
   RegistrationConfirmationResultDTO,
 } from "../auth.dto";
+import { UsersRepo } from "../../../../../infrstructura/users/users.adapter";
 
 export class RegistrationConfirmationCommand {
   constructor(public confirmCode: RegistrationConfirmationDTO) {}
@@ -12,7 +12,9 @@ export class RegistrationConfirmationCommand {
 export class RegistrationConfirmationUseCase
   implements ICommandHandler<RegistrationConfirmationCommand>
 {
-  constructor(private readonly usersRepository: UsersRepository) {}
+  constructor(
+    private readonly usersRepo: UsersRepo
+  ) {}
 
   async execute(
     command: RegistrationConfirmationCommand
@@ -28,7 +30,7 @@ export class RegistrationConfirmationUseCase
 
     // get user by confirm code
     const registrationDataByConfirmCode =
-      await this.usersRepository.findRegistrationDataByConfirmCode(code);
+      await this.usersRepo.findRegistrationDataByConfirmCode(code);
 
     // check is user found
     if (registrationDataByConfirmCode) {
@@ -56,12 +58,10 @@ export class RegistrationConfirmationUseCase
     }
 
     try {
-      const isRegistrationConfirmed =
-        await this.usersRepository.confirmRegistration({
-          confirmCode: registrationDataByConfirmCode.confirmCode,
-          isConfirmed: true,
-        });
-      result.isRegistrationConfirmed = isRegistrationConfirmed;
+      registrationDataByConfirmCode.isConfirmed = true;
+      await this.usersRepo.saveRegistration(registrationDataByConfirmCode);
+
+      result.isRegistrationConfirmed = true;
     } catch (err) {
       throw new Error(err);
     }

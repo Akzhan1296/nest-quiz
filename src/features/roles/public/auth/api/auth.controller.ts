@@ -154,7 +154,7 @@ export class AuthController {
   }
 
   @Post("registration-confirmation")
-  @UseGuards(BlockIpGuard)
+  // @UseGuards(BlockIpGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async registrationConfirmation(
     @Body() inputModel: AuthRegistrationConfirmInputModal
@@ -180,6 +180,8 @@ export class AuthController {
       throw new BadRequestException("Date is already expired");
     }
 
+    console.log('isUserByConfirmCodeFound', isUserByConfirmCodeFound)
+
     if (!isUserByConfirmCodeFound) {
       throw new NotFoundException("User by this confirm code not found");
     }
@@ -187,7 +189,7 @@ export class AuthController {
   }
 
   @Post("registration-email-resending")
-  @UseGuards(BlockIpGuard)
+  // @UseGuards(BlockIpGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async registrationEmailResending(
     @Body() inputModel: AuthEmailResendingInputModal
