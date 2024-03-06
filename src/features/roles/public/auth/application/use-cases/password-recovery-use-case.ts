@@ -1,7 +1,6 @@
 import { add } from "date-fns";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { AuthService } from "../auth.service";
-import { UsersRepository } from "../../../../../infrstructura/users/users.repository";
 import { v4 as uuidv4 } from "uuid";
 import { RecoveryPasswordResultDTO } from "../auth.dto";
 import { UsersRepo } from "../../../../../infrstructura/users/users.adapter";
@@ -14,7 +13,6 @@ export class PasswordRecoveryUseCase
   implements ICommandHandler<PasswordRecoveryCommand>
 {
   constructor(
-    private readonly usersRepository: UsersRepository,
     private readonly usersRepo: UsersRepo,
     private readonly authService: AuthService
   ) {}

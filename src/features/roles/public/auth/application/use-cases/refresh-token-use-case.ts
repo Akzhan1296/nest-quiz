@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { UsersRepository } from "../../../../../infrstructura/users/users.repository";
 import { GetRefreshTokenDTO, RefreshTokenResultDTO } from "../auth.dto";
 import { AuthService } from "../auth.service";
 import { DeviceSessionsRepository } from "../../../../../infrstructura/deviceSessions/device-sessions.repository";
+import { UsersRepo } from "../../../../../infrstructura/users/users.adapter";
 
 export class UpdateUserRefreshTokenCommand {
   constructor(public getRefreshTokenDTO: GetRefreshTokenDTO) {}
@@ -14,7 +14,7 @@ export class UpdateUserRefreshTokenUseCase
 {
   constructor(
     private readonly authService: AuthService,
-    private readonly usersRepository: UsersRepository,
+    private readonly usersRepository: UsersRepo,
     private readonly deviceSessionRepository: DeviceSessionsRepository
   ) {}
 

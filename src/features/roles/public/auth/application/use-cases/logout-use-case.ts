@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { UsersRepository } from "../../../../../infrstructura/users/users.repository";
 import { DeviceSessionsRepository } from "../../../../../infrstructura/deviceSessions/device-sessions.repository";
 import { LogOutDTO, LogOutResultDTO } from "../auth.dto";
+import { UsersRepo } from "../../../../../infrstructura/users/users.adapter";
 
 export class LogOutCommand {
   constructor(public logOutDTO: LogOutDTO) {}
@@ -10,7 +10,7 @@ export class LogOutCommand {
 @CommandHandler(LogOutCommand)
 export class LogOutUseCase implements ICommandHandler<LogOutCommand> {
   constructor(
-    private readonly usersRepository: UsersRepository,
+    private readonly usersRepo: UsersRepo,
     private readonly deviceSessionRepository: DeviceSessionsRepository
   ) {}
 
@@ -23,7 +23,7 @@ export class LogOutUseCase implements ICommandHandler<LogOutCommand> {
     };
 
     // try to find user in DB
-    const user = await this.usersRepository.findUserById(userId);
+    const user = await this.usersRepo.findUserById(userId);
     if (!user) return result;
 
     // try to find auth meta data in DB
