@@ -16,9 +16,9 @@ export class DeleteAllTestingData {
   async deleteRegistrationTableData() {
     await this.dataSource.query(`DELETE FROM public."registration"`);
   }
-  // async deleteAuthSessionTableData() {
-  //   await this.dataSource.query(`DELETE FROM public."AuthSessionsMetaData"`);
-  // }
+  async deleteAuthSessionTableData() {
+    await this.dataSource.query(`DELETE FROM public."auth_session"`);
+  }
   async deleteUserTableData() {
     await this.dataSource.query(`DELETE FROM public."user"`);
   }
@@ -61,7 +61,7 @@ export class DeleteDataController {
     // await this.deleteRepository.deletePostsTableData();
     await this.deleteRepository.deleteBlogsTableData();
     await this.deleteRepository.deleteRegistrationTableData();
-    // await this.deleteRepository.deleteAuthSessionTableData();
+    await this.deleteRepository.deleteAuthSessionTableData();
     await this.deleteRepository.deleteUserTableData();
 
     return response.status(HttpStatus.NO_CONTENT).send();

@@ -52,7 +52,7 @@ export class AuthController {
   ) {}
 
   @Post("login")
-  @UseGuards(BlockIpGuard)
+  // @UseGuards(BlockIpGuard)
   @HttpCode(HttpStatus.OK)
   async login(
     @Req() request: Request,

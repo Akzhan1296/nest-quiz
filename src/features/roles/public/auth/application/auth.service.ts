@@ -10,11 +10,13 @@ import { emailAdapter } from "../../../../../utils/emailAdapter";
 import { UsersRepository } from "../../../../infrstructura/users/users.repository";
 import { UserViewDTO } from "../../../../infrstructura/users/models/users.models";
 import { settings } from "../../../../../settings";
+import { UsersRepo } from "../../../../infrstructura/users/users.adapter";
+import { User } from "../../../../entity/users-entity";
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly usersRepository: UsersRepository,
+    private readonly usersRepo: UsersRepo,
     private readonly jwtService: JwtService
   ) {}
 
@@ -35,12 +37,12 @@ export class AuthService {
   async checkCreds(
     loginOrEmail: string,
     password: string
-  ): Promise<UserViewDTO | null> {
-    let userData: UserViewDTO | null = null;
+  ): Promise<User | null> {
+    let userData: User | null = null;
     let isPasswordExist: boolean = false;
-    userData = await this.usersRepository.findUserByEmail(loginOrEmail);
+    userData = await this.usersRepo.findUserByEmail(loginOrEmail);
     if (!userData) {
-      userData = await this.usersRepository.findUserByLogin(loginOrEmail);
+      userData = await this.usersRepo.findUserByLogin(loginOrEmail);
     }
 
     if (userData) {
