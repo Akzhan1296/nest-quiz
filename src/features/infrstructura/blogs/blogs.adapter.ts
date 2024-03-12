@@ -18,7 +18,7 @@ export class BlogsRepo {
     return this.blogsRepository.save(blog);
   }
 
-  async deleteBlogById(blogId: string){
-    return this.blogsRepository.delete(blogId);
+  async deleteBlog(blog: Blog) {
+    return this.blogsRepository.delete(blog);
   }
 }

@@ -31,7 +31,7 @@ export class UsersRepo {
   }
 
   async deleteUser(userId: string): Promise<DeleteResult> {
-    return this.usersRepository.delete(userId);
+    return this.usersRepository.delete({ id: userId });
   }
 
   // registration

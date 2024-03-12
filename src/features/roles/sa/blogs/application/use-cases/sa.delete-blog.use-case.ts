@@ -32,7 +32,7 @@ export class DeleteBlogBySAUseCase
     result.isBlogFound = true;
 
     try {
-      await this.blogsRepo.deleteBlogById(blogId);
+      await this.blogsRepo.deleteBlog(blogData);
       result.isBlogDeleted = true;
     } catch (err) {
       throw new Error(`Something went wrong with deleting blog${err}`);

@@ -12,7 +12,6 @@ export class LogOutUseCase implements ICommandHandler<LogOutCommand> {
   constructor(
     private readonly usersRepo: UsersRepo,
     private readonly deviceSessionRepo: DeviceSessionRepo
-
   ) {}
 
   async execute(command: LogOutCommand): Promise<LogOutResultDTO> {
@@ -38,9 +37,7 @@ export class LogOutUseCase implements ICommandHandler<LogOutCommand> {
 
     // if user and auth meta data were found, delete auth meta data
     try {
-      const a = await this.deviceSessionRepo.deleteAuthMetaData(deviceId);
-
-      console.log('a', a)
+      await this.deviceSessionRepo.deleteAuthMetaData(device);
 
       const authMetaData =
         await this.deviceSessionRepo.getAuthMetaDataByDeviceIdAndUserId({
@@ -48,7 +45,7 @@ export class LogOutUseCase implements ICommandHandler<LogOutCommand> {
           userId,
         });
 
-        console.log('authMetaData',authMetaData)
+      console.log("authMetaData", authMetaData);
 
       result.isDeleted = !authMetaData;
     } catch (err) {
