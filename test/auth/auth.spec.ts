@@ -214,7 +214,7 @@ describe("Auth", () => {
     });
   });
 
-  describe.skip("Login flow", () => {
+  describe("Login flow", () => {
     it("Should create user successfully", async () => {
       // add user
       await request(app.getHttpServer())
@@ -230,6 +230,7 @@ describe("Auth", () => {
       //auth user
       await request(app.getHttpServer())
         .post("/auth/login")
+        .set("user-agent", `deviceName${new Date()}`)
         .send({
           loginOrEmail: "login12345",
           password: "password",
@@ -252,6 +253,7 @@ describe("Auth", () => {
       //auth user
       const result = await request(app.getHttpServer())
         .post("/auth/login")
+        .set("user-agent", `deviceName${new Date()}`)
         .send({
           loginOrEmail: "login123",
           password: "password",
@@ -288,6 +290,7 @@ describe("Auth", () => {
       //auth user
       const result = await request(app.getHttpServer())
         .post("/auth/login")
+        .set("user-agent", `deviceName${new Date()}`)
         .send({
           loginOrEmail: "login123",
           password: "password",

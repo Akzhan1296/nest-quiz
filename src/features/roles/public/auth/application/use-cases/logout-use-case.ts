@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { DeviceSessionsRepository } from "../../../../../infrstructura/deviceSessions/device-sessions.repository";
 import { LogOutDTO, LogOutResultDTO } from "../auth.dto";
 import { UsersRepo } from "../../../../../infrstructura/users/users.adapter";
+import { DeviceSessionRepo } from "../../../../../infrstructura/deviceSessions/device-sessions.adapter";
 
 export class LogOutCommand {
   constructor(public logOutDTO: LogOutDTO) {}
@@ -11,7 +11,8 @@ export class LogOutCommand {
 export class LogOutUseCase implements ICommandHandler<LogOutCommand> {
   constructor(
     private readonly usersRepo: UsersRepo,
-    private readonly deviceSessionRepository: DeviceSessionsRepository
+    private readonly deviceSessionRepo: DeviceSessionRepo
+
   ) {}
 
   async execute(command: LogOutCommand): Promise<LogOutResultDTO> {
@@ -28,20 +29,27 @@ export class LogOutUseCase implements ICommandHandler<LogOutCommand> {
 
     // try to find auth meta data in DB
     const device =
-      await this.deviceSessionRepository.getAuthMetaDataByDeviceIdAndUserId({
+      await this.deviceSessionRepo.getAuthMetaDataByDeviceIdAndUserId({
         deviceId,
         userId,
       });
+
     if (!device) return result;
 
     // if user and auth meta data were found, delete auth meta data
     try {
-      await this.deviceSessionRepository.deleteAuthMetaData(deviceId);
+      const a = await this.deviceSessionRepo.deleteAuthMetaData(deviceId);
+
+      console.log('a', a)
+
       const authMetaData =
-        await this.deviceSessionRepository.getAuthMetaDataByDeviceIdAndUserId({
+        await this.deviceSessionRepo.getAuthMetaDataByDeviceIdAndUserId({
           deviceId,
           userId,
         });
+
+        console.log('authMetaData',authMetaData)
+
       result.isDeleted = !authMetaData;
     } catch (err) {
       throw new Error(`Failed to delete auth meta data: ${err.message}`);

@@ -46,7 +46,8 @@ export class DeviceSessionRepo {
     return this.deviceSessionRepository.save(authMetaData);
   }
 
-  async deleteAuthMetaData(dto: { userId: string; deviceId: string }) {
-    console.log(dto);
+  async deleteAuthMetaData(deviceId: string) {
+    console.log(deviceId)
+    return this.deviceSessionRepository.delete(deviceId);
   }
 }

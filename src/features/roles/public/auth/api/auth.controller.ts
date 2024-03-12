@@ -73,8 +73,10 @@ export class AuthController {
       throw new UnauthorizedException({ message: "Email or login incorrect" });
     }
     response.cookie("refreshToken", result.refreshToken, {
-      httpOnly: true,
-      secure: true,
+      // httpOnly: true,
+      // secure: true,
+      httpOnly: false,
+      secure: false,
     });
     return response.status(HttpStatus.OK).send({
       accessToken: result.accessToken,
@@ -85,6 +87,7 @@ export class AuthController {
   @UseGuards(RefreshTokenGuard)
   @HttpCode(HttpStatus.OK)
   async refreshtoken(@Req() request: Request, @Res() response: Response) {
+
     const result = await this.commandBus.execute(
       new UpdateUserRefreshTokenCommand({
         userId: request.body.userId,
@@ -93,8 +96,10 @@ export class AuthController {
     );
 
     response.cookie("refreshToken", `${result.refreshToken}`, {
-      httpOnly: true,
-      secure: true,
+      // httpOnly: true,
+      // secure: true,
+      httpOnly: false,
+      secure: false,
     });
     return response.status(HttpStatus.OK).send({
       accessToken: result.accessToken,
@@ -105,6 +110,7 @@ export class AuthController {
   @UseGuards(RefreshTokenGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async logOut(@Req() request: Request, @Res() response: Response) {
+
     await this.commandBus.execute(
       new LogOutCommand({
         deviceId: request.body.deviceId,
@@ -179,8 +185,6 @@ export class AuthController {
     if (isConfirmDateExpired) {
       throw new BadRequestException("Date is already expired");
     }
-
-    console.log('isUserByConfirmCodeFound', isUserByConfirmCodeFound)
 
     if (!isUserByConfirmCodeFound) {
       throw new NotFoundException("User by this confirm code not found");

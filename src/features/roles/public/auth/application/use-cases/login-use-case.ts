@@ -58,7 +58,6 @@ export class LoginUseCase implements ICommandHandler<LoginCommand> {
       }
     }
 
-
     // save auth meta data for future refresh token
     if (!authSessionMetaData) {
       const authSession = new AuthSession();
