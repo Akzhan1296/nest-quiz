@@ -228,7 +228,7 @@ export class AuthController {
   }
 
   @Post("password-recovery")
-  @UseGuards(BlockIpGuard)
+  // @UseGuards(BlockIpGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async passwordRecovery(
     @Body() inputModel: AuthEmailResendingInputModal
@@ -244,7 +244,7 @@ export class AuthController {
   }
 
   @Post("new-password")
-  @UseGuards(BlockIpGuard)
+  // @UseGuards(BlockIpGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async newPassword(
     @Body() inputModal: NewPasswordInputModal

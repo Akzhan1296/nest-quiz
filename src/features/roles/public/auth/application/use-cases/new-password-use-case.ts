@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { NewPasswordDTO, NewPasswordResultDTO } from "../auth.dto";
-import { UsersRepository } from "../../../../../infrstructura/users/users.repository";
 import { generateHash } from "../../../../../../utils/passwordHash";
+import { UsersRepo } from "../../../../../infrstructura/users/users.adapter";
 
 export class NewPasswordCommand {
   constructor(public newPasswordDTO: NewPasswordDTO) {}
@@ -9,7 +9,7 @@ export class NewPasswordCommand {
 
 @CommandHandler(NewPasswordCommand)
 export class NewPasswordUseCase implements ICommandHandler<NewPasswordCommand> {
-  constructor(private readonly usersRepository: UsersRepository) {}
+  constructor(private readonly usersRepo: UsersRepo) {}
 
   async execute(command: NewPasswordCommand): Promise<NewPasswordResultDTO> {
     const result: NewPasswordResultDTO = {
@@ -21,9 +21,7 @@ export class NewPasswordUseCase implements ICommandHandler<NewPasswordCommand> {
     const { recoveryCode, newPassword } = command.newPasswordDTO;
 
     const registrationData =
-      await this.usersRepository.findRegistrationDataByConfirmCode(
-        recoveryCode
-      );
+      await this.usersRepo.findRegistrationDataByConfirmCode(recoveryCode);
 
     if (!registrationData) return result;
 
@@ -32,12 +30,17 @@ export class NewPasswordUseCase implements ICommandHandler<NewPasswordCommand> {
     const { confirmCode, emailExpDate, userId } = registrationData;
 
     if (confirmCode === recoveryCode && emailExpDate > new Date()) {
+      const userData = await this.usersRepo.findUserById(userId);
       const passwordHash: string = await generateHash(newPassword);
-      result.isPasswordUpdated = await this.usersRepository.setNewPassword({
-        userId,
-        passwordHash,
-      });
-      result.isCorrectRecoveryCode = true;
+      userData.password = passwordHash;
+
+      try {
+        await this.usersRepo.saveUser(userData);
+        result.isPasswordUpdated = true;
+        result.isCorrectRecoveryCode = true;
+      } catch (err) {
+        throw new Error(`something went wrong during change password ${err}`);
+      }
     }
 
     return result;

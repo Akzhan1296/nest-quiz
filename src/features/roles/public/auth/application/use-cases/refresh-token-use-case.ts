@@ -15,7 +15,7 @@ export class UpdateUserRefreshTokenUseCase
 {
   constructor(
     private readonly authService: AuthService,
-    private readonly usersRepository: UsersRepo,
+    private readonly usersRepo: UsersRepo,
     private readonly deviceSessionRepo: DeviceSessionRepo
   ) {}
 
@@ -34,7 +34,7 @@ export class UpdateUserRefreshTokenUseCase
       refreshToken: null,
     };
 
-    const userData = await this.usersRepository.findUserById(userId);
+    const userData = await this.usersRepo.findUserById(userId);
 
     // return result, if user not found
     if (!userData) return result;
