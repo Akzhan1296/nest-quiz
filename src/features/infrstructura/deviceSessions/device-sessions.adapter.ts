@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { AuthSession } from "../../entity/auth-session-entity";
+import { DeleteAllDevicesDTO } from "./models/device.models";
 
 @Injectable()
 export class DeviceSessionRepo {
@@ -48,5 +49,15 @@ export class DeviceSessionRepo {
 
   async deleteAuthMetaData(authMetaData: AuthSession) {
     return this.deviceSessionRepository.delete(authMetaData);
+  }
+
+  async deleteAllAuthMetaDataExceptCurrent(deleteDevices: DeleteAllDevicesDTO) {
+    const { deviceId, userId } = deleteDevices;
+
+    return this.deviceSessionRepository
+      .createQueryBuilder()
+      .delete()
+      .where("userId = :userId", { userId })
+      .andWhere("deviceId != :deviceId", { deviceId });
   }
 }

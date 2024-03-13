@@ -78,6 +78,7 @@ import { UsersRepo } from "./features/infrstructura/users/users.adapter";
 import { BlogsRepository } from "./features/infrstructura/blogs/blogs.repository";
 import { UsersQueryRepo } from "./features/infrstructura/users/users.query.adapter";
 import { DeviceSessionRepo } from "./features/infrstructura/deviceSessions/device-sessions.adapter";
+import { DeviceSessionQueryRepo } from "./features/infrstructura/deviceSessions/device-sessions.query.adapter";
 
 const userUseCases = [CreateUserUseCase, DeleteUserUseCase];
 const authUseCases = [
@@ -188,6 +189,7 @@ const commentsUseCases = [
     UsersRepo,
     UsersQueryRepo,
     DeviceSessionRepo,
+    DeviceSessionQueryRepo,
     ...userUseCases,
     ...authUseCases,
     ...deviceUseCases,

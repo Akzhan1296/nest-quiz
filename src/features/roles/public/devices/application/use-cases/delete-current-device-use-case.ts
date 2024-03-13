@@ -1,9 +1,7 @@
-// import { ForbiddenException, NotFoundException } from '@nestjs/common';
-
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { DeleteDeviceDTO, DeleteDeviceResultDTO } from "../devices.dto";
-import { UsersRepository } from "../../../../../infrstructura/users/users.repository";
-import { DeviceSessionsRepository } from "../../../../../infrstructura/deviceSessions/device-sessions.repository";
+import { UsersRepo } from "../../../../../infrstructura/users/users.adapter";
+import { DeviceSessionRepo } from "../../../../../infrstructura/deviceSessions/device-sessions.adapter";
 
 export class DeleteCurrentDeviceCommand {
   constructor(public deleteDeviceDTO: DeleteDeviceDTO) {}
@@ -14,8 +12,8 @@ export class DeleteCurrentDeviceUseCase
   implements ICommandHandler<DeleteCurrentDeviceCommand>
 {
   constructor(
-    private readonly usersRepository: UsersRepository,
-    private readonly deviceSessionRepository: DeviceSessionsRepository
+    private readonly usersRepo: UsersRepo,
+    private readonly deviceSessionRepo: DeviceSessionRepo
   ) {}
 
   async execute(
@@ -31,16 +29,15 @@ export class DeleteCurrentDeviceUseCase
     };
 
     // check user
-    const user = await this.usersRepository.findUserById(userId);
+    const user = await this.usersRepo.findUserById(userId);
     if (!user) return result;
 
     result.isUserFound = true;
 
     // check device in DB
-    const deviceData =
-      await this.deviceSessionRepository.getAuthMetaDataByDeviceId({
-        deviceId,
-      });
+    const deviceData = await this.deviceSessionRepo.getAuthMetaDataByDeviceId({
+      deviceId,
+    });
 
     if (!deviceData) return result;
     result.isDeviceFound = true;
@@ -51,7 +48,7 @@ export class DeleteCurrentDeviceUseCase
     result.canDeleteDevice = true;
 
     try {
-      await this.deviceSessionRepository.deleteAuthMetaData(deviceId);
+      await this.deviceSessionRepo.deleteAuthMetaData(deviceData);
       result.isDeviceDeleted = true;
     } catch (err) {
       throw new Error(err);

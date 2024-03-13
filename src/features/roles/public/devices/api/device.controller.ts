@@ -13,25 +13,25 @@ import {
 import { CommandBus } from "@nestjs/cqrs";
 import { Request } from "express";
 import { RefreshTokenGuard } from "../../../../../guards/refreshToken.guard";
-import { DeviceSessionsQueryRepository } from "../../../../infrstructura/deviceSessions/device-sessions.query.repository";
 import { DevicesViewModel } from "../../../../infrstructura/deviceSessions/models/device.models";
 import { DeleteCurrentDeviceCommand } from "../application/use-cases/delete-current-device-use-case";
 import { DeleteDeviceResultDTO } from "../application/devices.dto";
 import { DeleteDevicesExceptCurrentCommand } from "../application/use-cases/delete-all-devices-use-case";
 import { ValidId } from "../../../../../common/types";
+import { DeviceSessionQueryRepo } from "../../../../infrstructura/deviceSessions/device-sessions.query.adapter";
 
 @Controller("security/devices")
 export class DevicesController {
   constructor(
     private readonly commandBus: CommandBus,
-    private readonly deviceSessionsQueryRepository: DeviceSessionsQueryRepository
+    private readonly deviceSessionsQueryRepo: DeviceSessionQueryRepo
   ) {}
 
   @Get("")
   @HttpCode(HttpStatus.OK)
   @UseGuards(RefreshTokenGuard)
   async getDevices(@Req() request: Request): Promise<DevicesViewModel[]> {
-    return this.deviceSessionsQueryRepository.getDevicesByUserId(
+    return this.deviceSessionsQueryRepo.getDevicesByUserId(
       request.body.userId
     );
   }
