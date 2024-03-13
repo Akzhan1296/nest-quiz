@@ -7,12 +7,12 @@ import {
 } from "@nestjs/common";
 import { Request } from "express";
 import { BlockIpsService } from "../features/infrstructura/ip-retriction.service";
-import { BlockIpsRepository } from "../features/infrstructura/ip/ip.repository";
+import { BlockIpsRepo } from "../features/infrstructura/ip/ip.adapter.repository";
 
 @Injectable()
 export class BlockIpGuard implements CanActivate {
   constructor(
-    private readonly blockIpRepository: BlockIpsRepository,
+    private readonly blockIpRepo: BlockIpsRepo,
     private readonly blockIpsService: BlockIpsService
   ) {}
   async canActivate(context: ExecutionContext) {
@@ -32,7 +32,7 @@ export class BlockIpGuard implements CanActivate {
     });
 
     if (isDataSaved) {
-      ipData = await this.blockIpRepository.findIp(
+      ipData = await this.blockIpRepo.findIp(
         ip as string,
         path,
         dateZero,

@@ -42,6 +42,7 @@ import { PasswordRecoveryCommand } from "../application/use-cases/password-recov
 import { NewPasswordCommand } from "../application/use-cases/new-password-use-case";
 import { BlockIpGuard } from "../../../../../guards/ip.guard";
 import { UsersQueryRepo } from "../../../../infrstructura/users/users.query.adapter";
+import { UserQueryViewDTO } from "../../../../infrstructura/users/models/users.models";
 
 @Controller("auth")
 export class AuthController {
@@ -51,7 +52,7 @@ export class AuthController {
   ) {}
 
   @Post("login")
-  // @UseGuards(BlockIpGuard)
+  @UseGuards(BlockIpGuard)
   @HttpCode(HttpStatus.OK)
   async login(
     @Req() request: Request,
@@ -72,10 +73,8 @@ export class AuthController {
       throw new UnauthorizedException({ message: "Email or login incorrect" });
     }
     response.cookie("refreshToken", result.refreshToken, {
-      // httpOnly: true,
-      // secure: true,
-      httpOnly: false,
-      secure: false,
+      httpOnly: true,
+      secure: true,
     });
     return response.status(HttpStatus.OK).send({
       accessToken: result.accessToken,
@@ -94,10 +93,8 @@ export class AuthController {
     );
 
     response.cookie("refreshToken", `${result.refreshToken}`, {
-      // httpOnly: true,
-      // secure: true,
-      httpOnly: false,
-      secure: false,
+      httpOnly: true,
+      secure: true,
     });
     return response.status(HttpStatus.OK).send({
       accessToken: result.accessToken,
@@ -123,7 +120,7 @@ export class AuthController {
   }
 
   @Post("registration")
-  // @UseGuards(BlockIpGuard)
+  @UseGuards(BlockIpGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async registration(
     @Body() inputModel: AuthRegistrationInputModal
@@ -157,7 +154,7 @@ export class AuthController {
   }
 
   @Post("registration-confirmation")
-  // @UseGuards(BlockIpGuard)
+  @UseGuards(BlockIpGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async registrationConfirmation(
     @Body() inputModel: AuthRegistrationConfirmInputModal
@@ -190,7 +187,7 @@ export class AuthController {
   }
 
   @Post("registration-email-resending")
-  // @UseGuards(BlockIpGuard)
+  @UseGuards(BlockIpGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async registrationEmailResending(
     @Body() inputModel: AuthEmailResendingInputModal
@@ -220,13 +217,12 @@ export class AuthController {
 
   @Get("me")
   @UseGuards(AuthGuard)
-  //: Promise<UserQueryViewDTO>
-  async getMe(@Req() request: Request) {
+  async getMe(@Req() request: Request): Promise<UserQueryViewDTO> {
     return await this.usersQueryRepo.findUserById(request.body.userId);
   }
 
   @Post("password-recovery")
-  // @UseGuards(BlockIpGuard)
+  @UseGuards(BlockIpGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async passwordRecovery(
     @Body() inputModel: AuthEmailResendingInputModal
@@ -242,7 +238,7 @@ export class AuthController {
   }
 
   @Post("new-password")
-  // @UseGuards(BlockIpGuard)
+  @UseGuards(BlockIpGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async newPassword(
     @Body() inputModal: NewPasswordInputModal

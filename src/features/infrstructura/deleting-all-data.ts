@@ -22,9 +22,9 @@ export class DeleteAllTestingData {
   async deleteUserTableData() {
     await this.dataSource.query(`DELETE FROM public."user"`);
   }
-  // async deleteIpsTableData() {
-  //   await this.dataSource.query(`DELETE FROM public."Ips"`);
-  // }
+  async deleteIpsTableData() {
+    await this.dataSource.query(`DELETE FROM public."ips"`);
+  }
   // async deletePostsTableData() {
   //   await this.dataSource.query(`DELETE FROM public."Posts"`);
   // }
@@ -53,7 +53,7 @@ export class DeleteDataController {
   @Delete("/all-data")
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteTestData(@Req() request: Request, @Res() response: Response) {
-    // await this.deleteRepository.deleteIpsTableData();
+    await this.deleteRepository.deleteIpsTableData();
 
     // await this.deleteRepository.deleteCommentLikesTableData();
     // await this.deleteRepository.deleteCommentsTableData();
