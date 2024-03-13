@@ -1,14 +1,14 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { AppModule } from "../../../../../../app.module";
 import { UpdateBlogBySAUseCase } from "./sa.update-blog.use-case";
-import { BlogsRepository } from "../../../../../infrstructura/blogs/blogs.repository";
 import { v4 as uuidv4 } from "uuid";
-import { BlogViewModel } from "../../../../../infrstructura/blogs/blogs.models";
+import { BlogsRepo } from "../../../../../infrstructura/blogs/blogs.adapter";
+import { Blog } from "../../../../../entity/blogs-entity";
 
 describe("Update blog use case", () => {
   let app: TestingModule;
   let updateBlogUseCase: UpdateBlogBySAUseCase;
-  let blogsRepository: BlogsRepository;
+  let blogsRepo: BlogsRepo;
 
   beforeEach(async () => {
     app = await Test.createTestingModule({
@@ -17,25 +17,27 @@ describe("Update blog use case", () => {
     await app.init();
 
     updateBlogUseCase = app.get<UpdateBlogBySAUseCase>(UpdateBlogBySAUseCase);
-    blogsRepository = app.get<BlogsRepository>(BlogsRepository);
+    blogsRepo = app.get<BlogsRepo>(BlogsRepo);
   });
 
   it("Should be defined", () => {
     expect(app).toBeDefined();
     expect(updateBlogUseCase).toBeDefined();
-    expect(blogsRepository).toBeDefined();
+    expect(blogsRepo).toBeDefined();
   });
 
   it("Should update blog succesfully ", async () => {
     const blogId = uuidv4();
 
     jest
-      .spyOn(blogsRepository, "findBlogById")
-      .mockImplementation(async () => ({}) as Promise<BlogViewModel>);
+      .spyOn(blogsRepo, "findBlogById")
+      .mockImplementation(
+        async () => ({ id: blogId }) as Blog
+      );
 
     jest
-      .spyOn(blogsRepository, "updateBlogById")
-      .mockImplementation(async () => true);
+      .spyOn(blogsRepo, "saveBlog")
+      .mockImplementation(async () => ({}) as Blog);
 
     const result = await updateBlogUseCase.execute({
       updateBlogDTO: {
@@ -55,13 +57,7 @@ describe("Update blog use case", () => {
   it("Should return 404 error", async () => {
     const blogId = uuidv4();
 
-    jest
-      .spyOn(blogsRepository, "findBlogById")
-      .mockImplementation(async () => null);
-
-    jest
-      .spyOn(blogsRepository, "updateBlogById")
-      .mockImplementation(async () => false);
+    jest.spyOn(blogsRepo, "findBlogById").mockImplementation(async () => null);
 
     const result = await updateBlogUseCase.execute({
       updateBlogDTO: {

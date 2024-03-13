@@ -18,22 +18,23 @@ import { CreatedUserViewModel } from "../../../../infrstructura/users/models/use
 import { DeleteUserCommand } from "../application/use-cases/delete-user-use-case";
 import { DeleteUserResultDTO } from "../application/users.dto";
 import { PaginationViewModel, ValidId } from "../../../../../common/types";
-import { UsersQueryRepository } from "../../../../infrstructura/users/users.query.repository";
 import { AuthBasicGuard } from "../../../../../guards/authBasic.guard";
+import { UsersQueryRepo } from "../../../../infrstructura/users/users.query.adapter";
 
 @Controller("sa/users")
 @UseGuards(AuthBasicGuard)
 export class UsersController {
   constructor(
     private readonly commandBus: CommandBus,
-    private readonly usersQueryRepository: UsersQueryRepository
+    private readonly usersQueryRepo: UsersQueryRepo
   ) {}
 
   @Get()
   async getUsers(
     @Query() pageSize: UsersQueryType
   ): Promise<PaginationViewModel<CreatedUserViewModel>> {
-    return this.usersQueryRepository.getUsers(pageSize);
+    return this.usersQueryRepo.getUsers(pageSize);
+
   }
 
   // create user by SA
@@ -42,14 +43,14 @@ export class UsersController {
   async createUser(
     @Body() inputModel: AddUserInputModel
   ): Promise<CreatedUserViewModel> {
-    const user = await this.commandBus.execute(
+    const { email, login, id, createdAt } = await this.commandBus.execute(
       new CreateUserCommand({
         login: inputModel.login,
         email: inputModel.email,
         password: inputModel.password,
       })
     );
-    return user;
+    return { email, login, id, createdAt };
   }
 
   // delete user by SA

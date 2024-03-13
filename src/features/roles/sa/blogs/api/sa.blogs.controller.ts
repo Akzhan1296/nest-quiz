@@ -25,7 +25,6 @@ import {
   ValidId,
 } from "../../../../../common/types";
 import { BlogViewModel } from "../../../../infrstructura/blogs/blogs.models";
-import { BlogsQueryRepository } from "../../../../infrstructura/blogs/blogs.query.repository";
 import { CommandBus } from "@nestjs/cqrs";
 import { CreateBlogBySACommand } from "../application/use-cases/sa.create-blog.use-case";
 import {
@@ -47,14 +46,15 @@ import { PostsQueryRepository } from "../../../../infrstructura/posts/posts.quer
 import { UpdatePostBySACommand } from "../application/use-cases/posts/sa.update-post.use-case";
 import { DeletePostBySACommand } from "../application/use-cases/posts/sa.delete-post.use-case";
 import { UserIdGuard } from "../../../../../guards/userId.guard";
+import { BlogsQueryRepo } from "../../../../infrstructura/blogs/blogs.query.adapter";
 
 @UseGuards(AuthBasicGuard)
 @Controller("sa/blogs")
 export class SABlogsController {
   constructor(
     private commandBus: CommandBus,
-    private blogsQueryRepository: BlogsQueryRepository,
-    private postQuerysRepository: PostsQueryRepository
+    private postQuerysRepository: PostsQueryRepository,
+    private blogsQueryRepo: BlogsQueryRepo
   ) {}
 
   // get blogs
@@ -63,7 +63,7 @@ export class SABlogsController {
   async getBlogs(
     @Query() pageSize: BlogsQueryType
   ): Promise<PaginationViewModel<BlogViewModel>> {
-    return await this.blogsQueryRepository.getBlogs(pageSize);
+    return await this.blogsQueryRepo.getBlogs(pageSize);
   }
 
   // create new blog
@@ -83,8 +83,7 @@ export class SABlogsController {
       })
     );
 
-    const blogViewModel = this.blogsQueryRepository.getBlogById(createdBlogId);
-    return blogViewModel;
+    return this.blogsQueryRepo.getBlogById(createdBlogId);
   }
 
   // update blog
@@ -135,7 +134,7 @@ export class SABlogsController {
     @Query() pageSize: BlogsQueryType,
     @Param() params: ValidId
   ): Promise<PaginationViewModel<PostViewModel>> {
-    const blog = await this.blogsQueryRepository.getBlogById(params.id);
+    const blog = await this.blogsQueryRepo.getBlogById(params.id);
     if (!blog) {
       throw new NotFoundException("posts by blogid not found");
     }

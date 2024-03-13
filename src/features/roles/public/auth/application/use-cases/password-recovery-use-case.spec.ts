@@ -1,12 +1,12 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { AppModule } from "../../../../../../app.module";
-import { UsersRepository } from "../../../../../infrstructura/users/users.repository";
 import { PasswordRecoveryUseCase } from "./password-recovery-use-case";
-import { RegistrationWithUserViewDTO } from "../../../../../infrstructura/users/models/users.models";
+import { UsersRepo } from "../../../../../infrstructura/users/users.adapter";
+import { Registration } from "../../../../../entity/registration-entity";
 
 describe("Password recovery use-case", () => {
   let app: TestingModule;
-  let usersRepository: UsersRepository;
+  let usersRepository: UsersRepo;
   let passwordRecoveryUseCase: PasswordRecoveryUseCase;
 
   beforeEach(async () => {
@@ -15,10 +15,12 @@ describe("Password recovery use-case", () => {
     }).compile();
     await app.init();
 
-    usersRepository = app.get<UsersRepository>(UsersRepository);
+    usersRepository = app.get<UsersRepo>(UsersRepo);
     passwordRecoveryUseCase = app.get<PasswordRecoveryUseCase>(
       PasswordRecoveryUseCase
     );
+
+    jest.clearAllMocks()
   });
 
   it("Should be defined", () => {
@@ -43,11 +45,15 @@ describe("Password recovery use-case", () => {
   it("Should update and send recovery code, if user found", async () => {
     jest
       .spyOn(usersRepository, "findUserRegistrationDataByEmail")
-      .mockImplementation(async () => ({}) as RegistrationWithUserViewDTO);
+      .mockImplementation(
+        async () => ({}) as unknown as Registration
+      );
 
-    jest
-      .spyOn(usersRepository, "setNewConfirmCode")
-      .mockImplementation(async () => true);
+      jest
+      .spyOn(usersRepository, "saveRegistration")
+      .mockImplementation(
+        async () => ({}) as unknown as Registration
+      );
 
     const result = await passwordRecoveryUseCase.execute({
       email: "test@test.com",

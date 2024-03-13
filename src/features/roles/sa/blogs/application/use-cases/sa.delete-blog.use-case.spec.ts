@@ -1,14 +1,15 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { AppModule } from "../../../../../../app.module";
-import { BlogsRepository } from "../../../../../infrstructura/blogs/blogs.repository";
 import { v4 as uuidv4 } from "uuid";
-import { BlogViewModel } from "../../../../../infrstructura/blogs/blogs.models";
 import { DeleteBlogBySAUseCase } from "./sa.delete-blog.use-case";
+import { BlogsRepo } from "../../../../../infrstructura/blogs/blogs.adapter";
+import { Blog } from "../../../../../entity/blogs-entity";
+import { DeleteResult } from "typeorm";
 
 describe("Delete blog use case", () => {
   let app: TestingModule;
   let deleteBlogUseCase: DeleteBlogBySAUseCase;
-  let blogsRepository: BlogsRepository;
+  let blogsRepo: BlogsRepo;
 
   beforeEach(async () => {
     app = await Test.createTestingModule({
@@ -17,25 +18,25 @@ describe("Delete blog use case", () => {
     await app.init();
 
     deleteBlogUseCase = app.get<DeleteBlogBySAUseCase>(DeleteBlogBySAUseCase);
-    blogsRepository = app.get<BlogsRepository>(BlogsRepository);
+    blogsRepo = app.get<BlogsRepo>(BlogsRepo);
   });
 
   it("Should be defined", () => {
     expect(app).toBeDefined();
     expect(deleteBlogUseCase).toBeDefined();
-    expect(blogsRepository).toBeDefined();
+    expect(blogsRepo).toBeDefined();
   });
 
   it("Should delete blog succesfully ", async () => {
     const blogId = uuidv4();
 
     jest
-      .spyOn(blogsRepository, "findBlogById")
-      .mockImplementation(async () => ({}) as Promise<BlogViewModel>);
+      .spyOn(blogsRepo, "findBlogById")
+      .mockImplementation(async () => ({ id: blogId }) as Blog);
 
     jest
-      .spyOn(blogsRepository, "deleteBlogById")
-      .mockImplementation(async () => true);
+      .spyOn(blogsRepo, "deleteBlogById")
+      .mockImplementation(async () => ({ raw: "" }) as DeleteResult);
 
     const result = await deleteBlogUseCase.execute({
       deleteBlogDTO: {
@@ -53,12 +54,8 @@ describe("Delete blog use case", () => {
     const blogId = uuidv4();
 
     jest
-      .spyOn(blogsRepository, "findBlogById")
+      .spyOn(blogsRepo, "findBlogById")
       .mockImplementation(async () => null);
-
-    jest
-      .spyOn(blogsRepository, "deleteBlogById")
-      .mockImplementation(async () => false);
 
     const result = await deleteBlogUseCase.execute({
       deleteBlogDTO: {

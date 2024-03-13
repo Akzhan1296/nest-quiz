@@ -1,8 +1,9 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { UsersRepository } from "../../../../../infrstructura/users/users.repository";
 import { GetRefreshTokenDTO, RefreshTokenResultDTO } from "../auth.dto";
 import { AuthService } from "../auth.service";
-import { DeviceSessionsRepository } from "../../../../../infrstructura/deviceSessions/device-sessions.repository";
+import { UsersRepo } from "../../../../../infrstructura/users/users.adapter";
+import { DeviceSessionRepo } from "../../../../../infrstructura/deviceSessions/device-sessions.adapter";
+import { AuthSession } from "../../../../../entity/auth-session-entity";
 
 export class UpdateUserRefreshTokenCommand {
   constructor(public getRefreshTokenDTO: GetRefreshTokenDTO) {}
@@ -14,8 +15,8 @@ export class UpdateUserRefreshTokenUseCase
 {
   constructor(
     private readonly authService: AuthService,
-    private readonly usersRepository: UsersRepository,
-    private readonly deviceSessionRepository: DeviceSessionsRepository
+    private readonly usersRepo: UsersRepo,
+    private readonly deviceSessionRepo: DeviceSessionRepo
   ) {}
 
   async execute(
@@ -24,7 +25,7 @@ export class UpdateUserRefreshTokenUseCase
     const { userId, deviceId } = command.getRefreshTokenDTO;
     const createdAtRefreshToken: Date = new Date();
 
-    let authSessionMetaData = null;
+    let authSessionMetaData: AuthSession | null = null;
 
     const result: RefreshTokenResultDTO = {
       isUserFound: false,
@@ -33,7 +34,7 @@ export class UpdateUserRefreshTokenUseCase
       refreshToken: null,
     };
 
-    const userData = await this.usersRepository.findUserById(userId);
+    const userData = await this.usersRepo.findUserById(userId);
 
     // return result, if user not found
     if (!userData) return result;
@@ -41,7 +42,7 @@ export class UpdateUserRefreshTokenUseCase
     result.isUserFound = true;
 
     authSessionMetaData =
-      await this.deviceSessionRepository.getAuthMetaDataByDeviceIdAndUserId({
+      await this.deviceSessionRepo.getAuthMetaDataByDeviceIdAndUserId({
         userId,
         deviceId,
       });
@@ -53,10 +54,8 @@ export class UpdateUserRefreshTokenUseCase
     if (authSessionMetaData) {
       result.isUserAlreadyHasAuthSession = true;
       try {
-        await this.deviceSessionRepository.updateAuthMetaData({
-          authSessionId: authSessionMetaData.id,
-          createdAt: createdAtRefreshToken,
-        });
+        authSessionMetaData.createdAt = createdAtRefreshToken;
+        await this.deviceSessionRepo.saveAuthMetaData(authSessionMetaData);
       } catch (err) {
         throw new Error(`Some error while updating meta auth data ${err}`);
       }

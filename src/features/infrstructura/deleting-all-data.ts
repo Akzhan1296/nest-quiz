@@ -14,31 +14,35 @@ export class DeleteAllTestingData {
   constructor(@InjectDataSource() protected dataSource: DataSource) {}
 
   async deleteRegistrationTableData() {
-    await this.dataSource.query(`DELETE FROM public."Registration"`);
+    await this.dataSource.query(`DELETE FROM public."registration"`);
   }
   async deleteAuthSessionTableData() {
-    await this.dataSource.query(`DELETE FROM public."AuthSessionsMetaData"`);
+    await this.dataSource.query(`DELETE FROM public."auth_session"`);
   }
   async deleteUserTableData() {
-    await this.dataSource.query(`DELETE FROM public."Users"`);
+    await this.dataSource.query(`DELETE FROM public."user"`);
   }
   async deleteIpsTableData() {
-    await this.dataSource.query(`DELETE FROM public."Ips"`);
+    await this.dataSource.query(`DELETE FROM public."ips"`);
   }
-  async deletePostsTableData() {
-    await this.dataSource.query(`DELETE FROM public."Posts"`);
-  }
+  // async deletePostsTableData() {
+  //   await this.dataSource.query(`DELETE FROM public."Posts"`);
+  // }
+  // async deleteBlogsTableData() {
+  //   await this.dataSource.query(`DELETE FROM public."Blogs"`);
+  // }
+  // async deleteCommentsTableData() {
+  //   await this.dataSource.query(`DELETE FROM public."Comments"`);
+  // }
+  // async deleteCommentLikesTableData() {
+  //   await this.dataSource.query(`DELETE FROM public."CommentLikesStatuses"`);
+  // }
+  // async deletePostsLikesTableData() {
+  //   await this.dataSource.query(`DELETE FROM public."PostsLikesStatuses"`);
+  // }
+
   async deleteBlogsTableData() {
-    await this.dataSource.query(`DELETE FROM public."Blogs"`);
-  }
-  async deleteCommentsTableData() {
-    await this.dataSource.query(`DELETE FROM public."Comments"`);
-  }
-  async deleteCommentLikesTableData() {
-    await this.dataSource.query(`DELETE FROM public."CommentLikesStatuses"`);
-  }
-  async deletePostsLikesTableData() {
-    await this.dataSource.query(`DELETE FROM public."PostsLikesStatuses"`);
+    await this.dataSource.query(`DELETE FROM public."blog"`);
   }
 }
 
@@ -49,13 +53,12 @@ export class DeleteDataController {
   @Delete("/all-data")
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteTestData(@Req() request: Request, @Res() response: Response) {
-
     await this.deleteRepository.deleteIpsTableData();
 
-    await this.deleteRepository.deleteCommentLikesTableData();
-    await this.deleteRepository.deleteCommentsTableData();
-    await this.deleteRepository.deletePostsLikesTableData();
-    await this.deleteRepository.deletePostsTableData();
+    // await this.deleteRepository.deleteCommentLikesTableData();
+    // await this.deleteRepository.deleteCommentsTableData();
+    // await this.deleteRepository.deletePostsLikesTableData();
+    // await this.deleteRepository.deletePostsTableData();
     await this.deleteRepository.deleteBlogsTableData();
     await this.deleteRepository.deleteRegistrationTableData();
     await this.deleteRepository.deleteAuthSessionTableData();

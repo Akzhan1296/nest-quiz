@@ -2,9 +2,10 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { AppModule } from "../../../../../../app.module";
 import { UpdateUserRefreshTokenUseCase } from "./refresh-token-use-case";
 import { AuthService } from "../auth.service";
-import { DeviceSessionsRepository } from "../../../../../infrstructura/deviceSessions/device-sessions.repository";
-import { UsersRepository } from "../../../../../infrstructura/users/users.repository";
-import { AuthMetaDataViewModel } from "../../../../../infrstructura/deviceSessions/models/device.models";
+import { UsersRepo } from "../../../../../infrstructura/users/users.adapter";
+import { User } from "../../../../../entity/users-entity";
+import { DeviceSessionRepo } from "../../../../../infrstructura/deviceSessions/device-sessions.adapter";
+import { AuthSession } from "../../../../../entity/auth-session-entity";
 
 const getRefreshTokenDTOMock = {
   userId: "123",
@@ -15,8 +16,8 @@ describe("Refresh token use case", () => {
   let app: TestingModule;
   let refreshTokenUseCase: UpdateUserRefreshTokenUseCase;
   let authService: AuthService;
-  let usersRepository: UsersRepository;
-  let deviceSessionRepository: DeviceSessionsRepository;
+  let usersRepository: UsersRepo;
+  let deviceRepo: DeviceSessionRepo;
 
   beforeEach(async () => {
     app = await Test.createTestingModule({
@@ -28,17 +29,15 @@ describe("Refresh token use case", () => {
       UpdateUserRefreshTokenUseCase
     );
     authService = app.get<AuthService>(AuthService);
-    deviceSessionRepository = app.get<DeviceSessionsRepository>(
-      DeviceSessionsRepository
-    );
-    usersRepository = app.get<UsersRepository>(UsersRepository);
+    deviceRepo = app.get<DeviceSessionRepo>(DeviceSessionRepo);
+    usersRepository = app.get<UsersRepo>(UsersRepo);
   });
 
   it("Should be defined", () => {
     expect(app).toBeDefined();
     expect(refreshTokenUseCase).toBeDefined();
     expect(authService).toBeDefined();
-    expect(deviceSessionRepository).toBeDefined();
+    expect(deviceRepo).toBeDefined();
     expect(usersRepository).toBeDefined();
   });
   it("Should not return tokens, if userData not found", async () => {
@@ -58,17 +57,18 @@ describe("Refresh token use case", () => {
     });
   });
   it("Should not return tokens, if authMetaData not found", async () => {
-    jest
-      .spyOn(usersRepository, "findUserById")
-      .mockImplementation(async () => ({
-        id: "id123",
-        login: "login",
-        password: "123",
-        email: "email",
-      }));
+    jest.spyOn(usersRepository, "findUserById").mockImplementation(
+      async () =>
+        ({
+          id: "id123",
+          login: "login",
+          password: "123",
+          email: "email",
+        }) as User
+    );
 
     jest
-      .spyOn(deviceSessionRepository, "getAuthMetaDataByDeviceIdAndUserId")
+      .spyOn(deviceRepo, "getAuthMetaDataByDeviceIdAndUserId")
       .mockImplementation(async () => null);
 
     const result = await refreshTokenUseCase.execute({
@@ -83,18 +83,19 @@ describe("Refresh token use case", () => {
     });
   });
   it("Should update auth meta data, if already have, and return tokens", async () => {
-    jest
-      .spyOn(usersRepository, "findUserById")
-      .mockImplementation(async () => ({
-        id: "id123",
-        login: "login",
-        password: "123",
-        email: "email",
-      }));
+    jest.spyOn(usersRepository, "findUserById").mockImplementation(
+      async () =>
+        ({
+          id: "id123",
+          login: "login",
+          password: "123",
+          email: "email",
+        }) as User
+    );
 
     jest
-      .spyOn(deviceSessionRepository, "getAuthMetaDataByDeviceIdAndUserId")
-      .mockImplementation(async () => ({}) as AuthMetaDataViewModel);
+      .spyOn(deviceRepo, "getAuthMetaDataByDeviceIdAndUserId")
+      .mockImplementation(async () => ({}) as AuthSession);
 
     // mock CT
     jest
@@ -105,6 +106,10 @@ describe("Refresh token use case", () => {
     jest
       .spyOn(authService, "createRefreshToken")
       .mockImplementation(async () => "refresh token");
+
+    jest
+      .spyOn(deviceRepo, "saveAuthMetaData")
+      .mockImplementation(async () => undefined);
     const result = await refreshTokenUseCase.execute({
       getRefreshTokenDTO: getRefreshTokenDTOMock,
     });

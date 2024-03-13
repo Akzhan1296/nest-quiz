@@ -1,9 +1,10 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { AppModule } from "../../../../../../app.module";
-import { UsersRepository } from "../../../../../infrstructura/users/users.repository";
 import { RegistrationConfirmationUseCase } from "./registration-confirmation-use-case";
 import { add } from "date-fns";
 import { v4 as uuidv4 } from "uuid";
+import { UsersRepo } from "../../../../../infrstructura/users/users.adapter";
+import { Registration } from "../../../../../entity/registration-entity";
 
 const userByConfirmCodeMock = {
   createdAt: new Date(),
@@ -18,7 +19,7 @@ const userByConfirmCodeMock = {
 
 describe("Registration confirmation use-case", () => {
   let app: TestingModule;
-  let usersRepository: UsersRepository;
+  let usersRepo: UsersRepo;
   let registrationConfirmationUserUseCase: RegistrationConfirmationUseCase;
 
   beforeEach(async () => {
@@ -27,23 +28,23 @@ describe("Registration confirmation use-case", () => {
     }).compile();
     await app.init();
 
-    usersRepository = app.get<UsersRepository>(UsersRepository);
+    usersRepo = app.get<UsersRepo>(UsersRepo);
     registrationConfirmationUserUseCase =
       app.get<RegistrationConfirmationUseCase>(RegistrationConfirmationUseCase);
   });
 
   it("Should be defined", () => {
     expect(registrationConfirmationUserUseCase).toBeDefined();
-    expect(usersRepository).toBeDefined();
+    expect(usersRepo).toBeDefined();
   });
   it("Should confirm registration", async () => {
     jest
-      .spyOn(usersRepository, "findRegistrationDataByConfirmCode")
-      .mockImplementation(async () => userByConfirmCodeMock);
+      .spyOn(usersRepo, "findRegistrationDataByConfirmCode")
+      .mockImplementation(async () => userByConfirmCodeMock as unknown as Registration);
 
     jest
-    .spyOn(usersRepository, "confirmRegistration")
-    .mockImplementation(async () => true);
+    .spyOn(usersRepo, "saveRegistration")
+    .mockImplementation(async () => null as unknown as Registration);
 
     const result = await registrationConfirmationUserUseCase.execute({
       confirmCode: { code: "a8904469-3781-49a1-a5d7-56007c27ee77" },
@@ -59,11 +60,11 @@ describe("Registration confirmation use-case", () => {
 
   it("Should return isEmailAlreadyConfirmed: true, if email already confirmed", async () => {
     jest
-      .spyOn(usersRepository, "findRegistrationDataByConfirmCode")
+      .spyOn(usersRepo, "findRegistrationDataByConfirmCode")
       .mockImplementation(async () => ({
         ...userByConfirmCodeMock,
         isConfirmed: true,
-      }));
+      }) as unknown as Registration);
 
     const result = await registrationConfirmationUserUseCase.execute({
       confirmCode: { code: "a8904469-3781-49a1-a5d7-56007c27ee77" },
@@ -79,13 +80,14 @@ describe("Registration confirmation use-case", () => {
 
   it("Should return isConfirmDateExpired: true, if exp date is already expired", async () => {
     jest
-      .spyOn(usersRepository, "findRegistrationDataByConfirmCode")
+      .spyOn(usersRepo, "findRegistrationDataByConfirmCode")
       .mockImplementation(async () => ({
         ...userByConfirmCodeMock,
+        isConfirmed: false,
         emailExpDate: add(new Date(), {
           minutes: -10,
         }),
-      }));
+      }) as unknown as Registration);
 
     const result = await registrationConfirmationUserUseCase.execute({
       confirmCode: { code: "a8904469-3781-49a1-a5d7-56007c27ee77" },
@@ -101,7 +103,7 @@ describe("Registration confirmation use-case", () => {
 
   it("Should return isUserByConfirmCodeFound: false, if user by confirm code not found", async () => {
     jest
-      .spyOn(usersRepository, "findRegistrationDataByConfirmCode")
+      .spyOn(usersRepo, "findRegistrationDataByConfirmCode")
       .mockImplementation(async () => null);
 
     const result = await registrationConfirmationUserUseCase.execute({

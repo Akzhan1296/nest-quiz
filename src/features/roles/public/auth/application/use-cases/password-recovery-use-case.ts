@@ -1,9 +1,9 @@
 import { add } from "date-fns";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { AuthService } from "../auth.service";
-import { UsersRepository } from "../../../../../infrstructura/users/users.repository";
 import { v4 as uuidv4 } from "uuid";
 import { RecoveryPasswordResultDTO } from "../auth.dto";
+import { UsersRepo } from "../../../../../infrstructura/users/users.adapter";
 
 export class PasswordRecoveryCommand {
   constructor(public email: string) {}
@@ -13,7 +13,7 @@ export class PasswordRecoveryUseCase
   implements ICommandHandler<PasswordRecoveryCommand>
 {
   constructor(
-    private readonly usersRepository: UsersRepository,
+    private readonly usersRepo: UsersRepo,
     private readonly authService: AuthService
   ) {}
 
@@ -25,10 +25,10 @@ export class PasswordRecoveryUseCase
       isConfirmDataUpdated: false,
     };
 
-    const userByEmail =
-      await this.usersRepository.findUserRegistrationDataByEmail(command.email);
+    const registrationData =
+      await this.usersRepo.findUserRegistrationDataByEmail(command.email);
 
-    if (!userByEmail) {
+    if (!registrationData) {
       return result;
     }
 
@@ -37,16 +37,13 @@ export class PasswordRecoveryUseCase
 
     // update confirm data
     try {
-      const isConfirmCodeUpdated = await this.usersRepository.setNewConfirmCode(
-        {
-          confirmCode,
-          emailExpDate: add(new Date(), {
-            minutes: 100,
-          }),
-          registrationId: userByEmail.registrationId,
-        }
-      );
-      result.isConfirmDataUpdated = isConfirmCodeUpdated;
+      registrationData.confirmCode = confirmCode;
+      registrationData.emailExpDate = add(new Date(), {
+        minutes: 100,
+      });
+      await this.usersRepo.saveRegistration(registrationData);
+
+      result.isConfirmDataUpdated = true;
     } catch (err) {
       throw new Error(err);
     }

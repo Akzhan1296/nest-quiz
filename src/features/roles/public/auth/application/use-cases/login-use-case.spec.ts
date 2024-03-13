@@ -1,11 +1,13 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { AppModule } from "../../../../../../app.module";
 import { AuthService } from "../auth.service";
-import { DeviceSessionsRepository } from "../../../../../infrstructura/deviceSessions/device-sessions.repository";
+
 import { LoginUseCase } from "./login-use-case";
-import { UsersRepository } from "../../../../../infrstructura/users/users.repository";
 import bcrypt from "bcrypt";
-import { AuthMetaDataViewModel } from "../../../../../infrstructura/deviceSessions/models/device.models";
+import { DeviceSessionRepo } from "../../../../../infrstructura/deviceSessions/device-sessions.adapter";
+import { UsersRepo } from "../../../../../infrstructura/users/users.adapter";
+import { AuthSession } from "../../../../../entity/auth-session-entity";
+import { User } from "../../../../../entity/users-entity";
 
 const authMock = {
   loginOrEmail: "login",
@@ -18,8 +20,8 @@ describe("Login use case", () => {
   let app: TestingModule;
   let loginUseCase: LoginUseCase;
   let authService: AuthService;
-  let deviceSessionRepository: DeviceSessionsRepository;
-  let usersRepository: UsersRepository;
+  let deviceSessionRepository: DeviceSessionRepo;
+  let usersRepo: UsersRepo;
 
   beforeEach(async () => {
     app = await Test.createTestingModule({
@@ -29,10 +31,8 @@ describe("Login use case", () => {
 
     loginUseCase = app.get<LoginUseCase>(LoginUseCase);
     authService = app.get<AuthService>(AuthService);
-    usersRepository = app.get<UsersRepository>(UsersRepository);
-    deviceSessionRepository = app.get<DeviceSessionsRepository>(
-      DeviceSessionsRepository
-    );
+    usersRepo = app.get<UsersRepo>(UsersRepo);
+    deviceSessionRepository = app.get<DeviceSessionRepo>(DeviceSessionRepo);
   });
 
   it("Should be defined", () => {
@@ -40,7 +40,7 @@ describe("Login use case", () => {
     expect(loginUseCase).toBeDefined();
     expect(authService).toBeDefined();
     expect(deviceSessionRepository).toBeDefined();
-    expect(usersRepository).toBeDefined();
+    expect(usersRepo).toBeDefined();
   });
   it("Should not return tokens, if userData not found", async () => {
     jest.spyOn(authService, "checkCreds").mockImplementation(async () => null);
@@ -58,19 +58,20 @@ describe("Login use case", () => {
   });
   it("Should update auth meta data, if already have, and return tokens", async () => {
     //mock usersRepository
-    jest
-      .spyOn(usersRepository, "findUserByEmail")
-      .mockImplementation(async () => ({
-        id: "id123",
-        login: "login",
-        password: "123",
-        email: "email",
-      }));
+    jest.spyOn(usersRepo, "findUserByEmail").mockImplementation(
+      async () =>
+        ({
+          id: "id123",
+          login: "login",
+          password: "123",
+          email: "email",
+        }) as User
+    );
 
     // mock authSessionMetaData
     jest
       .spyOn(deviceSessionRepository, "getAuthMetaDataByDeviceNameAndUserId")
-      .mockImplementation(async () => ({}) as AuthMetaDataViewModel);
+      .mockImplementation(async () => ({}) as AuthSession);
 
     // mock CT
     jest
@@ -85,6 +86,10 @@ describe("Login use case", () => {
     // mock bcrypt
     jest.spyOn(bcrypt, "compare").mockImplementation(async () => true);
 
+    jest
+      .spyOn(deviceSessionRepository, "saveAuthMetaData")
+      .mockImplementation(async () => undefined);
+
     const result = await loginUseCase.execute({
       authDTO: authMock,
     });
@@ -98,14 +103,15 @@ describe("Login use case", () => {
   });
   it("Should create meta data, if no, and return tokens", async () => {
     //mock usersRepository
-    jest
-      .spyOn(usersRepository, "findUserByEmail")
-      .mockImplementation(async () => ({
-        id: "id123",
-        login: "login",
-        password: "123",
-        email: "email",
-      }));
+    jest.spyOn(usersRepo, "findUserByEmail").mockImplementation(
+      async () =>
+        ({
+          id: "id123",
+          login: "login",
+          password: "123",
+          email: "email",
+        }) as User
+    );
 
     // mock bcrypt
     jest.spyOn(bcrypt, "compare").mockImplementation(async () => true);
@@ -115,7 +121,7 @@ describe("Login use case", () => {
       .spyOn(deviceSessionRepository, "getAuthMetaDataByDeviceNameAndUserId")
       .mockImplementation(async () => null);
     jest
-      .spyOn(deviceSessionRepository, "createAuthMetaData")
+      .spyOn(deviceSessionRepository, "saveAuthMetaData")
       .mockImplementation(async () => undefined);
 
     // mock CT

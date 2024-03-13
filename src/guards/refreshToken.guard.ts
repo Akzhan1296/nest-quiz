@@ -7,13 +7,13 @@ import {
 import { JwtService } from "@nestjs/jwt";
 import { Request } from "express";
 import { settings } from "../settings";
-import { DeviceSessionsRepository } from "../features/infrstructura/deviceSessions/device-sessions.repository";
+import { DeviceSessionRepo } from "../features/infrstructura/deviceSessions/device-sessions.adapter";
 
 @Injectable()
 export class RefreshTokenGuard implements CanActivate {
   constructor(
     private readonly jwtService: JwtService,
-    private readonly deviceSessionRepository: DeviceSessionsRepository // private readonly jwtTokensQueryRepository: JwtTokensQueryRepository,
+    private readonly deviceSessionRepo: DeviceSessionRepo // private readonly jwtTokensQueryRepository: JwtTokensQueryRepository,
   ) {}
   async canActivate(context: ExecutionContext) {
     const request: Request = context.switchToHttp().getRequest();
@@ -39,7 +39,7 @@ export class RefreshTokenGuard implements CanActivate {
     }
     if (payload) {
       authMetaData =
-        await this.deviceSessionRepository.getAuthMetaDataByDeviceIdAndUserId({
+        await this.deviceSessionRepo.getAuthMetaDataByDeviceIdAndUserId({
           userId: payload.userId,
           deviceId: payload.deviceId,
         });

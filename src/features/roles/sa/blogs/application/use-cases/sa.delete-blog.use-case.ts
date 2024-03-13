@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { DeleteBlogResultDTO } from "../sa.blogs.dto";
-import { BlogsRepository } from "../../../../../infrstructura/blogs/blogs.repository";
+import { BlogsRepo } from "../../../../../infrstructura/blogs/blogs.adapter";
 
 export class DeleteBlogBySACommand {
   constructor(
@@ -14,7 +14,9 @@ export class DeleteBlogBySACommand {
 export class DeleteBlogBySAUseCase
   implements ICommandHandler<DeleteBlogBySACommand>
 {
-  constructor(private blogsRepository: BlogsRepository) {}
+  constructor(
+    private blogsRepo: BlogsRepo
+  ) {}
 
   async execute(command: DeleteBlogBySACommand): Promise<DeleteBlogResultDTO> {
     const result: DeleteBlogResultDTO = {
@@ -24,13 +26,13 @@ export class DeleteBlogBySAUseCase
 
     const { blogId } = command.deleteBlogDTO;
 
-    const blogData = await this.blogsRepository.findBlogById(blogId);
+    const blogData = await this.blogsRepo.findBlogById(blogId);
     if (!blogData) return result;
 
     result.isBlogFound = true;
 
     try {
-      await this.blogsRepository.deleteBlogById(blogId);
+      await this.blogsRepo.deleteBlog(blogData);
       result.isBlogDeleted = true;
     } catch (err) {
       throw new Error(`Something went wrong with deleting blog${err}`);

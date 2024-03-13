@@ -7,7 +7,7 @@ export class Blog {
   id: string;
 
   @Column()
-  blogName: string;
+  name: string;
 
   @Column()
   websiteUrl: string;
