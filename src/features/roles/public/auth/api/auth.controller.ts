@@ -52,7 +52,7 @@ export class AuthController {
   ) {}
 
   @Post("login")
-  @UseGuards(BlockIpGuard)
+  // @UseGuards(BlockIpGuard)
   @HttpCode(HttpStatus.OK)
   async login(
     @Req() request: Request,
@@ -120,7 +120,7 @@ export class AuthController {
   }
 
   @Post("registration")
-  @UseGuards(BlockIpGuard)
+  // @UseGuards(BlockIpGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async registration(
     @Body() inputModel: AuthRegistrationInputModal
@@ -154,7 +154,7 @@ export class AuthController {
   }
 
   @Post("registration-confirmation")
-  @UseGuards(BlockIpGuard)
+  // @UseGuards(BlockIpGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async registrationConfirmation(
     @Body() inputModel: AuthRegistrationConfirmInputModal
@@ -187,7 +187,7 @@ export class AuthController {
   }
 
   @Post("registration-email-resending")
-  @UseGuards(BlockIpGuard)
+  // @UseGuards(BlockIpGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async registrationEmailResending(
     @Body() inputModel: AuthEmailResendingInputModal
@@ -222,7 +222,7 @@ export class AuthController {
   }
 
   @Post("password-recovery")
-  @UseGuards(BlockIpGuard)
+  // @UseGuards(BlockIpGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async passwordRecovery(
     @Body() inputModel: AuthEmailResendingInputModal
@@ -238,7 +238,7 @@ export class AuthController {
   }
 
   @Post("new-password")
-  @UseGuards(BlockIpGuard)
+  // @UseGuards(BlockIpGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async newPassword(
     @Body() inputModal: NewPasswordInputModal
