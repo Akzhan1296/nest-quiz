@@ -38,17 +38,16 @@ import { RefreshTokenGuard } from "../../../../../guards/refreshToken.guard";
 import { UpdateUserRefreshTokenCommand } from "../application/use-cases/refresh-token-use-case";
 import { LogOutCommand } from "../application/use-cases/logout-use-case";
 import { AuthGuard } from "../../../../../guards/auth.guard";
-import { UsersQueryRepository } from "../../../../infrstructura/users/users.query.repository";
-import { UserQueryViewDTO } from "../../../../infrstructura/users/models/users.models";
 import { PasswordRecoveryCommand } from "../application/use-cases/password-recovery-use-case";
 import { NewPasswordCommand } from "../application/use-cases/new-password-use-case";
 import { BlockIpGuard } from "../../../../../guards/ip.guard";
+import { UsersQueryRepo } from "../../../../infrstructura/users/users.query.adapter";
 
 @Controller("auth")
 export class AuthController {
   constructor(
     private readonly commandBus: CommandBus,
-    private readonly usersQueryRepository: UsersQueryRepository
+    private readonly usersQueryRepo: UsersQueryRepo
   ) {}
 
   @Post("login")
@@ -87,7 +86,6 @@ export class AuthController {
   @UseGuards(RefreshTokenGuard)
   @HttpCode(HttpStatus.OK)
   async refreshtoken(@Req() request: Request, @Res() response: Response) {
-
     const result = await this.commandBus.execute(
       new UpdateUserRefreshTokenCommand({
         userId: request.body.userId,
@@ -110,7 +108,6 @@ export class AuthController {
   @UseGuards(RefreshTokenGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async logOut(@Req() request: Request, @Res() response: Response) {
-
     await this.commandBus.execute(
       new LogOutCommand({
         deviceId: request.body.deviceId,
@@ -223,8 +220,9 @@ export class AuthController {
 
   @Get("me")
   @UseGuards(AuthGuard)
-  async getMe(@Req() request: Request): Promise<UserQueryViewDTO> {
-    return await this.usersQueryRepository.findUserById(request.body.userId);
+  //: Promise<UserQueryViewDTO>
+  async getMe(@Req() request: Request) {
+    return await this.usersQueryRepo.findUserById(request.body.userId);
   }
 
   @Post("password-recovery")

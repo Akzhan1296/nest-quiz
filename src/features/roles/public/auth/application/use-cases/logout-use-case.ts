@@ -45,8 +45,6 @@ export class LogOutUseCase implements ICommandHandler<LogOutCommand> {
           userId,
         });
 
-      console.log("authMetaData", authMetaData);
-
       result.isDeleted = !authMetaData;
     } catch (err) {
       throw new Error(`Failed to delete auth meta data: ${err.message}`);

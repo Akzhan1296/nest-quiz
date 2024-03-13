@@ -43,8 +43,8 @@ export class UsersRepo {
       .getOne();
   }
 
-  async findRegistrationDataById(id: string) {
-    return this.registrationRepository.findOneBy({ id });
+  async findRegistrationDataByUserId(userId: string) {
+    return this.registrationRepository.findOneBy({ userId });
   }
 
   async findRegistrationDataByConfirmCode(confirmCode: string) {

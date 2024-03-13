@@ -27,7 +27,11 @@ export class UsersQueryRepo {
       .getOne();
 
     if (builder) {
-      return this.getUserViewModel(builder);
+      return {
+        login: builder.login,
+        userId: builder.id,
+        email: builder.email,
+      }
     }
 
     return null;

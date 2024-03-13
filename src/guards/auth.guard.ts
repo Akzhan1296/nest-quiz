@@ -9,12 +9,12 @@ import { Request } from "express";
 import { JwtService } from "@nestjs/jwt";
 // import { JwtPayloadDTO } from '../features/jwt/application/dto/jwt.dto';
 import { settings } from "../settings";
-import { UsersRepository } from "../features/infrstructura/users/users.repository";
+import { UsersRepo } from "../features/infrstructura/users/users.adapter";
 
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
-    private readonly usersRepository: UsersRepository,
+    private readonly usersRepo: UsersRepo,
     private readonly jwtService: JwtService
   ) {}
   async canActivate(context: ExecutionContext) {
@@ -35,7 +35,7 @@ export class AuthGuard implements CanActivate {
       throw new UnauthorizedException();
     }
     if (payload && payload.userId && payload.userId.length > 0) {
-      user = await this.usersRepository.findUserById(payload.userId);
+      user = await this.usersRepo.findUserById(payload.userId);
     }
     if (user) {
       request.body.userId = payload.userId;
