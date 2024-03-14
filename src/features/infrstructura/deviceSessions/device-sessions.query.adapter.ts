@@ -18,12 +18,10 @@ export class DeviceSessionQueryRepo {
       .where("u.userId = :userId", { userId })
       .getMany();
 
-    console.log(users);
-
     return users.map((u) => ({
       ip: u.deviceIp,
       title: u.deviceName,
-      lastActiveDate: u.createdAt.toString(),
+      lastActiveDate: u.createdAt.toISOString(),
       deviceId: u.deviceId,
     }));
   }
