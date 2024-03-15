@@ -49,9 +49,6 @@ export class RefreshTokenGuard implements CanActivate {
       throw new UnauthorizedException();
     }
 
-    // console.log(authMetaData.createdAt.getTime());
-    // console.log(new Date(payload.createdAt).getTime());
-
     if (
       authMetaData.createdAt.getTime() !== new Date(payload.createdAt).getTime()
     ) {

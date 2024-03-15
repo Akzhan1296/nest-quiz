@@ -72,8 +72,7 @@ describe("Devices", () => {
     // auth user login123 with device 1
     const result = await request(app.getHttpServer())
       .post("/auth/login")
-      .set("user-agent", `deviceName${new Date()}`)
-      // .set("User-Agent", "1234")
+      .set("user-agent", `deviceName1234`)
       .send({
         loginOrEmail: "login123",
         password: "password",
@@ -82,8 +81,7 @@ describe("Devices", () => {
     // auth user login123 with device 2
     await request(app.getHttpServer())
       .post("/auth/login")
-      .set("user-agent", `deviceName${new Date()}`)
-      // .set("User-Agent", "123")
+      .set("user-agent", `deviceName12345`)
       .send({
         loginOrEmail: "login123",
         password: "password",
@@ -91,16 +89,12 @@ describe("Devices", () => {
 
     const refreshToken = result.headers["set-cookie"][0].split("=")[1];
 
-    // console.log(refreshToken);
-
     // get gevice id
     const devices = await request(app.getHttpServer())
       .get("/security/devices")
       .set("Cookie", `refreshToken=${refreshToken}`);
 
     expect(devices.body).toHaveLength(2);
-
-
 
     // delete current device by id
     await request(app.getHttpServer())
