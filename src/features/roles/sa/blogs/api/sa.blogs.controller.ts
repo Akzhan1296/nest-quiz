@@ -154,7 +154,9 @@ export class SABlogsController {
   async createPostByBlogId(
     @Param() params: ValidId,
     @Body() postInputModel: CreatePostInputType,
-  ): Promise<PostViewModel> {
+  )
+  // : Promise<PostViewModel>
+  {
     const result = await this.commandBus.execute<unknown, ResultCreatePostDTO>(
       new CreatePostBySACommand({
         blogId: params.id,
@@ -166,13 +168,15 @@ export class SABlogsController {
 
     if (!result.isBlogFound) throw new NotFoundException();
 
-    if (result.isPostCreated) {
-      const postViewModel = this.postQuerysRepository.getPostByPostId(
-        result.createdPostId,
-        null,
-      );
-      return postViewModel;
-    }
+    // if (result.isPostCreated) {
+    //   const postViewModel = this.postQuerysRepository.getPostByPostId(
+    //     result.createdPostId,
+    //     null,
+    //   );
+    //   return postViewModel;
+    // }
+
+    return null
   }
 
   // update post by blog id

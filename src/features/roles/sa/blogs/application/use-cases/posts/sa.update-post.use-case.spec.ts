@@ -1,15 +1,16 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { AppModule } from "../../../../../../../app.module";
 import { v4 as uuidv4 } from "uuid";
-import { BlogsRepository } from "../../../../../../infrstructura/blogs/blogs.repository";
-import { PostsRepository } from "../../../../../../infrstructura/posts/posts.repository";
 import { UpdatePostBySAUseCase } from "./sa.update-post.use-case";
+import { BlogsRepo } from "../../../../../../infrstructura/blogs/blogs.adapter";
+import { PostsRepo } from "../../../../../../infrstructura/posts/posts.adapter";
+import { Post } from "../../../../../../entity/posts-entity";
 
 describe("Update post use case", () => {
   let app: TestingModule;
   let updatePostUseCase: UpdatePostBySAUseCase;
-  let blogsRepository: BlogsRepository;
-  let postsRepository: PostsRepository;
+  let blogsRepo: BlogsRepo;
+  let postsRepo: PostsRepo;
 
   beforeEach(async () => {
     app = await Test.createTestingModule({
@@ -18,31 +19,31 @@ describe("Update post use case", () => {
     await app.init();
 
     updatePostUseCase = app.get<UpdatePostBySAUseCase>(UpdatePostBySAUseCase);
-    blogsRepository = app.get<BlogsRepository>(BlogsRepository);
-    postsRepository = app.get<PostsRepository>(PostsRepository);
+    blogsRepo = app.get<BlogsRepo>(BlogsRepo);
+    postsRepo = app.get<PostsRepo>(PostsRepo);
   });
 
   it("Should be defined", () => {
     expect(app).toBeDefined();
     expect(updatePostUseCase).toBeDefined();
-    expect(blogsRepository).toBeDefined();
-    expect(postsRepository).toBeDefined();
+    expect(blogsRepo).toBeDefined();
+    expect(postsRepo).toBeDefined();
   });
 
-  it("Should create post succesfully ", async () => {
+  it("Should update post succesfully ", async () => {
     const blogId = uuidv4();
     const postId = uuidv4();
 
     jest
-      .spyOn(blogsRepository, "findBlogById")
+      .spyOn(blogsRepo, "findBlogById")
       .mockImplementation(async () => blogId);
     jest
-      .spyOn(postsRepository, "findPostById")
-      .mockImplementation(async () => postId);
+      .spyOn(postsRepo, "findPostById")
+      .mockImplementation(async () => ({ id: postId }) as Post);
 
     jest
-      .spyOn(postsRepository, "updatePostById")
-      .mockImplementation(async () => true);
+      .spyOn(postsRepo, "savePost")
+      .mockImplementation(async () => ({}) as Post);
 
     const result = await updatePostUseCase.execute({
       updatePostDTO: {

@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { ResultUpdatePostDTO, UpdatePostDTO } from "../../sa.posts.dto";
-import { BlogsRepository } from "../../../../../../infrstructura/blogs/blogs.repository";
-import { PostsRepository } from "../../../../../../infrstructura/posts/posts.repository";
+import { BlogsRepo } from "../../../../../../infrstructura/blogs/blogs.adapter";
+import { PostsRepo } from "../../../../../../infrstructura/posts/posts.adapter";
 
 export class UpdatePostBySACommand {
   constructor(public updatePostDTO: UpdatePostDTO) {}
@@ -12,8 +12,8 @@ export class UpdatePostBySAUseCase
   implements ICommandHandler<UpdatePostBySACommand>
 {
   constructor(
-    private blogsRepository: BlogsRepository,
-    private postsRepository: PostsRepository,
+    private blogsRepo: BlogsRepo,
+    private postsRepo: PostsRepo
   ) {}
 
   async execute(command: UpdatePostBySACommand): Promise<ResultUpdatePostDTO> {
@@ -26,22 +26,22 @@ export class UpdatePostBySAUseCase
       isPostUpdated: false,
     };
 
-    const blogData = await this.blogsRepository.findBlogById(blogId);
+    const blogData = await this.blogsRepo.findBlogById(blogId);
     if (!blogData) return result;
     result.isBlogFound = true;
 
-    const postData = await this.postsRepository.findPostById(postId);
+    const postData = await this.postsRepo.findPostById(postId);
     if (!postData) return result;
     result.isPostFound = true;
 
     try {
-      const isPostUpdated = await this.postsRepository.updatePostById({
-        postId,
-        content,
-        shortDescription,
-        title,
-      });
-      result.isPostUpdated = isPostUpdated;
+      postData.content = content;
+      postData.shortDescription = shortDescription;
+      postData.title = title;
+
+      await this.postsRepo.savePost(postData);
+
+      result.isPostUpdated = true;
     } catch (err) {
       throw new Error(`Something went wrong with updating post ${err}`);
     }

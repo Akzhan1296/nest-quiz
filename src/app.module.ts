@@ -80,6 +80,8 @@ import { UsersQueryRepo } from "./features/infrstructura/users/users.query.adapt
 import { DeviceSessionRepo } from "./features/infrstructura/deviceSessions/device-sessions.adapter";
 import { DeviceSessionQueryRepo } from "./features/infrstructura/deviceSessions/device-sessions.query.adapter";
 import { BlockIpsRepo } from "./features/infrstructura/ip/ip.adapter.repository";
+import { PostsRepo } from "./features/infrstructura/posts/posts.adapter";
+import { PostsQueryRepo } from "./features/infrstructura/posts/posts.query.adapter";
 
 const userUseCases = [CreateUserUseCase, DeleteUserUseCase];
 const authUseCases = [
@@ -187,6 +189,8 @@ const commentsUseCases = [
     DeviceSessionRepo,
     DeviceSessionQueryRepo,
     BlockIpsRepo,
+    PostsRepo,
+    PostsQueryRepo,
     ...userUseCases,
     ...authUseCases,
     ...deviceUseCases,
