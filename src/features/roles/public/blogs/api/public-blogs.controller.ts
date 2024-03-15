@@ -41,7 +41,7 @@ export class PublicBlogs {
   async getBlogPostsgetBlogById(
     @Req() request: Request,
     @Query() pageSize: BlogsQueryType,
-    @Param() params: ValidId
+    @Param() params: ValidId,
   ): Promise<PaginationViewModel<PostViewModel>> {
     const blog = await this.blogsQueryRepo.getBlogById(params.id);
     if (!blog) {
@@ -53,7 +53,7 @@ export class PublicBlogs {
         skip: pageSize.skip,
         blogId: params.id,
       } as PageSizeQueryModel,
-      request.body.userId
+      request.body.userId,
     );
   }
 

@@ -55,7 +55,7 @@ describe("UsersController", () => {
       expect(result).toBeTruthy();
       expect(result).toEqual(mockResult);
       expect(mockExecute).toHaveBeenCalledWith(
-        new CreateUserCommand(createUserMock)
+        new CreateUserCommand(createUserMock),
       );
     });
   });
@@ -82,7 +82,7 @@ describe("UsersController", () => {
       //results
       expect(result).toBeTruthy();
       expect(mockExecute).toHaveBeenCalledWith(
-        new DeleteUserCommand(mockDeleteUserId)
+        new DeleteUserCommand(mockDeleteUserId),
       );
     });
     it("Should return 404, if user not found", async () => {
@@ -100,9 +100,9 @@ describe("UsersController", () => {
 
       //result
       await expect(
-        usersController.deleteUser({ id: mockDeleteUserId })
+        usersController.deleteUser({ id: mockDeleteUserId }),
       ).rejects.toEqual(
-        new BadRequestException("User by this confirm code not found")
+        new BadRequestException("User by this confirm code not found"),
       );
     });
   });

@@ -18,7 +18,7 @@ export class PostsRepository {
       SELECT *
 	  FROM public."Posts"
 	  WHERE "Id" = $1`,
-      [postId]
+      [postId],
     );
 
     if (result.length === 0) return null;
@@ -42,7 +42,7 @@ export class PostsRepository {
         VALUES ( $1, $2, $3, $4, $5)
         RETURNING "Id";
         `,
-      [title, shortDescription, content, createdAt, blogId]
+      [title, shortDescription, content, createdAt, blogId],
     );
 
     return result[0].Id;
@@ -55,7 +55,7 @@ export class PostsRepository {
       `UPDATE public."Posts"
         SET "Content"= $2, "ShortDescription" = $3, "Title" = $4
         WHERE "Id" = $1`,
-      [postId, content, shortDescription, title]
+      [postId, content, shortDescription, title],
     );
     // result = [[], 1 | 0]
     return !!result[1];
@@ -67,7 +67,7 @@ export class PostsRepository {
 	      DELETE FROM public."Posts"
 	      WHERE "Id" = $1
         `,
-      [postId]
+      [postId],
     );
 
     return !!result[1];
@@ -81,7 +81,7 @@ export class PostsRepository {
       SELECT "Id"
       FROM public."PostsLikesStatuses"
       WHERE "PostId" = $1 AND "UserId" = $2`,
-      [postId, userId]
+      [postId, userId],
     );
     if (result.length === 0) return null;
     return result[0].Id;
@@ -93,29 +93,30 @@ export class PostsRepository {
       SELECT "Id", "CommentId", "LikeStatus", "PostId", "UserId", "CreatedAt"
       FROM public."PostsLikesStatuses"
       WHERE "PostId" = $1`,
-      [postId]
+      [postId],
     );
     return result.length > 0 ? true : false;
   }
 
   async createPostLikeData(
-    setPostLikeEntityDto: SetPostLikeEntityDto
+    setPostLikeEntityDto: SetPostLikeEntityDto,
   ): Promise<string> {
-    const { createdAt, likeStatus, postId, userId, userLogin } = setPostLikeEntityDto;
+    const { createdAt, likeStatus, postId, userId, userLogin } =
+      setPostLikeEntityDto;
 
     const result = await this.dataSource.query(
       `INSERT INTO public."PostsLikesStatuses"(
         "PostId", "UserId", "CreatedAt", "LikeStatus", "UserLogin")
           VALUES ($1, $2, $3, $4, $5)
           RETURNING "Id"`,
-      [postId, userId, createdAt, likeStatus, userLogin]
+      [postId, userId, createdAt, likeStatus, userLogin],
     );
 
     return result[0].Id;
   }
 
   async updatePostLikeEntity(
-    updatePostLikeDto: UpdatePostLikeEntityDto
+    updatePostLikeDto: UpdatePostLikeEntityDto,
   ): Promise<boolean> {
     const { postLikeEntityId, postLikeStatus } = updatePostLikeDto;
 
@@ -123,7 +124,7 @@ export class PostsRepository {
       `UPDATE public."PostsLikesStatuses"
       SET "LikeStatus"= $2
       WHERE "Id" = $1`,
-      [postLikeEntityId, postLikeStatus]
+      [postLikeEntityId, postLikeStatus],
     );
     // result = [[], 1 | 0]
     return !!result[1];
@@ -135,7 +136,7 @@ export class PostsRepository {
 	      DELETE FROM public."PostsLikesStatuses"
 	      WHERE "PostId" = $1
         `,
-      [postId]
+      [postId],
     );
   }
 }

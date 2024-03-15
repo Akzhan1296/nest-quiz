@@ -15,7 +15,7 @@ import { User } from "../../../../entity/users-entity";
 export class AuthService {
   constructor(
     private readonly usersRepo: UsersRepo,
-    private readonly jwtService: JwtService
+    private readonly jwtService: JwtService,
   ) {}
 
   async sendEmail(emailDataDTO: EmailDataDTO) {
@@ -29,12 +29,12 @@ export class AuthService {
     await emailAdapter.sendEmail(
       email,
       `${letterTitle}`,
-      `<a href="http://localhost:5005/?${codeText}=${code}">${letterText}</a>`
+      `<a href="http://localhost:5005/?${codeText}=${code}">${letterText}</a>`,
     );
   }
   async checkCreds(
     loginOrEmail: string,
-    password: string
+    password: string,
   ): Promise<User | null> {
     let userData: User | null = null;
     let isPasswordExist: boolean = false;
@@ -50,7 +50,7 @@ export class AuthService {
     return isPasswordExist ? userData : null;
   }
   async createAccessToken(
-    accessTokenPayload: AccessTokenPayloadDTO
+    accessTokenPayload: AccessTokenPayloadDTO,
   ): Promise<string> {
     let accessToken = null;
     const { userId, login, email } = accessTokenPayload;
@@ -73,7 +73,7 @@ export class AuthService {
     return accessToken;
   }
   async createRefreshToken(
-    refreshTokenPayload: RefreshTokenPayloadDTO
+    refreshTokenPayload: RefreshTokenPayloadDTO,
   ): Promise<string> {
     let refreshsToken = null;
     const { userId, login, email, deviceName, deviceIp, deviceId, createdAt } =

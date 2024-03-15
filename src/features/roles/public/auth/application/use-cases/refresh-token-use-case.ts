@@ -16,11 +16,11 @@ export class UpdateUserRefreshTokenUseCase
   constructor(
     private readonly authService: AuthService,
     private readonly usersRepo: UsersRepo,
-    private readonly deviceSessionRepo: DeviceSessionRepo
+    private readonly deviceSessionRepo: DeviceSessionRepo,
   ) {}
 
   async execute(
-    command: UpdateUserRefreshTokenCommand
+    command: UpdateUserRefreshTokenCommand,
   ): Promise<RefreshTokenResultDTO> {
     const { userId, deviceId } = command.getRefreshTokenDTO;
     const createdAtRefreshToken: Date = new Date();

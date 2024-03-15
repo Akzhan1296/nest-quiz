@@ -19,7 +19,7 @@ describe("Logout use case", () => {
     logOutUseCase = app.get<LogOutUseCase>(LogOutUseCase);
     usersRepo = app.get<UsersRepo>(UsersRepo);
     deviceSessionRepository = app.get<DeviceSessionsRepository>(
-      DeviceSessionsRepository
+      DeviceSessionsRepository,
     );
   });
 

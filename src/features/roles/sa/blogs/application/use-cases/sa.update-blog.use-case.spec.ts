@@ -31,9 +31,7 @@ describe("Update blog use case", () => {
 
     jest
       .spyOn(blogsRepo, "findBlogById")
-      .mockImplementation(
-        async () => ({ id: blogId }) as Blog
-      );
+      .mockImplementation(async () => ({ id: blogId }) as Blog);
 
     jest
       .spyOn(blogsRepo, "saveBlog")

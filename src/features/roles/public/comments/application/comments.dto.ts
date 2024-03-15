@@ -15,7 +15,7 @@ export type CreateCommentResult = {
 
 export type HandleLikeCommentDTO = {
   commentId: string;
-  commentLikeStatus: Likes
+  commentLikeStatus: Likes;
   userId: string;
 };
 

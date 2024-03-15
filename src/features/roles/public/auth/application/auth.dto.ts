@@ -100,5 +100,5 @@ export type NewPasswordDTO = {
 export type NewPasswordResultDTO = {
   isRegistrationDataFound: boolean;
   isCorrectRecoveryCode: boolean;
-  isPasswordUpdated: boolean
-}
+  isPasswordUpdated: boolean;
+};

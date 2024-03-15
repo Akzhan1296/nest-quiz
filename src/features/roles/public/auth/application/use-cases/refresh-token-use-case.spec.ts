@@ -26,7 +26,7 @@ describe("Refresh token use case", () => {
     await app.init();
 
     refreshTokenUseCase = app.get<UpdateUserRefreshTokenUseCase>(
-      UpdateUserRefreshTokenUseCase
+      UpdateUserRefreshTokenUseCase,
     );
     authService = app.get<AuthService>(AuthService);
     deviceRepo = app.get<DeviceSessionRepo>(DeviceSessionRepo);
@@ -64,7 +64,7 @@ describe("Refresh token use case", () => {
           login: "login",
           password: "123",
           email: "email",
-        }) as User
+        }) as User,
     );
 
     jest
@@ -90,7 +90,7 @@ describe("Refresh token use case", () => {
           login: "login",
           password: "123",
           email: "email",
-        }) as User
+        }) as User,
     );
 
     jest

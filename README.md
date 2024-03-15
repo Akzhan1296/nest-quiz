@@ -19,7 +19,8 @@ This is my pet project where I used NestJS + TypeORM + Postgressql + unit tests 
 | Lesson 18       | 23.12.2023 - 11.01.2024               |
 | Lesson 19       | 22.01.2024 - 07.02.2024               |
 | Lesson 20       | 07.02.2024 - 11.02.2024               |
-| Lesson 21       | 27.02.2024 - ...                      |
+| Lesson 21       | 27.02.2024 - 15.03.2024               |
+| Lesson 22       | 15.03.2024 - ...                      |
 | Refactor and    | 14.02.2024 - ...                      |
 | adding tests    |                                       |     
 

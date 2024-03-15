@@ -16,7 +16,7 @@ describe("LikeStatusCommentUseCase", () => {
     await app.init();
     commentsRepository = app.get<CommentsRepository>(CommentsRepository);
     likeStatusCommentuseCase = app.get<LikeStatusCommentUseCase>(
-      LikeStatusCommentUseCase
+      LikeStatusCommentUseCase,
     );
   });
 

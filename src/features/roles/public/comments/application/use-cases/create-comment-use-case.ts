@@ -13,7 +13,7 @@ export class CreateCommentUseCase
 {
   constructor(
     private postsRepository: PostsRepository,
-    private commentsRepository: CommentsRepository
+    private commentsRepository: CommentsRepository,
   ) {}
 
   async execute(command: CreateCommentCommand): Promise<CreateCommentResult> {

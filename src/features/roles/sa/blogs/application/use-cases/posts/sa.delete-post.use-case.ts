@@ -13,7 +13,7 @@ export class DeletePostBySAUseCase
 {
   constructor(
     private blogsRepository: BlogsRepository,
-    private postsRepository: PostsRepository
+    private postsRepository: PostsRepository,
   ) {}
 
   async execute(command: DeletePostBySACommand): Promise<ResultDeletePostDTO> {

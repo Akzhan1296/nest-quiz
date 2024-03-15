@@ -13,7 +13,7 @@ export class CommentsRepository {
   constructor(@InjectDataSource() protected dataSource: DataSource) {}
 
   async createCommentForPost(
-    createCommentDTO: CreateCommentType
+    createCommentDTO: CreateCommentType,
   ): Promise<string> {
     const { createdAt, content, postId, userId, userLogin } = createCommentDTO;
 
@@ -22,21 +22,21 @@ export class CommentsRepository {
         "Content", "UserId", "UserLogin", "CreatedAt",  "PostId")
           VALUES ($1, $2, $3, $4, $5)
         RETURNING "Id"`,
-      [content, userId, userLogin, createdAt, postId]
+      [content, userId, userLogin, createdAt, postId],
     );
 
     return result[0].Id;
   }
 
   async getCommentEntityById(
-    commentId: string
+    commentId: string,
   ): Promise<CommentDataView | null> {
     const result = await this.dataSource.query(
       `    
       SELECT "Id", "Content", "UserId", "UserLogin", "CreatedAt", "PostId"
       FROM public."Comments"
       WHERE "Id" = $1`,
-      [commentId]
+      [commentId],
     );
 
     if (result.length === 0) return null;
@@ -57,7 +57,7 @@ export class CommentsRepository {
 	      DELETE FROM public."Comments"
 	      WHERE "Id" = $1
         `,
-      [commentId]
+      [commentId],
     );
 
     return !!result[1];
@@ -70,7 +70,7 @@ export class CommentsRepository {
       `UPDATE public."Comments"
         SET "Content"= $2
         WHERE "Id" = $1`,
-      [commentId, content]
+      [commentId, content],
     );
     // result = [[], 1 | 0]
     return !!result[1];
@@ -78,7 +78,7 @@ export class CommentsRepository {
 
   // comments likes
   async getCommentLikeData(
-    getCommentLikeDto: GetCommentLikeDataDTO
+    getCommentLikeDto: GetCommentLikeDataDTO,
   ): Promise<null | string> {
     const { commentId, userId } = getCommentLikeDto;
     const result = await this.dataSource.query(
@@ -86,7 +86,7 @@ export class CommentsRepository {
       SELECT "Id"
       FROM public."CommentLikesStatuses"
       WHERE "CommentId" = $1 AND "UserId" = $2`,
-      [commentId, userId]
+      [commentId, userId],
     );
     if (result.length === 0) return null;
     return result[0].Id;
@@ -98,13 +98,13 @@ export class CommentsRepository {
       SELECT "Id", "CommentId", "LikeStatus", "PostId", "UserId", "CreatedAt"
       FROM public."CommentLikesStatuses"
       WHERE "CommentId" = $1`,
-      [commentId]
+      [commentId],
     );
     return result.length > 0 ? true : false;
   }
 
   async createCommentLikeEntity(
-    setCommentLikeEntityDto: SetCommentLikeEntityDto
+    setCommentLikeEntityDto: SetCommentLikeEntityDto,
   ): Promise<string> {
     const { commentId, createdAt, likeStatus, postId, userId } =
       setCommentLikeEntityDto;
@@ -114,14 +114,14 @@ export class CommentsRepository {
           "CommentId", "LikeStatus", "PostId", "UserId", "CreatedAt")
             VALUES ($1, $2, $3, $4, $5)
           RETURNING "Id"`,
-      [commentId, likeStatus, postId, userId, createdAt]
+      [commentId, likeStatus, postId, userId, createdAt],
     );
 
     return result[0].Id;
   }
 
   async updateCommentLikeEntity(
-    updateCommentLike: UpdateCommentLikeEntityDto
+    updateCommentLike: UpdateCommentLikeEntityDto,
   ): Promise<boolean> {
     const { likeEntityId, likeStatus } = updateCommentLike;
 
@@ -129,7 +129,7 @@ export class CommentsRepository {
       `UPDATE public."CommentLikesStatuses"
       SET "LikeStatus"= $2
       WHERE "Id" = $1`,
-      [likeEntityId, likeStatus]
+      [likeEntityId, likeStatus],
     );
     // result = [[], 1 | 0]
     return !!result[1];
@@ -141,7 +141,7 @@ export class CommentsRepository {
 	      DELETE FROM public."CommentLikesStatuses"
 	      WHERE "CommentId" = $1
         `,
-      [commentId]
+      [commentId],
     );
   }
 }

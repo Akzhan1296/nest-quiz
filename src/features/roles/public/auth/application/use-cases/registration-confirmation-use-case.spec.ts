@@ -14,7 +14,7 @@ const userByConfirmCodeMock = {
   isConfirmed: false,
   confirmCode: "a8904469-3781-49a1-a5d7-56007c27ee77",
   registrationId: uuidv4(),
-  userId: uuidv4()
+  userId: uuidv4(),
 } as const;
 
 describe("Registration confirmation use-case", () => {
@@ -40,11 +40,13 @@ describe("Registration confirmation use-case", () => {
   it("Should confirm registration", async () => {
     jest
       .spyOn(usersRepo, "findRegistrationDataByConfirmCode")
-      .mockImplementation(async () => userByConfirmCodeMock as unknown as Registration);
+      .mockImplementation(
+        async () => userByConfirmCodeMock as unknown as Registration,
+      );
 
     jest
-    .spyOn(usersRepo, "saveRegistration")
-    .mockImplementation(async () => null as unknown as Registration);
+      .spyOn(usersRepo, "saveRegistration")
+      .mockImplementation(async () => null as unknown as Registration);
 
     const result = await registrationConfirmationUserUseCase.execute({
       confirmCode: { code: "a8904469-3781-49a1-a5d7-56007c27ee77" },
@@ -61,10 +63,13 @@ describe("Registration confirmation use-case", () => {
   it("Should return isEmailAlreadyConfirmed: true, if email already confirmed", async () => {
     jest
       .spyOn(usersRepo, "findRegistrationDataByConfirmCode")
-      .mockImplementation(async () => ({
-        ...userByConfirmCodeMock,
-        isConfirmed: true,
-      }) as unknown as Registration);
+      .mockImplementation(
+        async () =>
+          ({
+            ...userByConfirmCodeMock,
+            isConfirmed: true,
+          }) as unknown as Registration,
+      );
 
     const result = await registrationConfirmationUserUseCase.execute({
       confirmCode: { code: "a8904469-3781-49a1-a5d7-56007c27ee77" },
@@ -81,13 +86,16 @@ describe("Registration confirmation use-case", () => {
   it("Should return isConfirmDateExpired: true, if exp date is already expired", async () => {
     jest
       .spyOn(usersRepo, "findRegistrationDataByConfirmCode")
-      .mockImplementation(async () => ({
-        ...userByConfirmCodeMock,
-        isConfirmed: false,
-        emailExpDate: add(new Date(), {
-          minutes: -10,
-        }),
-      }) as unknown as Registration);
+      .mockImplementation(
+        async () =>
+          ({
+            ...userByConfirmCodeMock,
+            isConfirmed: false,
+            emailExpDate: add(new Date(), {
+              minutes: -10,
+            }),
+          }) as unknown as Registration,
+      );
 
     const result = await registrationConfirmationUserUseCase.execute({
       confirmCode: { code: "a8904469-3781-49a1-a5d7-56007c27ee77" },

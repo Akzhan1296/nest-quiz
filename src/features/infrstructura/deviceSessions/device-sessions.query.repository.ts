@@ -11,7 +11,7 @@ export class DeviceSessionsQueryRepository {
       FROM public."AuthSessionsMetaData"
       WHERE "UserId" = $1
       `,
-      [userId]
+      [userId],
     );
 
     return result.map((r) => ({

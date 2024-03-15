@@ -23,7 +23,7 @@ export class UsersRepository {
     SELECT "Id", "Login", "Password", "Email"
 	  FROM public."Users"
 	  WHERE "Email" like $1`,
-      [email]
+      [email],
     );
 
     if (result.length === 0) return null;
@@ -43,7 +43,7 @@ export class UsersRepository {
     SELECT "Id", "Login", "Password", "Email"
 	  FROM public."Users"
 	  WHERE "Login" like $1`,
-      [login]
+      [login],
     );
 
     if (result.length === 0) return null;
@@ -63,7 +63,7 @@ export class UsersRepository {
     SELECT "Id", "Login", "Password", "Email"
 	  FROM public."Users"
 	  WHERE "Id" = $1`,
-      [id]
+      [id],
     );
 
     if (result.length === 0) return null;
@@ -77,14 +77,14 @@ export class UsersRepository {
 
   // registration table
   async findRegistrationDataByConfirmCode(
-    code: string
+    code: string,
   ): Promise<RegistrationViewDTO | null> {
     // registration table
     const result = await this.dataSource.query(
       ` SELECT "Id", "ConfirmCode", "IsConfirmed", "EmailExpDate", "CreatedAt", "UserId"
 	      FROM public."Registration"
 	      WHERE "ConfirmCode" like $1`,
-      [code]
+      [code],
     );
 
     if (result.length === 0) return null;
@@ -101,7 +101,7 @@ export class UsersRepository {
 
   // registration + user tables
   async findUserRegistrationDataByEmail(
-    email: string
+    email: string,
   ): Promise<RegistrationWithUserViewDTO | null> {
     const result = await this.dataSource.query(
       `SELECT r.*, u."Email"
@@ -109,7 +109,7 @@ export class UsersRepository {
         LEFT JOIN public."Users" u
         on r."UserId" = u."Id"
         WHERE u."Email" = $1`,
-      [email]
+      [email],
     );
 
     if (!result.length) return null;
@@ -132,7 +132,7 @@ export class UsersRepository {
     SELECT "Id"
 	  FROM public."Registration"
 	  WHERE "UserId" = $1`,
-      [userId]
+      [userId],
     );
 
     if (!result.length) return null;
@@ -141,7 +141,7 @@ export class UsersRepository {
 
   // user table
   async createUser(
-    creationUser: CreateUserEntryDTO
+    creationUser: CreateUserEntryDTO,
   ): Promise<CreatedUserViewModel> {
     const { login, passwordHash, email, createdAt } = creationUser;
 
@@ -150,7 +150,7 @@ export class UsersRepository {
       "Login", "Password", "Email", "CreatedAt")
       VALUES ($1, $2, $3, $4)
       RETURNING "Id", "Email", "CreatedAt", "Login";`,
-      [login, passwordHash, email, createdAt]
+      [login, passwordHash, email, createdAt],
     );
     return {
       id: result[0].Id,
@@ -162,7 +162,7 @@ export class UsersRepository {
 
   // registration table
   async registrationUser(
-    registrationUser: RegistrationEntryDTO
+    registrationUser: RegistrationEntryDTO,
   ): Promise<boolean> {
     const { confirmCode, isConfirmed, emailExpDate, createdAt, userId } =
       registrationUser;
@@ -172,7 +172,7 @@ export class UsersRepository {
       "ConfirmCode", "IsConfirmed", "EmailExpDate", "CreatedAt", "UserId")
 	    VALUES ($1, $2, $3, $4, $5)
       RETURNING "Id"`,
-      [confirmCode, isConfirmed, emailExpDate, createdAt, userId]
+      [confirmCode, isConfirmed, emailExpDate, createdAt, userId],
     );
 
     return result[0];
@@ -180,7 +180,7 @@ export class UsersRepository {
 
   // registratino table
   async confirmRegistration(
-    registrationConfirmation: ConfirmRegistrationEntryDTO
+    registrationConfirmation: ConfirmRegistrationEntryDTO,
   ): Promise<boolean> {
     const { confirmCode, isConfirmed } = registrationConfirmation;
 
@@ -188,7 +188,7 @@ export class UsersRepository {
       `UPDATE public."Registration"
         SET "IsConfirmed"= $2
         WHERE "ConfirmCode" = $1`,
-      [confirmCode, isConfirmed]
+      [confirmCode, isConfirmed],
     );
     // result = [[], 1 | 0]
     return !!result[1];
@@ -196,7 +196,7 @@ export class UsersRepository {
 
   // registration table
   async setNewConfirmCode(
-    newConfirmCode: NewConfirmCodeEntryDTO
+    newConfirmCode: NewConfirmCodeEntryDTO,
   ): Promise<boolean> {
     const { confirmCode, emailExpDate, registrationId } = newConfirmCode;
 
@@ -204,7 +204,7 @@ export class UsersRepository {
       `UPDATE public."Registration"
         SET "ConfirmCode"= $1, "EmailExpDate"= $2
         WHERE "Id" = $3`,
-      [confirmCode, emailExpDate, registrationId]
+      [confirmCode, emailExpDate, registrationId],
     );
     // result = [[], 1 | 0]
     return !!result[1];
@@ -217,7 +217,7 @@ export class UsersRepository {
       `UPDATE public."Users"
         SET "Password"= $1
         WHERE "Id" = $2`,
-      [passwordHash, userId]
+      [passwordHash, userId],
     );
     // result = [[], 1 | 0]
     return !!result[1];
@@ -230,7 +230,7 @@ export class UsersRepository {
 	      DELETE FROM public."Users"
 	      WHERE "Id" = $1
         `,
-      [userId]
+      [userId],
     );
   }
 
@@ -242,7 +242,7 @@ export class UsersRepository {
 	      DELETE FROM public."Registration"
 	      WHERE "Id" = $1
         `,
-      [regestrationId]
+      [regestrationId],
     );
   };
 }

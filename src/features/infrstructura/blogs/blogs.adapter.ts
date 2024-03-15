@@ -7,7 +7,7 @@ import { Blog } from "../../entity/blogs-entity";
 export class BlogsRepo {
   constructor(
     @InjectRepository(Blog)
-    private blogsRepository: Repository<Blog>
+    private blogsRepository: Repository<Blog>,
   ) {}
 
   async findBlogById(blogId: string): Promise<Blog | null> {

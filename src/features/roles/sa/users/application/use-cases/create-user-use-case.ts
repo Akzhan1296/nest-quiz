@@ -10,9 +10,7 @@ export class CreateUserCommand {
 }
 @CommandHandler(CreateUserCommand)
 export class CreateUserUseCase implements ICommandHandler<CreateUserCommand> {
-  constructor(
-    private readonly usersRepo: UsersRepo
-  ) {}
+  constructor(private readonly usersRepo: UsersRepo) {}
 
   async execute(command: CreateUserCommand): Promise<CreatedUserViewModel> {
     const { login, password, email } = command.createUserDTO;

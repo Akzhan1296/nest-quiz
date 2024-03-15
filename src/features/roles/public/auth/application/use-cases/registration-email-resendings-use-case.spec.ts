@@ -30,7 +30,7 @@ describe("Registration email resending use-case", () => {
 
     usersRepository = app.get<UsersRepo>(UsersRepo);
     emailResendingUseCase = app.get<EmailResendingUseCase>(
-      EmailResendingUseCase
+      EmailResendingUseCase,
     );
   });
 
@@ -42,7 +42,7 @@ describe("Registration email resending use-case", () => {
     jest
       .spyOn(usersRepository, "findUserRegistrationDataByEmail")
       .mockImplementation(
-        async () => userByEmailMock as unknown as Registration
+        async () => userByEmailMock as unknown as Registration,
       );
 
     const result = await emailResendingUseCase.execute({
@@ -64,7 +64,7 @@ describe("Registration email resending use-case", () => {
           ({
             ...userByEmailMock,
             isConfirmed: true,
-          }) as unknown as Registration
+          }) as unknown as Registration,
       );
 
     const result = await emailResendingUseCase.execute({

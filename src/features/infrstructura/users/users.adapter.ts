@@ -10,7 +10,7 @@ export class UsersRepo {
     @InjectRepository(User)
     private usersRepository: Repository<User>,
     @InjectRepository(Registration)
-    private registrationRepository: Repository<Registration>
+    private registrationRepository: Repository<Registration>,
   ) {}
 
   // user

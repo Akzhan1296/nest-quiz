@@ -32,7 +32,7 @@ export type RegistrationViewDTO = {
   isConfirmed: boolean;
   confirmCode: string;
   registrationId: string;
-  userId: string
+  userId: string;
 };
 
 export type UserViewDTO = {

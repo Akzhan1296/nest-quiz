@@ -13,11 +13,11 @@ export class DeleteCurrentDeviceUseCase
 {
   constructor(
     private readonly usersRepo: UsersRepo,
-    private readonly deviceSessionRepo: DeviceSessionRepo
+    private readonly deviceSessionRepo: DeviceSessionRepo,
   ) {}
 
   async execute(
-    command: DeleteCurrentDeviceCommand
+    command: DeleteCurrentDeviceCommand,
   ): Promise<DeleteDeviceResultDTO> {
     const { userId, deviceId } = command.deleteDeviceDTO;
 

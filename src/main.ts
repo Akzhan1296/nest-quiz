@@ -32,7 +32,7 @@ async function bootstrap() {
 
         throw new BadRequestException(errorsForProperty);
       },
-    })
+    }),
   );
 
   app.useGlobalFilters(new HttpExceptionFilter());

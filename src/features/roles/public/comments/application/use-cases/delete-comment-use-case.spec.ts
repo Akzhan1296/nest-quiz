@@ -58,7 +58,7 @@ describe("DeleteCommentUseCase", () => {
     jest
       .spyOn(commentsRepository, "getCommentEntityById")
       .mockImplementation(
-        async () => ({ userId: uuidv4() }) as CommentDataView
+        async () => ({ userId: uuidv4() }) as CommentDataView,
       );
 
     const result = await deleteCommentUseCase.execute({

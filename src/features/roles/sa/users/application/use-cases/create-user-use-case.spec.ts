@@ -15,10 +15,10 @@ describe("Create user use case", () => {
     usersRepo = app.get<UsersRepo>(UsersRepo);
   });
 
-  it('Should be defined', () => {
+  it("Should be defined", () => {
     expect(createUserUseCase).toBeDefined();
     expect(usersRepo).toBeDefined();
-  })
+  });
   it("Should create user", async () => {
     const createUserDTO = {
       login: "123",

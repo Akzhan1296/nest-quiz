@@ -65,7 +65,7 @@ describe("Login use case", () => {
           login: "login",
           password: "123",
           email: "email",
-        }) as User
+        }) as User,
     );
 
     // mock authSessionMetaData
@@ -110,7 +110,7 @@ describe("Login use case", () => {
           login: "login",
           password: "123",
           email: "email",
-        }) as User
+        }) as User,
     );
 
     // mock bcrypt

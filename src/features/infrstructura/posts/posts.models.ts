@@ -47,7 +47,7 @@ export type SetPostLikeEntityDto = {
   likeStatus: string;
   postId: string;
   createdAt: Date;
-  userLogin: string
+  userLogin: string;
 };
 
 export type UpdatePostLikeEntityDto = {

@@ -31,7 +31,7 @@ export class DeleteCommentUseCase
       return result;
     }
 
-    const isAnyCommentLikesData = 
+    const isAnyCommentLikesData =
       await this.commentsRepository.isAnyCommentLikesData(commentId);
 
     if (isAnyCommentLikesData) {
@@ -39,7 +39,7 @@ export class DeleteCommentUseCase
         await this.commentsRepository.deleteCommentLikeEntities(commentId);
       } catch (err) {
         throw new Error(
-          `Something went wrong with deleting comments likes entity ${err}`
+          `Something went wrong with deleting comments likes entity ${err}`,
         );
       }
     }
@@ -51,7 +51,7 @@ export class DeleteCommentUseCase
       result.isCommentDeleted = isCommentDeleted;
     } catch (err) {
       throw new Error(
-        `Something went wrong with deleting comment entity ${err}`
+        `Something went wrong with deleting comment entity ${err}`,
       );
     }
 

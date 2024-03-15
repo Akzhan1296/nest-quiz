@@ -28,7 +28,7 @@ export class PostsQueryRepository {
 
   async getPostByPostId(
     postId: string,
-    userId: string | null
+    userId: string | null,
   ): Promise<PostViewModel | null> {
     const result = await this.dataSource.query(
       `	SELECT
@@ -64,7 +64,7 @@ FROM (
       p."Id" = $1;
     
       `,
-      [postId, userId]
+      [postId, userId],
     );
 
     if (!result.length) return null;
@@ -90,7 +90,7 @@ FROM (
 
   async getPostsByBlogId(
     pageParams: PageSizeQueryModel,
-    userId: string | null
+    userId: string | null,
   ): Promise<PaginationViewModel<PostViewModel>> {
     const { sortBy, sortDirection, skip, pageSize, blogId } = pageParams;
     const orderBy = transformFirstLetter(sortBy);
@@ -137,7 +137,7 @@ FROM (
         $1 OFFSET $2
 
         `,
-      [pageSize, skip, blogId, userId]
+      [pageSize, skip, blogId, userId],
     );
 
     const count = await this.dataSource.query(
@@ -146,7 +146,7 @@ FROM (
       FROM public."Posts"
       WHERE "BlogId" = $1
     `,
-      [blogId]
+      [blogId],
     );
 
     return Paginated.transformPagination<PostViewModel>(
@@ -154,13 +154,13 @@ FROM (
         ...pageParams,
         totalCount: +count[0].count,
       },
-      this.getMappedPostItems(result)
+      this.getMappedPostItems(result),
     );
   }
 
   async getPosts(
     pageParams: PageSizeQueryModel,
-    userId: string | null
+    userId: string | null,
   ): Promise<PaginationViewModel<PostViewModel>> {
     const { sortBy, sortDirection, skip, pageSize } = pageParams;
     const orderBy = transformFirstLetter(sortBy);
@@ -201,14 +201,14 @@ FROM (
         ORDER BY "${orderBy}" ${sortDirection}
         LIMIT $1 OFFSET $2
       `,
-      [pageSize, skip, userId]
+      [pageSize, skip, userId],
     );
 
     const count = await this.dataSource.query(
       `
       SELECT count (*)
       FROM public."Posts"
-    `
+    `,
     );
 
     return Paginated.transformPagination<PostViewModel>(
@@ -216,7 +216,7 @@ FROM (
         ...pageParams,
         totalCount: +count[0].count,
       },
-      this.getMappedPostItems(result)
+      this.getMappedPostItems(result),
     );
   }
 }

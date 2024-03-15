@@ -10,9 +10,7 @@ export class UpdateBlogBySACommand {
 export class UpdateBlogBySAUseCase
   implements ICommandHandler<UpdateBlogBySACommand>
 {
-  constructor(
-    private blogsRepo: BlogsRepo
-  ) {}
+  constructor(private blogsRepo: BlogsRepo) {}
 
   async execute(command: UpdateBlogBySACommand): Promise<UpdateBlogResultDTO> {
     const { blogId, description, name, websiteUrl } = command.updateBlogDTO;
@@ -34,7 +32,7 @@ export class UpdateBlogBySAUseCase
       result.isBlogUpdated = true;
     } catch (err) {
       throw new Error(
-        `Something went wrong during updating blog by id ${blogId} ${err}`
+        `Something went wrong during updating blog by id ${blogId} ${err}`,
       );
     }
 

@@ -8,7 +8,7 @@ import { PageSizeQueryModel, PaginationViewModel } from "../../../common/types";
 export class BlogsQueryRepo {
   constructor(
     @InjectRepository(Blog)
-    private blogsRepository: Repository<Blog>
+    private blogsRepository: Repository<Blog>,
   ) {}
 
   async getBlogById(blogId: string): Promise<BlogViewModel | null> {
@@ -37,7 +37,7 @@ export class BlogsQueryRepo {
   }
 
   async getBlogs(
-    pageParams: PageSizeQueryModel
+    pageParams: PageSizeQueryModel,
   ): Promise<PaginationViewModel<BlogViewModel>> {
     const { sortBy, sortDirection, skip, pageSize, searchNameTerm } =
       pageParams;
@@ -50,7 +50,7 @@ export class BlogsQueryRepo {
       })
       .orderBy(
         `"${sortBy}"`,
-        `${sortDirection.toUpperCase()}` as "ASC" | "DESC"
+        `${sortDirection.toUpperCase()}` as "ASC" | "DESC",
       )
       .skip(skip)
       .take(pageSize)
@@ -68,7 +68,7 @@ export class BlogsQueryRepo {
         ...pageParams,
         totalCount: +count,
       },
-      blogs
+      blogs,
     );
   }
 }

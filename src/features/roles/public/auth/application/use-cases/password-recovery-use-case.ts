@@ -14,11 +14,11 @@ export class PasswordRecoveryUseCase
 {
   constructor(
     private readonly usersRepo: UsersRepo,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
   ) {}
 
   async execute(
-    command: PasswordRecoveryCommand
+    command: PasswordRecoveryCommand,
   ): Promise<RecoveryPasswordResultDTO> {
     const result: RecoveryPasswordResultDTO = {
       isUserFound: false,

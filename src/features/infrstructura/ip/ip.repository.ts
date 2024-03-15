@@ -16,7 +16,7 @@ export class BlockIpsRepository {
       "Ip", "RequestPath", "DateNumber")
       VALUES ($1, $2, $3)
       RETURNING "Id";`,
-      [ip, path, date]
+      [ip, path, date],
     );
     return result[0].Id;
   }
@@ -28,7 +28,7 @@ export class BlockIpsRepository {
           AND "RequestPath" = $2
           AND "DateNumber" >= $3
           AND "DateNumber" <= $4;`,
-      [ip, path, dateLeft, dateRight]
+      [ip, path, dateLeft, dateRight],
     );
 
     return result;

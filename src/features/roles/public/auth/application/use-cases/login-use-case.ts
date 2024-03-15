@@ -13,7 +13,7 @@ export class LoginCommand {
 export class LoginUseCase implements ICommandHandler<LoginCommand> {
   constructor(
     private readonly authService: AuthService,
-    private readonly deviceSessionRepo: DeviceSessionRepo
+    private readonly deviceSessionRepo: DeviceSessionRepo,
   ) {}
 
   async execute(command: LoginCommand): Promise<AutoResultDTO> {

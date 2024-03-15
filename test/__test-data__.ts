@@ -22,7 +22,7 @@ export const mockResponse = {
 export const registrationUser: AuthRegistrationInputModal = {
   login: `login${new Date().getHours()}${new Date().getMilliseconds()}`.slice(
     0,
-    10
+    10,
   ),
   password: "password",
   email: `test${new Date().getHours()}${new Date().getMilliseconds()}@test.ru`,

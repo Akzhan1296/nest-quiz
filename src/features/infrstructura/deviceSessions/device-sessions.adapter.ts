@@ -8,7 +8,7 @@ import { DeleteAllDevicesDTO } from "./models/device.models";
 export class DeviceSessionRepo {
   constructor(
     @InjectRepository(AuthSession)
-    private deviceSessionRepository: Repository<AuthSession>
+    private deviceSessionRepository: Repository<AuthSession>,
   ) {}
 
   async getAuthMetaDataByDeviceIdAndUserId(dto: {

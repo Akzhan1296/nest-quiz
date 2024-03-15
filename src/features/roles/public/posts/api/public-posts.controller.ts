@@ -35,7 +35,7 @@ export class PublicPosts {
   constructor(
     private postQuerysRepository: PostsQueryRepository,
     private commentsQueryRepository: CommentsQueryRepository,
-    private commandBus: CommandBus
+    private commandBus: CommandBus,
   ) {}
 
   @Get("")
@@ -43,11 +43,11 @@ export class PublicPosts {
   @HttpCode(HttpStatus.OK)
   async getPosts(
     @Req() request: Request,
-    @Query() pageSize: BlogsQueryType
+    @Query() pageSize: BlogsQueryType,
   ): Promise<PaginationViewModel<PostViewModel>> {
     return await this.postQuerysRepository.getPosts(
       pageSize,
-      request.body.userId
+      request.body.userId,
     );
   }
 
@@ -58,7 +58,7 @@ export class PublicPosts {
   async getPostById(@Req() request: Request, @Param() params: ValidId) {
     const post = await this.postQuerysRepository.getPostByPostId(
       params.id,
-      request.body.userId
+      request.body.userId,
     );
     if (!post) {
       throw new NotFoundException("post by id not found");
@@ -73,11 +73,11 @@ export class PublicPosts {
   async getCommentsPostById(
     @Req() request: Request,
     @Query() pageSize: CommentsQueryType,
-    @Param() params: ValidId
+    @Param() params: ValidId,
   ) {
     const post = await this.postQuerysRepository.getPostByPostId(
       params.id,
-      request.body.userId
+      request.body.userId,
     );
 
     if (!post) {
@@ -87,7 +87,7 @@ export class PublicPosts {
     const comments = await this.commentsQueryRepository.getCommentsByPostId(
       params.id,
       request.body.userId,
-      pageSize
+      pageSize,
     );
 
     return comments;
@@ -101,7 +101,7 @@ export class PublicPosts {
   async postStatus(
     @Req() request: Request,
     @Param() params: ValidId,
-    @Body() postLikeStatus: PostLikeStatus
+    @Body() postLikeStatus: PostLikeStatus,
   ) {
     const result = await this.commandBus.execute(
       new HandlePostLikesCommand({
@@ -109,7 +109,7 @@ export class PublicPosts {
         postLikeStatus: postLikeStatus.likeStatus,
         userId: request.body.userId,
         userLogin: request.body.userLogin,
-      })
+      }),
     );
 
     if (!result.isPostFound) {
@@ -125,7 +125,7 @@ export class PublicPosts {
   async createCommentForSelectedPost(
     @Req() request: Request,
     @Param() params: ValidId,
-    @Body() commentInputModel: CreateCommentInputModel
+    @Body() commentInputModel: CreateCommentInputModel,
   ): Promise<CommentViewModel> {
     const result = await this.commandBus.execute(
       new CreateCommentCommand({
@@ -133,7 +133,7 @@ export class PublicPosts {
         userLogin: request.body.userLogin,
         postId: params.id,
         content: commentInputModel.content,
-      })
+      }),
     );
 
     if (!result.isPostFound) {
@@ -143,7 +143,7 @@ export class PublicPosts {
     if (result.isCommentCreated) {
       const commentViewModel = this.commentsQueryRepository.getCommentById(
         result.commentId,
-        request.body.userId
+        request.body.userId,
       );
       return commentViewModel;
     }

@@ -58,7 +58,6 @@ describe("CreateCommentUseCase", () => {
   });
 
   it("Should NOT create comment, if post did NOT found", async () => {
-
     jest
       .spyOn(postsRepository, "findPostById")
       .mockImplementation(async () => null);

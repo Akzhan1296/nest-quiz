@@ -22,11 +22,11 @@ export class RegistrationUserUseCase
   constructor(
     private readonly commandBus: CommandBus,
     private readonly authService: AuthService,
-    private readonly usersRepo: UsersRepo
+    private readonly usersRepo: UsersRepo,
   ) {}
 
   async execute(
-    command: RegistrationUserCommand
+    command: RegistrationUserCommand,
   ): Promise<RegistrationUserResultDTO> {
     let userId = null;
     let confirmCode = null;
@@ -40,8 +40,7 @@ export class RegistrationUserUseCase
     const { email, login, password } = command.registrationUser;
 
     // check login
-    const isLoginAlreadyExist =
-      await this.usersRepo.findUserByLogin(login);
+    const isLoginAlreadyExist = await this.usersRepo.findUserByLogin(login);
 
     if (isLoginAlreadyExist) {
       result.isLoginAlreadyExist = true;
@@ -49,8 +48,7 @@ export class RegistrationUserUseCase
     }
 
     // check email
-    const isEmailAlreadyExist =
-      await this.usersRepo.findUserByEmail(email);
+    const isEmailAlreadyExist = await this.usersRepo.findUserByEmail(email);
 
     if (isEmailAlreadyExist) {
       result.isEmailAlreadyExist = true;
@@ -63,7 +61,7 @@ export class RegistrationUserUseCase
           email,
           login,
           password,
-        })
+        }),
       );
       result.isUserCreated = !!createdUser;
       userId = createdUser.id;

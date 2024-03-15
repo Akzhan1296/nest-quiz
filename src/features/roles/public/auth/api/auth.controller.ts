@@ -40,7 +40,7 @@ import { LogOutCommand } from "../application/use-cases/logout-use-case";
 import { AuthGuard } from "../../../../../guards/auth.guard";
 import { PasswordRecoveryCommand } from "../application/use-cases/password-recovery-use-case";
 import { NewPasswordCommand } from "../application/use-cases/new-password-use-case";
-import { BlockIpGuard } from "../../../../../guards/ip.guard";
+// import { BlockIpGuard } from "../../../../../guards/ip.guard";
 import { UsersQueryRepo } from "../../../../infrstructura/users/users.query.adapter";
 import { UserQueryViewDTO } from "../../../../infrstructura/users/models/users.models";
 
@@ -48,7 +48,7 @@ import { UserQueryViewDTO } from "../../../../infrstructura/users/models/users.m
 export class AuthController {
   constructor(
     private readonly commandBus: CommandBus,
-    private readonly usersQueryRepo: UsersQueryRepo
+    private readonly usersQueryRepo: UsersQueryRepo,
   ) {}
 
   @Post("login")
@@ -58,7 +58,7 @@ export class AuthController {
     @Req() request: Request,
     @Res() response: Response,
     @Ip() deviceIp,
-    @Body() inputModel: AuthLoginInputModal
+    @Body() inputModel: AuthLoginInputModal,
   ) {
     const result = await this.commandBus.execute<unknown, AutoResultDTO>(
       new LoginCommand({
@@ -66,7 +66,7 @@ export class AuthController {
         password: inputModel.password,
         deviceIp,
         deviceName: request.headers["user-agent"],
-      })
+      }),
     );
 
     if (!result.isCorrectPassword) {
@@ -91,7 +91,7 @@ export class AuthController {
       new UpdateUserRefreshTokenCommand({
         userId: request.body.userId,
         deviceId: request.body.deviceId,
-      })
+      }),
     );
 
     response.cookie("refreshToken", `${result.refreshToken}`, {
@@ -113,7 +113,7 @@ export class AuthController {
       new LogOutCommand({
         deviceId: request.body.deviceId,
         userId: request.body.userId,
-      })
+      }),
     );
     return response
       .cookie("refreshToken", ``, {
@@ -127,7 +127,7 @@ export class AuthController {
   // @UseGuards(BlockIpGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async registration(
-    @Body() inputModel: AuthRegistrationInputModal
+    @Body() inputModel: AuthRegistrationInputModal,
   ): Promise<void> {
     const { login, email, password } = inputModel;
 
@@ -137,7 +137,7 @@ export class AuthController {
           login: login,
           email: email,
           password: password,
-        })
+        }),
       );
 
     if (isLoginAlreadyExist) {
@@ -161,7 +161,7 @@ export class AuthController {
   // @UseGuards(BlockIpGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async registrationConfirmation(
-    @Body() inputModel: AuthRegistrationConfirmInputModal
+    @Body() inputModel: AuthRegistrationConfirmInputModal,
   ): Promise<boolean> {
     const {
       isUserByConfirmCodeFound,
@@ -194,7 +194,7 @@ export class AuthController {
   // @UseGuards(BlockIpGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async registrationEmailResending(
-    @Body() inputModel: AuthEmailResendingInputModal
+    @Body() inputModel: AuthEmailResendingInputModal,
   ): Promise<boolean> {
     const { isUserFound, isEmailResent, isEmailAlreadyConfirmed } =
       await this.commandBus.execute<
@@ -229,7 +229,7 @@ export class AuthController {
   // @UseGuards(BlockIpGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async passwordRecovery(
-    @Body() inputModel: AuthEmailResendingInputModal
+    @Body() inputModel: AuthEmailResendingInputModal,
   ): Promise<void> {
     const { isUserFound } = await this.commandBus.execute<
       unknown,
@@ -245,7 +245,7 @@ export class AuthController {
   // @UseGuards(BlockIpGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async newPassword(
-    @Body() inputModal: NewPasswordInputModal
+    @Body() inputModal: NewPasswordInputModal,
   ): Promise<boolean> {
     const {
       isRegistrationDataFound,
@@ -255,7 +255,7 @@ export class AuthController {
       new NewPasswordCommand({
         recoveryCode: inputModal.recoveryCode,
         newPassword: inputModal.newPassword,
-      })
+      }),
     );
 
     if (!isCorrectRecoveryCode) {
