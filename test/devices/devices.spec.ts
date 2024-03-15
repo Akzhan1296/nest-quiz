@@ -39,6 +39,7 @@ describe("Devices", () => {
     //auth user
     const result = await request(app.getHttpServer())
       .post("/auth/login")
+      .set("user-agent", `deviceName${new Date()}`)
       .send({
         loginOrEmail: "login1",
         password: "password",
@@ -56,6 +57,7 @@ describe("Devices", () => {
 
   it("Deleting all  devices except current", async () => {
     // adding user by SA
+    // user login123
     await request(app.getHttpServer())
       .post("/sa/users")
       .auth("admin", "qwerty", { type: "basic" })
@@ -67,17 +69,21 @@ describe("Devices", () => {
       .expect(HttpStatus.CREATED);
 
     //auth user
+    // auth user login123 with device 1
     const result = await request(app.getHttpServer())
       .post("/auth/login")
-      .set("User-Agent", "1234")
+      .set("user-agent", `deviceName${new Date()}`)
+      // .set("User-Agent", "1234")
       .send({
         loginOrEmail: "login123",
         password: "password",
       } as AuthLoginInputModal);
 
+    // auth user login123 with device 2
     await request(app.getHttpServer())
       .post("/auth/login")
-      .set("User-Agent", "123")
+      .set("user-agent", `deviceName${new Date()}`)
+      // .set("User-Agent", "123")
       .send({
         loginOrEmail: "login123",
         password: "password",
@@ -85,12 +91,16 @@ describe("Devices", () => {
 
     const refreshToken = result.headers["set-cookie"][0].split("=")[1];
 
+    // console.log(refreshToken);
+
     // get gevice id
     const devices = await request(app.getHttpServer())
       .get("/security/devices")
       .set("Cookie", `refreshToken=${refreshToken}`);
 
     expect(devices.body).toHaveLength(2);
+
+
 
     // delete current device by id
     await request(app.getHttpServer())
@@ -121,6 +131,8 @@ describe("Devices", () => {
       //auth user
       const result = await request(app.getHttpServer())
         .post("/auth/login")
+        .set("user-agent", `deviceName${new Date()}`)
+
         .send({
           loginOrEmail: "login1",
           password: "password",
@@ -173,6 +185,7 @@ describe("Devices", () => {
       //auth user 1
       const result = await request(app.getHttpServer())
         .post("/auth/login")
+        .set("user-agent", `deviceName${new Date()}`)
         .send({
           loginOrEmail: "login1",
           password: "password",
@@ -190,6 +203,7 @@ describe("Devices", () => {
       //auth user 2
       const result2 = await request(app.getHttpServer())
         .post("/auth/login")
+        .set("user-agent", `deviceName${new Date()}`)
         .send({
           loginOrEmail: "login2",
           password: "password",
@@ -229,6 +243,8 @@ describe("Devices", () => {
       //auth user 1
       const result = await request(app.getHttpServer())
         .post("/auth/login")
+        .set("user-agent", `deviceName${new Date()}`)
+
         .send({
           loginOrEmail: "login1",
           password: "password",
