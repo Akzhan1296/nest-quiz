@@ -36,7 +36,7 @@ describe("Registration use-case", () => {
     authService = app.get<AuthService>(AuthService);
     usersRepo = app.get<UsersRepo>(UsersRepo);
     registrationUserUseCase = app.get<RegistrationUserUseCase>(
-      RegistrationUserUseCase
+      RegistrationUserUseCase,
     );
   });
 

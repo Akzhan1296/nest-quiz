@@ -11,7 +11,7 @@ export class BlogsRepository {
       SELECT "Id", "BlogName", "WebsiteUrl", "Description", "IsMembership", "CreatedAt"
 	  FROM public."Blogs"
 	  WHERE "Id" = $1`,
-      [blogId]
+      [blogId],
     );
 
     if (result.length === 0) return null;
@@ -34,7 +34,7 @@ export class BlogsRepository {
         "BlogName", "WebsiteUrl", "Description", "IsMembership", "CreatedAt")
         VALUES ($1, $2, $3, $4, $5)
       RETURNING "Id"`,
-      [name, websiteUrl, description, isMembership, createdAt]
+      [name, websiteUrl, description, isMembership, createdAt],
     );
 
     return result[0].Id;
@@ -47,7 +47,7 @@ export class BlogsRepository {
       `UPDATE public."Blogs"
         SET "Description"= $2, "BlogName" = $3, "WebsiteUrl" = $4
         WHERE "Id" = $1`,
-      [blogId, description, name, websiteUrl]
+      [blogId, description, name, websiteUrl],
     );
     // result = [[], 1 | 0]
     return !!result[1];
@@ -59,7 +59,7 @@ export class BlogsRepository {
 	      DELETE FROM public."Blogs"
 	      WHERE "Id" = $1
         `,
-      [blogId]
+      [blogId],
     );
 
     return !!result[1];

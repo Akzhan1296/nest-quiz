@@ -8,7 +8,7 @@ import { DevicesViewModel } from "./models/device.models";
 export class DeviceSessionQueryRepo {
   constructor(
     @InjectRepository(AuthSession)
-    private deviceSessionRepository: Repository<AuthSession>
+    private deviceSessionRepository: Repository<AuthSession>,
   ) {}
 
   async getDevicesByUserId(userId: string): Promise<DevicesViewModel[]> {

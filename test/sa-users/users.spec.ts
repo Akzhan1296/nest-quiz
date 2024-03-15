@@ -99,7 +99,7 @@ describe("Users", () => {
               page: 1,
               pageSize: 10,
               pagesCount: 1,
-            })
+            }),
           );
         });
     });

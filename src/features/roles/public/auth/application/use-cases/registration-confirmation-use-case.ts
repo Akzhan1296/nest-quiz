@@ -12,12 +12,10 @@ export class RegistrationConfirmationCommand {
 export class RegistrationConfirmationUseCase
   implements ICommandHandler<RegistrationConfirmationCommand>
 {
-  constructor(
-    private readonly usersRepo: UsersRepo
-  ) {}
+  constructor(private readonly usersRepo: UsersRepo) {}
 
   async execute(
-    command: RegistrationConfirmationCommand
+    command: RegistrationConfirmationCommand,
   ): Promise<RegistrationConfirmationResultDTO> {
     const { code } = command.confirmCode;
 

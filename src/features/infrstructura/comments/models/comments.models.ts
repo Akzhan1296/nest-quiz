@@ -52,4 +52,4 @@ export type CommentViewModel = {
 export type UpdateCommentType = {
   commentId: string;
   content: string;
-}
+};

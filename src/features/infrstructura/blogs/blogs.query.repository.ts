@@ -15,7 +15,7 @@ export class BlogsQueryRepository {
       SELECT "Id", "BlogName", "WebsiteUrl", "Description", "IsMembership", "CreatedAt"
       FROM public."Blogs"
           WHERE "Id" = $1`,
-      [blogId]
+      [blogId],
     );
 
     if (result.length === 0) return null;
@@ -31,7 +31,7 @@ export class BlogsQueryRepository {
   }
 
   async getBlogs(
-    pageParams: PageSizeQueryModel
+    pageParams: PageSizeQueryModel,
   ): Promise<PaginationViewModel<BlogViewModel>> {
     const { sortBy, sortDirection, skip, pageSize, searchNameTerm } =
       pageParams;
@@ -48,7 +48,7 @@ export class BlogsQueryRepository {
         ORDER BY "${orderBy}" ${sortDirection}
         LIMIT $2 OFFSET $3
       `,
-      [`%${searchNameTerm}%`, pageSize, skip]
+      [`%${searchNameTerm}%`, pageSize, skip],
     );
 
     const count = await this.dataSource.query(
@@ -57,7 +57,7 @@ export class BlogsQueryRepository {
       FROM public."Blogs"
       WHERE "BlogName"  ILIKE $1
     `,
-      [`%${searchNameTerm}%`]
+      [`%${searchNameTerm}%`],
     );
 
     const mappedResult: BlogViewModel[] = result.map((r) => ({
@@ -74,7 +74,7 @@ export class BlogsQueryRepository {
         ...pageParams,
         totalCount: +count[0].count,
       },
-      mappedResult
+      mappedResult,
     );
   }
 }

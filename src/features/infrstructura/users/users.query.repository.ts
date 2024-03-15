@@ -10,7 +10,7 @@ export class UsersQueryRepository {
 
   // user table
   async getUsers(
-    pageParams: PageSizeQueryModel
+    pageParams: PageSizeQueryModel,
   ): Promise<PaginationViewModel<CreatedUserViewModel>> {
     const {
       sortBy,
@@ -31,7 +31,7 @@ export class UsersQueryRepository {
         ORDER BY "${orderBy}" ${sortDirection}
         LIMIT $3 OFFSET $4
       `,
-      [`%${searchLoginTerm}%`, `%${searchEmailTerm}%`, pageSize, skip]
+      [`%${searchLoginTerm}%`, `%${searchEmailTerm}%`, pageSize, skip],
     );
 
     const count = await this.dataSource.query(
@@ -40,7 +40,7 @@ export class UsersQueryRepository {
       FROM public."Users"
       WHERE "Login" ILIKE $1 OR "Email" ILIKE $2
     `,
-      [`%${searchLoginTerm}%`, `%${searchEmailTerm}%`]
+      [`%${searchLoginTerm}%`, `%${searchEmailTerm}%`],
     );
 
     const mappedResult = result.map((r) => ({
@@ -55,7 +55,7 @@ export class UsersQueryRepository {
         ...pageParams,
         totalCount: +count[0].count,
       },
-      mappedResult
+      mappedResult,
     );
   }
 
@@ -67,7 +67,7 @@ export class UsersQueryRepository {
       SELECT "Id", "Login", "Password", "Email"
       FROM public."Users"
       WHERE "Id" = $1`,
-      [id]
+      [id],
     );
 
     if (result.length === 0) return null;

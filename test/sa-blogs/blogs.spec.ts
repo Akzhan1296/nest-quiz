@@ -79,7 +79,7 @@ describe("Blogs", () => {
               page: 1,
               pageSize: 10,
               pagesCount: 0,
-            })
+            }),
           );
         });
 
@@ -99,7 +99,7 @@ describe("Blogs", () => {
               page: 1,
               pageSize: 10,
               pagesCount: 1,
-            })
+            }),
           );
         });
     });
@@ -121,7 +121,7 @@ describe("Blogs", () => {
         .then(({ body }) => {
           blogId = body.items[0].id;
           expect(
-            body.items.some((item) => item.name === creatingBlogMock.name)
+            body.items.some((item) => item.name === creatingBlogMock.name),
           ).toBeTruthy();
 
           expect(body).toEqual(
@@ -130,7 +130,7 @@ describe("Blogs", () => {
               page: 1,
               pageSize: 10,
               pagesCount: 1,
-            })
+            }),
           );
         });
 
@@ -149,7 +149,7 @@ describe("Blogs", () => {
         .then(({ body }) => {
           blogId = body.items[0].id;
           expect(
-            body.items.some((item) => item.name === "updated name")
+            body.items.some((item) => item.name === "updated name"),
           ).toBeTruthy();
 
           expect(body).toEqual(
@@ -158,7 +158,7 @@ describe("Blogs", () => {
               page: 1,
               pageSize: 10,
               pagesCount: 1,
-            })
+            }),
           );
         });
     });
@@ -191,7 +191,7 @@ describe("Blogs", () => {
         .then(({ body }) => {
           blogId = body.items[0].id;
           expect(
-            body.items.some((item) => item.name === creatingBlogMock.name)
+            body.items.some((item) => item.name === creatingBlogMock.name),
           ).toBeTruthy();
 
           expect(body).toEqual(
@@ -200,7 +200,7 @@ describe("Blogs", () => {
               page: 1,
               pageSize: 10,
               pagesCount: 1,
-            })
+            }),
           );
         });
 
@@ -219,7 +219,7 @@ describe("Blogs", () => {
               page: 1,
               pageSize: 10,
               pagesCount: 0,
-            })
+            }),
           );
         });
     });
@@ -249,7 +249,7 @@ describe("Blogs", () => {
         .then(({ body }) => {
           blogId = body.items[0].id;
           expect(
-            body.items.some((item) => item.name === creatingBlogMock.name)
+            body.items.some((item) => item.name === creatingBlogMock.name),
           ).toBeTruthy();
 
           expect(body).toEqual(
@@ -258,7 +258,7 @@ describe("Blogs", () => {
               page: 1,
               pageSize: 10,
               pagesCount: 1,
-            })
+            }),
           );
         });
 
@@ -281,7 +281,7 @@ describe("Blogs", () => {
             myStatus: "None",
             newestLikes: [],
           },
-        })
+        }),
       );
     });
 
@@ -317,7 +317,7 @@ describe("Blogs", () => {
         .then(({ body }) => {
           blogId = body.items[0].id;
           expect(
-            body.items.some((item) => item.name === creatingBlogMock.name)
+            body.items.some((item) => item.name === creatingBlogMock.name),
           ).toBeTruthy();
         });
 
@@ -365,7 +365,7 @@ describe("Blogs", () => {
         .then(({ body }) => {
           blogId = body.items[0].id;
           expect(
-            body.items.some((item) => item.name === creatingBlogMock.name)
+            body.items.some((item) => item.name === creatingBlogMock.name),
           ).toBeTruthy();
 
           expect(body).toEqual(
@@ -374,7 +374,7 @@ describe("Blogs", () => {
               page: 1,
               pageSize: 10,
               pagesCount: 1,
-            })
+            }),
           );
         });
 
@@ -397,7 +397,7 @@ describe("Blogs", () => {
             myStatus: "None",
             newestLikes: [],
           },
-        })
+        }),
       );
 
       postId = result.body.id;
@@ -446,7 +446,7 @@ describe("Blogs", () => {
         .then(({ body }) => {
           blogId = body.items[0].id;
           expect(
-            body.items.some((item) => item.name === creatingBlogMock.name)
+            body.items.some((item) => item.name === creatingBlogMock.name),
           ).toBeTruthy();
 
           expect(body).toEqual(
@@ -455,7 +455,7 @@ describe("Blogs", () => {
               page: 1,
               pageSize: 10,
               pagesCount: 1,
-            })
+            }),
           );
         });
 
@@ -478,7 +478,7 @@ describe("Blogs", () => {
             myStatus: "None",
             newestLikes: [],
           },
-        })
+        }),
       );
 
       postId = result.body.id;
@@ -527,7 +527,7 @@ describe("Blogs", () => {
         .then(({ body }) => {
           blogId = body.items[0].id;
           expect(
-            body.items.some((item) => item.name === creatingBlogMock.name)
+            body.items.some((item) => item.name === creatingBlogMock.name),
           ).toBeTruthy();
 
           expect(body).toEqual(
@@ -536,7 +536,7 @@ describe("Blogs", () => {
               page: 1,
               pageSize: 10,
               pagesCount: 1,
-            })
+            }),
           );
         });
 
@@ -559,7 +559,7 @@ describe("Blogs", () => {
             myStatus: "None",
             newestLikes: [],
           },
-        })
+        }),
       );
 
       postId = result.body.id;
@@ -574,7 +574,7 @@ describe("Blogs", () => {
               page: 1,
               pageSize: 10,
               pagesCount: 1,
-            })
+            }),
           );
         });
 
@@ -593,7 +593,7 @@ describe("Blogs", () => {
               page: 1,
               pageSize: 10,
               pagesCount: 0,
-            })
+            }),
           );
         });
     });
@@ -612,7 +612,7 @@ describe("Blogs", () => {
         .then(({ body }) => {
           blogId = body.items[0].id;
           expect(
-            body.items.some((item) => item.name === creatingBlogMock.name)
+            body.items.some((item) => item.name === creatingBlogMock.name),
           ).toBeTruthy();
 
           expect(body).toEqual(
@@ -621,7 +621,7 @@ describe("Blogs", () => {
               page: 1,
               pageSize: 10,
               pagesCount: 1,
-            })
+            }),
           );
         });
 

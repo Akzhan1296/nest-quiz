@@ -13,7 +13,7 @@ export class UpdatePostBySAUseCase
 {
   constructor(
     private blogsRepository: BlogsRepository,
-    private postsRepository: PostsRepository
+    private postsRepository: PostsRepository,
   ) {}
 
   async execute(command: UpdatePostBySACommand): Promise<ResultUpdatePostDTO> {

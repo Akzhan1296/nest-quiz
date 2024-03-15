@@ -20,7 +20,7 @@ export class DeviceSessionsRepository {
     SELECT "Id", "Email", "Login", "DeviceIp", "DeviceId", "DeviceName", "CreatedAt", "UserId"
 	  FROM public."AuthSessionsMetaData"
 	  WHERE "UserId" = $1 AND "DeviceId" = $2`,
-      [userId, deviceId]
+      [userId, deviceId],
     );
 
     if (result.length === 0) return null;
@@ -48,7 +48,7 @@ export class DeviceSessionsRepository {
     SELECT "Id", "Email", "Login", "DeviceIp", "DeviceId", "DeviceName", "CreatedAt", "UserId"
 	  FROM public."AuthSessionsMetaData"
 	  WHERE "UserId" = $1 AND "DeviceName" like $2`,
-      [userId, deviceName]
+      [userId, deviceName],
     );
 
     if (result.length === 0) return null;
@@ -75,7 +75,7 @@ export class DeviceSessionsRepository {
     SELECT "Id", "Email", "Login", "DeviceIp", "DeviceId", "DeviceName", "CreatedAt", "UserId"
 	  FROM public."AuthSessionsMetaData"
 	  WHERE "DeviceId" = $1`,
-      [deviceId]
+      [deviceId],
     );
 
     if (result.length === 0) return null;
@@ -102,7 +102,7 @@ export class DeviceSessionsRepository {
       `UPDATE public."AuthSessionsMetaData"
         SET "CreatedAt"= $2
         WHERE "Id" = $1`,
-      [authSessionId, createdAt]
+      [authSessionId, createdAt],
     );
     // result = [[], 1 | 0]
     return !!result[1];
@@ -116,7 +116,7 @@ export class DeviceSessionsRepository {
       `INSERT INTO public."AuthSessionsMetaData"(
         "Email", "Login", "DeviceIp", "DeviceId", "DeviceName", "CreatedAt", "UserId")
         VALUES ($1, $2, $3, $4, $5, $6, $7);`,
-      [email, login, deviceIp, deviceId, deviceName, createdAt, userId]
+      [email, login, deviceIp, deviceId, deviceName, createdAt, userId],
     );
   }
 
@@ -126,7 +126,7 @@ export class DeviceSessionsRepository {
 	      DELETE FROM public."AuthSessionsMetaData"
 	      WHERE "DeviceId" = $1
         `,
-      [deviceId]
+      [deviceId],
     );
 
     return;
@@ -139,7 +139,7 @@ export class DeviceSessionsRepository {
 	      DELETE FROM public."AuthSessionsMetaData"
 	      WHERE "DeviceId" != $1 AND "UserId" = $2
         `,
-      [deviceId, userId]
+      [deviceId, userId],
     );
 
     return;

@@ -13,7 +13,7 @@ import { DeviceSessionRepo } from "../features/infrstructura/deviceSessions/devi
 export class RefreshTokenGuard implements CanActivate {
   constructor(
     private readonly jwtService: JwtService,
-    private readonly deviceSessionRepo: DeviceSessionRepo // private readonly jwtTokensQueryRepository: JwtTokensQueryRepository,
+    private readonly deviceSessionRepo: DeviceSessionRepo,
   ) {}
   async canActivate(context: ExecutionContext) {
     const request: Request = context.switchToHttp().getRequest();

@@ -58,7 +58,7 @@ export class LikeStatusCommentUseCase
           {
             likeEntityId: commentLikeEntityId,
             likeStatus: commentLikeStatus,
-          }
+          },
         );
         result.isLikeStatusUpdated = isUpdated;
       } catch (err) {

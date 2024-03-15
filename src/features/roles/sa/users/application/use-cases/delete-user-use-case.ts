@@ -22,7 +22,7 @@ export class DeleteUserUseCase implements ICommandHandler<DeleteUserCommand> {
 
     result.isUserFound = true;
     const registrationData = await this.usersRepo.findRegistrationDataByUserId(
-      user.id
+      user.id,
     );
 
     // delete registration first user id is refered

@@ -55,7 +55,7 @@ describe("AuthController", () => {
 
           throw new BadRequestException(errorsForProperty);
         },
-      })
+      }),
     );
     app.useGlobalFilters(new HttpExceptionFilter());
     await app.init();
@@ -84,7 +84,7 @@ describe("AuthController", () => {
       // results
       expect(result).toBeTruthy();
       expect(mockExecute).toHaveBeenCalledWith(
-        new RegistrationUserCommand(registrationUserMock)
+        new RegistrationUserCommand(registrationUserMock),
       );
     });
     it("Should return 400 error if isLoginAlreadyExist", async () => {
@@ -96,7 +96,7 @@ describe("AuthController", () => {
       jest.spyOn(commandBus, "execute").mockImplementation(mockExecute);
 
       await expect(
-        authController.registration(registrationUserMock)
+        authController.registration(registrationUserMock),
       ).rejects.toEqual(new BadRequestException("Login is already exist"));
     });
     it("Should return 400 error if isEmailAlreadyExist", async () => {
@@ -108,7 +108,7 @@ describe("AuthController", () => {
       jest.spyOn(commandBus, "execute").mockImplementation(mockExecute);
 
       await expect(
-        authController.registration(registrationUserMock)
+        authController.registration(registrationUserMock),
       ).rejects.toEqual(new BadRequestException("Email is already exist"));
     });
   });
@@ -133,7 +133,7 @@ describe("AuthController", () => {
       expect(mockExecute).toHaveBeenCalledWith(
         new RegistrationConfirmationCommand({
           code: "45dff467-ccdd-49df-9e9d-c6b407538137",
-        })
+        }),
       );
     });
     it("Should return 400 error if confirmation code is already confirmed", async () => {
@@ -150,7 +150,7 @@ describe("AuthController", () => {
       await expect(
         authController.registrationConfirmation({
           code: "45dff467-ccdd-49df-9e9d-c6b407538122",
-        })
+        }),
       ).rejects.toEqual(new BadRequestException("Email is already confirmed"));
     });
     it("Should return 400 error if confirmation date is expired", async () => {
@@ -167,7 +167,7 @@ describe("AuthController", () => {
       await expect(
         authController.registrationConfirmation({
           code: "45dff467-ccdd-49df-9e9d-c6b407538122",
-        })
+        }),
       ).rejects.toEqual(new BadRequestException("Date is already expired"));
     });
     it("Should return 404 error if user by confirmationcode is not found", async () => {
@@ -184,9 +184,9 @@ describe("AuthController", () => {
       await expect(
         authController.registrationConfirmation({
           code: "45dff467-ccdd-49df-9e9d-c6b407538122",
-        })
+        }),
       ).rejects.toEqual(
-        new BadRequestException("User by this confirm code not found")
+        new BadRequestException("User by this confirm code not found"),
       );
     });
   });
@@ -210,7 +210,7 @@ describe("AuthController", () => {
       // results
       expect(result).toBeTruthy();
       expect(mockExecute).toHaveBeenCalledWith(
-        new EmailResendingCommand("test@test.com")
+        new EmailResendingCommand("test@test.com"),
       );
     });
     it("Should return 400 error, if user by email not found", async () => {
@@ -223,12 +223,12 @@ describe("AuthController", () => {
 
       jest.spyOn(commandBus, "execute").mockImplementation(mockExecute);
       await expect(
-        authController.registrationEmailResending({ email: "test@test.com" })
+        authController.registrationEmailResending({ email: "test@test.com" }),
       ).rejects.toEqual(
         new BadRequestException({
           message: "User by this confirm code not found",
           field: "email",
-        })
+        }),
       );
     });
     it("Should return 400 error, if email is already confirmed", async () => {
@@ -241,12 +241,12 @@ describe("AuthController", () => {
 
       jest.spyOn(commandBus, "execute").mockImplementation(mockExecute);
       await expect(
-        authController.registrationEmailResending({ email: "test@test.com" })
+        authController.registrationEmailResending({ email: "test@test.com" }),
       ).rejects.toEqual(
         new BadRequestException({
           message: "Email is already confirmed",
           field: "email",
-        })
+        }),
       );
     });
   });
@@ -281,10 +281,15 @@ describe("AuthController", () => {
       } as unknown as Response;
 
       // act
-      const result = await authController.login(mockRequest, mockResponse, "1", {
-        loginOrEmail: "login",
-        password: "password",
-      });
+      const result = await authController.login(
+        mockRequest,
+        mockResponse,
+        "1",
+        {
+          loginOrEmail: "login",
+          password: "password",
+        },
+      );
 
       // results
       expect(result).toBeTruthy();

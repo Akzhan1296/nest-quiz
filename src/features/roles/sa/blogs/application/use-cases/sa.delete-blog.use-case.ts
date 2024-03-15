@@ -6,7 +6,7 @@ export class DeleteBlogBySACommand {
   constructor(
     public deleteBlogDTO: {
       blogId: string;
-    }
+    },
   ) {}
 }
 
@@ -14,9 +14,7 @@ export class DeleteBlogBySACommand {
 export class DeleteBlogBySAUseCase
   implements ICommandHandler<DeleteBlogBySACommand>
 {
-  constructor(
-    private blogsRepo: BlogsRepo
-  ) {}
+  constructor(private blogsRepo: BlogsRepo) {}
 
   async execute(command: DeleteBlogBySACommand): Promise<DeleteBlogResultDTO> {
     const result: DeleteBlogResultDTO = {

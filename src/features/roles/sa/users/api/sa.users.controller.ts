@@ -26,29 +26,28 @@ import { UsersQueryRepo } from "../../../../infrstructura/users/users.query.adap
 export class UsersController {
   constructor(
     private readonly commandBus: CommandBus,
-    private readonly usersQueryRepo: UsersQueryRepo
+    private readonly usersQueryRepo: UsersQueryRepo,
   ) {}
 
   @Get()
   async getUsers(
-    @Query() pageSize: UsersQueryType
+    @Query() pageSize: UsersQueryType,
   ): Promise<PaginationViewModel<CreatedUserViewModel>> {
     return this.usersQueryRepo.getUsers(pageSize);
-
   }
 
   // create user by SA
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async createUser(
-    @Body() inputModel: AddUserInputModel
+    @Body() inputModel: AddUserInputModel,
   ): Promise<CreatedUserViewModel> {
     const { email, login, id, createdAt } = await this.commandBus.execute(
       new CreateUserCommand({
         login: inputModel.login,
         email: inputModel.email,
         password: inputModel.password,
-      })
+      }),
     );
     return { email, login, id, createdAt };
   }

@@ -15,18 +15,17 @@ export class PageSizeDTO {
 }
 
 export class PageSizeQueryModel {
-    pageNumber: number;
-    pageSize: number;
-    skip: number;
-    sortBy: string;
-    sortDirection: string;
-    searchNameTerm?: string;
-    searchLoginTerm?: string;
-    searchEmailTerm?: string;
-    banStatus?: string;
-    blogId?: string;
-  }
-  
+  pageNumber: number;
+  pageSize: number;
+  skip: number;
+  sortBy: string;
+  sortDirection: string;
+  searchNameTerm?: string;
+  searchLoginTerm?: string;
+  searchEmailTerm?: string;
+  banStatus?: string;
+  blogId?: string;
+}
 
 export type PaginationViewModel<T> = {
   page: number;

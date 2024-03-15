@@ -14,11 +14,11 @@ export class EmailResendingUseCase
 {
   constructor(
     private readonly usersRepo: UsersRepo,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
   ) {}
 
   async execute(
-    command: EmailResendingCommand
+    command: EmailResendingCommand,
   ): Promise<RegistrationEmailResendingResultDTO> {
     const { email } = command;
 
@@ -44,7 +44,6 @@ export class EmailResendingUseCase
       return result;
     }
 
-
     const confirmCode = uuidv4();
     // update confirm data
     try {
@@ -56,7 +55,7 @@ export class EmailResendingUseCase
 
       result.isConfirmDataUpdated = true;
     } catch (err) {
-      console.log(err)
+      console.log(err);
       throw new Error(err);
     }
 

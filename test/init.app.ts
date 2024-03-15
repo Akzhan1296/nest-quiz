@@ -40,7 +40,7 @@ export const initTestApp = async (): Promise<INestApplication> => {
 
         throw new BadRequestException(errorsForProperty);
       },
-    })
+    }),
   );
   app.useGlobalFilters(new HttpExceptionFilter());
 

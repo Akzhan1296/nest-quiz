@@ -7,7 +7,7 @@ export class BlockIpsRepo {
   constructor(
     protected dataSource: DataSource,
     @InjectRepository(Ips)
-    private blockIpsRepository: Repository<Ips>
+    private blockIpsRepository: Repository<Ips>,
   ) {}
 
   async saveIp(ip: Ips): Promise<Ips> {

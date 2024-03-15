@@ -10,7 +10,7 @@ export class CommentsQueryRepository {
 
   async getCommentById(
     commentId: string,
-    userId: string | null
+    userId: string | null,
   ): Promise<CommentViewModel | null> {
     const result = await this.dataSource.query(
       `    
@@ -23,7 +23,7 @@ export class CommentsQueryRepository {
        WHERE public."CommentLikesStatuses"."LikeStatus" = 'Dislike' AND public."CommentLikesStatuses"."CommentId" = $1) as "DislikesCount"
       FROM public."Comments" as c
       WHERE "Id" = $1`,
-      [commentId, userId]
+      [commentId, userId],
     );
 
     // const result = []
@@ -49,7 +49,7 @@ export class CommentsQueryRepository {
   async getCommentsByPostId(
     postId: string,
     userId: string | null,
-    pageParams: PageSizeQueryModel
+    pageParams: PageSizeQueryModel,
   ) {
     const { sortBy, sortDirection, skip, pageSize } = pageParams;
     const orderBy = transformFirstLetter(sortBy);
@@ -70,7 +70,7 @@ export class CommentsQueryRepository {
   WHERE c."PostId" = $1
   ORDER BY "${orderBy}" ${sortDirection}
   LIMIT $2 OFFSET $3`,
-      [postId, pageSize, skip, userId]
+      [postId, pageSize, skip, userId],
     );
 
     const count = await this.dataSource.query(
@@ -79,7 +79,7 @@ export class CommentsQueryRepository {
       FROM public."Comments"
       WHERE "PostId" = $1
     `,
-      [postId]
+      [postId],
     );
 
     const mappedComments = result.map((comment) => ({
@@ -102,7 +102,7 @@ export class CommentsQueryRepository {
         ...pageParams,
         totalCount: +count[0].count,
       },
-      mappedComments
+      mappedComments,
     );
   }
 }

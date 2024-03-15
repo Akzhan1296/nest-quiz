@@ -13,7 +13,7 @@ import { BlockIpsRepo } from "../features/infrstructura/ip/ip.adapter.repository
 export class BlockIpGuard implements CanActivate {
   constructor(
     private readonly blockIpRepo: BlockIpsRepo,
-    private readonly blockIpsService: BlockIpsService
+    private readonly blockIpsService: BlockIpsService,
   ) {}
   async canActivate(context: ExecutionContext) {
     const request: Request = context.switchToHttp().getRequest();
@@ -36,7 +36,7 @@ export class BlockIpGuard implements CanActivate {
         ip as string,
         path,
         dateZero,
-        date
+        date,
       );
     }
 

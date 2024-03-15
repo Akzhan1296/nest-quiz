@@ -14,7 +14,7 @@ export type IpsDataDto = {
 export class BlockIpsService {
   constructor(
     private readonly blockIpsRepository: BlockIpsRepository,
-    private readonly blockIpsRepo: BlockIpsRepo
+    private readonly blockIpsRepo: BlockIpsRepo,
   ) {}
 
   async addIpData(ipsData: IpsDataDto): Promise<boolean> {

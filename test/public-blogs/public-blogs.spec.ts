@@ -39,7 +39,7 @@ describe("Blogs", () => {
             page: 1,
             pageSize: 10,
             pagesCount: 0,
-          })
+          }),
         );
       });
 
@@ -60,7 +60,7 @@ describe("Blogs", () => {
             page: 1,
             pageSize: 10,
             pagesCount: 1,
-          })
+          }),
         );
       });
   });
@@ -81,7 +81,7 @@ describe("Blogs", () => {
       .then(({ body }) => {
         blogId = body.items[0].id;
         expect(
-          body.items.some((item) => item.name === creatingBlogMock.name)
+          body.items.some((item) => item.name === creatingBlogMock.name),
         ).toBeTruthy();
 
         expect(body).toEqual(
@@ -90,7 +90,7 @@ describe("Blogs", () => {
             page: 1,
             pageSize: 10,
             pagesCount: 1,
-          })
+          }),
         );
       });
 
@@ -101,7 +101,7 @@ describe("Blogs", () => {
           expect.objectContaining({
             ...creatingBlogMock,
             id: blogId,
-          })
+          }),
         );
       });
   });
@@ -123,7 +123,7 @@ describe("Blogs", () => {
       .then(({ body }) => {
         blogId = body.items[0].id;
         expect(
-          body.items.some((item) => item.name === creatingBlogMock.name)
+          body.items.some((item) => item.name === creatingBlogMock.name),
         ).toBeTruthy();
 
         expect(body).toEqual(
@@ -132,7 +132,7 @@ describe("Blogs", () => {
             page: 1,
             pageSize: 10,
             pagesCount: 1,
-          })
+          }),
         );
       });
 
@@ -163,7 +163,7 @@ describe("Blogs", () => {
                 blogName: "blog name",
               }),
             ]),
-          })
+          }),
         );
       });
   });

@@ -68,7 +68,7 @@ describe("Auth", () => {
           expect.objectContaining({
             login: "login123",
             email: "login123@login.com",
-          })
+          }),
         );
       });
   });
@@ -111,11 +111,15 @@ describe("Auth", () => {
     it("Should confirm registration successfully", () => {
       jest
         .spyOn(usersRepository, "findRegistrationDataByConfirmCode")
-        .mockImplementation(async () => userByConfirmCodeMock as unknown as Registration);
+        .mockImplementation(
+          async () => userByConfirmCodeMock as unknown as Registration,
+        );
 
       jest
         .spyOn(usersRepository, "saveRegistration")
-        .mockImplementation(async () => userByConfirmCodeMock as unknown as Registration);
+        .mockImplementation(
+          async () => userByConfirmCodeMock as unknown as Registration,
+        );
 
       return request(app.getHttpServer())
         .post("/auth/registration-confirmation")
@@ -140,10 +144,13 @@ describe("Auth", () => {
     it("Should return 400 error", async () => {
       jest
         .spyOn(usersRepository, "findRegistrationDataByConfirmCode")
-        .mockImplementation(async () => ({
-          ...userByConfirmCodeMock,
-          isConfirmed: true,
-        }) as unknown as Registration);
+        .mockImplementation(
+          async () =>
+            ({
+              ...userByConfirmCodeMock,
+              isConfirmed: true,
+            }) as unknown as Registration,
+        );
 
       request(app.getHttpServer())
         .post("/auth/registration-confirmation")
@@ -167,7 +174,9 @@ describe("Auth", () => {
     it("Should resend email", () => {
       jest
         .spyOn(usersRepository, "findUserRegistrationDataByEmail")
-        .mockImplementation(async () => userByEmailMock as unknown as Registration);
+        .mockImplementation(
+          async () => userByEmailMock as unknown as Registration,
+        );
 
       request(app.getHttpServer())
         .post("/auth/registration-email-resending")
@@ -192,10 +201,13 @@ describe("Auth", () => {
     it("Should return 400 error, if email already confirmed", () => {
       jest
         .spyOn(usersRepository, "findUserRegistrationDataByEmail")
-        .mockImplementation(async () => ({
-          ...userByEmailMock,
-          isConfirmed: true,
-        }) as unknown as Registration);
+        .mockImplementation(
+          async () =>
+            ({
+              ...userByEmailMock,
+              isConfirmed: true,
+            }) as unknown as Registration,
+        );
 
       request(app.getHttpServer())
         .post("/auth/registration-email-resending")

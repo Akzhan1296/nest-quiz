@@ -24,30 +24,25 @@ import { DeviceSessionQueryRepo } from "../../../../infrstructura/deviceSessions
 export class DevicesController {
   constructor(
     private readonly commandBus: CommandBus,
-    private readonly deviceSessionsQueryRepo: DeviceSessionQueryRepo
+    private readonly deviceSessionsQueryRepo: DeviceSessionQueryRepo,
   ) {}
 
   @Get("")
   @HttpCode(HttpStatus.OK)
   @UseGuards(RefreshTokenGuard)
   async getDevices(@Req() request: Request): Promise<DevicesViewModel[]> {
-    return this.deviceSessionsQueryRepo.getDevicesByUserId(
-      request.body.userId
-    );
+    return this.deviceSessionsQueryRepo.getDevicesByUserId(request.body.userId);
   }
 
   @Delete("")
   @UseGuards(RefreshTokenGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteAllDevices(
-    @Req() request: Request,
-  ): Promise<boolean> {
-
+  async deleteAllDevices(@Req() request: Request): Promise<boolean> {
     return this.commandBus.execute(
       new DeleteDevicesExceptCurrentCommand({
         deviceId: request.body.deviceId,
         userId: request.body.userId,
-      })
+      }),
     );
   }
 
@@ -57,14 +52,14 @@ export class DevicesController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteSelectedDevice(
     @Req() request: Request,
-    @Param() params: ValidId
+    @Param() params: ValidId,
   ): Promise<boolean> {
     const { isDeviceFound, canDeleteDevice, isDeviceDeleted } =
       await this.commandBus.execute<unknown, DeleteDeviceResultDTO>(
         new DeleteCurrentDeviceCommand({
           deviceId: params.id,
           userId: request.body.userId,
-        })
+        }),
       );
 
     if (!isDeviceFound) throw new NotFoundException();

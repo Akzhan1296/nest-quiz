@@ -17,10 +17,10 @@ describe("Password recovery use-case", () => {
 
     usersRepository = app.get<UsersRepo>(UsersRepo);
     passwordRecoveryUseCase = app.get<PasswordRecoveryUseCase>(
-      PasswordRecoveryUseCase
+      PasswordRecoveryUseCase,
     );
 
-    jest.clearAllMocks()
+    jest.clearAllMocks();
   });
 
   it("Should be defined", () => {
@@ -45,15 +45,11 @@ describe("Password recovery use-case", () => {
   it("Should update and send recovery code, if user found", async () => {
     jest
       .spyOn(usersRepository, "findUserRegistrationDataByEmail")
-      .mockImplementation(
-        async () => ({}) as unknown as Registration
-      );
+      .mockImplementation(async () => ({}) as unknown as Registration);
 
-      jest
+    jest
       .spyOn(usersRepository, "saveRegistration")
-      .mockImplementation(
-        async () => ({}) as unknown as Registration
-      );
+      .mockImplementation(async () => ({}) as unknown as Registration);
 
     const result = await passwordRecoveryUseCase.execute({
       email: "test@test.com",

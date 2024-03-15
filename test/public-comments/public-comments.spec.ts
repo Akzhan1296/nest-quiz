@@ -53,7 +53,7 @@ describe("Comments", () => {
         .then(({ body }) => {
           blogId = body.items[0].id;
           expect(
-            body.items.some((item) => item.name === creatingBlogMock.name)
+            body.items.some((item) => item.name === creatingBlogMock.name),
           ).toBeTruthy();
 
           expect(body).toEqual(
@@ -62,7 +62,7 @@ describe("Comments", () => {
               page: 1,
               pageSize: 10,
               pagesCount: 1,
-            })
+            }),
           );
         });
 
@@ -123,7 +123,7 @@ describe("Comments", () => {
         .then(({ body }) => {
           blogId = body.items[0].id;
           expect(
-            body.items.some((item) => item.name === creatingBlogMock.name)
+            body.items.some((item) => item.name === creatingBlogMock.name),
           ).toBeTruthy();
 
           expect(body).toEqual(
@@ -132,7 +132,7 @@ describe("Comments", () => {
               page: 1,
               pageSize: 10,
               pagesCount: 1,
-            })
+            }),
           );
         });
 
@@ -202,7 +202,7 @@ describe("Comments", () => {
         .then(({ body }) => {
           blogId = body.items[0].id;
           expect(
-            body.items.some((item) => item.name === creatingBlogMock.name)
+            body.items.some((item) => item.name === creatingBlogMock.name),
           ).toBeTruthy();
 
           expect(body).toEqual(
@@ -211,7 +211,7 @@ describe("Comments", () => {
               page: 1,
               pageSize: 10,
               pagesCount: 1,
-            })
+            }),
           );
         });
 
@@ -276,7 +276,7 @@ describe("Comments", () => {
         .then(({ body }) => {
           blogId = body.items[0].id;
           expect(
-            body.items.some((item) => item.name === creatingBlogMock.name)
+            body.items.some((item) => item.name === creatingBlogMock.name),
           ).toBeTruthy();
 
           expect(body).toEqual(
@@ -285,7 +285,7 @@ describe("Comments", () => {
               page: 1,
               pageSize: 10,
               pagesCount: 1,
-            })
+            }),
           );
         });
 
@@ -426,7 +426,7 @@ describe("Comments", () => {
         .then(({ body }) => {
           blogId = body.items[0].id;
           expect(
-            body.items.some((item) => item.name === creatingBlogMock.name)
+            body.items.some((item) => item.name === creatingBlogMock.name),
           ).toBeTruthy();
 
           expect(body).toEqual(
@@ -435,7 +435,7 @@ describe("Comments", () => {
               page: 1,
               pageSize: 10,
               pagesCount: 1,
-            })
+            }),
           );
         });
 
@@ -521,7 +521,7 @@ describe("Comments", () => {
         .then(({ body }) => {
           blogId = body.items[0].id;
           expect(
-            body.items.some((item) => item.name === creatingBlogMock.name)
+            body.items.some((item) => item.name === creatingBlogMock.name),
           ).toBeTruthy();
 
           expect(body).toEqual(
@@ -530,7 +530,7 @@ describe("Comments", () => {
               page: 1,
               pageSize: 10,
               pagesCount: 1,
-            })
+            }),
           );
         });
 
@@ -583,7 +583,7 @@ describe("Comments", () => {
         .expect(HttpStatus.NO_CONTENT);
 
       const commentView = await request(app.getHttpServer()).get(
-        `/comments/${commentResult.body.id}`
+        `/comments/${commentResult.body.id}`,
       );
 
       expect(commentView.body).toEqual({
@@ -624,7 +624,7 @@ describe("Comments", () => {
         .then(({ body }) => {
           blogId = body.items[0].id;
           expect(
-            body.items.some((item) => item.name === creatingBlogMock.name)
+            body.items.some((item) => item.name === creatingBlogMock.name),
           ).toBeTruthy();
 
           expect(body).toEqual(
@@ -633,7 +633,7 @@ describe("Comments", () => {
               page: 1,
               pageSize: 10,
               pagesCount: 1,
-            })
+            }),
           );
         });
 
@@ -699,7 +699,7 @@ describe("Comments", () => {
         .then(({ body }) => {
           blogId = body.items[0].id;
           expect(
-            body.items.some((item) => item.name === creatingBlogMock.name)
+            body.items.some((item) => item.name === creatingBlogMock.name),
           ).toBeTruthy();
 
           expect(body).toEqual(
@@ -708,7 +708,7 @@ describe("Comments", () => {
               page: 1,
               pageSize: 10,
               pagesCount: 1,
-            })
+            }),
           );
         });
 
@@ -832,7 +832,7 @@ describe("Comments", () => {
         .then(({ body }) => {
           blogId = body.items[0].id;
           expect(
-            body.items.some((item) => item.name === creatingBlogMock.name)
+            body.items.some((item) => item.name === creatingBlogMock.name),
           ).toBeTruthy();
 
           expect(body).toEqual(
@@ -841,7 +841,7 @@ describe("Comments", () => {
               page: 1,
               pageSize: 10,
               pagesCount: 1,
-            })
+            }),
           );
         });
 
@@ -891,13 +891,13 @@ describe("Comments", () => {
         .expect(HttpStatus.NO_CONTENT);
 
       const { body } = await request(app.getHttpServer()).get(
-        `/comments/${commentResult.body.id}`
+        `/comments/${commentResult.body.id}`,
       );
 
       expect(body).toEqual(
         expect.objectContaining({
           content: "1111111111111111111111111111111",
-        })
+        }),
       );
     });
     it("Should return 403 error", async () => {
@@ -918,7 +918,7 @@ describe("Comments", () => {
         .then(({ body }) => {
           blogId = body.items[0].id;
           expect(
-            body.items.some((item) => item.name === creatingBlogMock.name)
+            body.items.some((item) => item.name === creatingBlogMock.name),
           ).toBeTruthy();
 
           expect(body).toEqual(
@@ -927,7 +927,7 @@ describe("Comments", () => {
               page: 1,
               pageSize: 10,
               pagesCount: 1,
-            })
+            }),
           );
         });
 
@@ -1049,7 +1049,7 @@ describe("Comments", () => {
         .then(({ body }) => {
           blogId = body.items[0].id;
           expect(
-            body.items.some((item) => item.name === creatingBlogMock.name)
+            body.items.some((item) => item.name === creatingBlogMock.name),
           ).toBeTruthy();
 
           expect(body).toEqual(
@@ -1058,7 +1058,7 @@ describe("Comments", () => {
               page: 1,
               pageSize: 10,
               pagesCount: 1,
-            })
+            }),
           );
         });
 

@@ -4,10 +4,9 @@ export type CreateUserDTO = {
   email: string;
 };
 
-
 export type DeleteUserResultDTO = {
-  isUserFound: boolean,
-  isUserDeleted: boolean,
-  isUserHaveRegistrationData: boolean,
-  IsRegistrationDataDeleted: boolean,
-}
+  isUserFound: boolean;
+  isUserDeleted: boolean;
+  isUserHaveRegistrationData: boolean;
+  IsRegistrationDataDeleted: boolean;
+};

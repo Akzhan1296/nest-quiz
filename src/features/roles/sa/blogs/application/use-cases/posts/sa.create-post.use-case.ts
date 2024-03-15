@@ -13,7 +13,7 @@ export class CreatePostBySAUseCase
 {
   constructor(
     private blogsRepository: BlogsRepository,
-    private postsRepository: PostsRepository
+    private postsRepository: PostsRepository,
   ) {}
   async execute(command: CreatePostBySACommand): Promise<ResultCreatePostDTO> {
     const { blogId, content, shortDescription, title } = command.createPostDTO;

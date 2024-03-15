@@ -1,6 +1,12 @@
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from "typeorm";
 import { Blog } from "./blogs-entity";
-import {Comment} from "./comments-entity"
+import { Comment } from "./comments-entity";
 import { CommentLike } from "./comment-likes-entity";
 import { PostLike } from "./post-likes-entity";
 

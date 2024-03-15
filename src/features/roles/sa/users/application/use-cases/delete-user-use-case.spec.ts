@@ -32,7 +32,7 @@ describe("Delete user use case", () => {
     jest
       .spyOn(usersRepo, "findRegistrationDataByUserId")
       .mockImplementation(
-        async () => ({ id: mockRegistrationId }) as Registration
+        async () => ({ id: mockRegistrationId }) as Registration,
       );
 
     jest
@@ -49,7 +49,7 @@ describe("Delete user use case", () => {
     // Verify repository method calls
     expect(usersRepo.findUserById).toHaveBeenCalledWith(mockDeleteUserId);
     expect(usersRepo.findRegistrationDataByUserId).toHaveBeenCalledWith(
-      mockUser.id
+      mockUser.id,
     );
     expect(usersRepo.deleteRegistration).toHaveBeenCalledWith({
       id: mockRegistrationId,

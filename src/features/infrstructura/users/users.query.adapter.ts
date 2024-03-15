@@ -8,7 +8,7 @@ import { Paginated } from "../../../common/paginated";
 export class UsersQueryRepo {
   constructor(
     @InjectRepository(User)
-    private usersRepository: Repository<User>
+    private usersRepository: Repository<User>,
   ) {}
 
   private getUserViewModel(user: User) {
@@ -31,14 +31,14 @@ export class UsersQueryRepo {
         login: builder.login,
         userId: builder.id,
         email: builder.email,
-      }
+      };
     }
 
     return null;
   }
 
   async getUsers(
-    pageParams: PageSizeQueryModel
+    pageParams: PageSizeQueryModel,
   ): Promise<PaginationViewModel<CreatedUserViewModel>> {
     const {
       sortBy,
@@ -60,7 +60,7 @@ export class UsersQueryRepo {
       })
       .orderBy(
         `"${sortBy}"`,
-        `${sortDirection.toUpperCase()}` as "ASC" | "DESC"
+        `${sortDirection.toUpperCase()}` as "ASC" | "DESC",
       )
       .skip(skip)
       .take(pageSize)
@@ -81,7 +81,7 @@ export class UsersQueryRepo {
         ...pageParams,
         totalCount: +count,
       },
-      users.map((user) => this.getUserViewModel(user))
+      users.map((user) => this.getUserViewModel(user)),
     );
   }
 }

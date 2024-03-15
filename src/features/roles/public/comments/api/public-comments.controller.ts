@@ -36,7 +36,7 @@ import { ValidId } from "../../../../../common/types";
 export class PublicComments {
   constructor(
     private readonly commandBus: CommandBus,
-    private readonly commentsQueryRepository: CommentsQueryRepository
+    private readonly commentsQueryRepository: CommentsQueryRepository,
   ) {}
 
   // commentId
@@ -44,11 +44,11 @@ export class PublicComments {
   @Get(":id")
   async getCommentById(
     @Req() request: Request,
-    @Param() params: ValidId
+    @Param() params: ValidId,
   ): Promise<CommentViewModel> {
     const result = await this.commentsQueryRepository.getCommentById(
       params.id,
-      request.body.userId
+      request.body.userId,
     );
     if (!result) {
       throw new NotFoundException();
@@ -63,7 +63,7 @@ export class PublicComments {
   async handleCommentLikeStatus(
     @Req() request: Request,
     @Param() params: ValidId,
-    @Body() commentLikeStatus: CommentLikeStatus
+    @Body() commentLikeStatus: CommentLikeStatus,
   ) {
     const result = await this.commandBus.execute<
       unknown,
@@ -73,7 +73,7 @@ export class PublicComments {
         commentId: params.id,
         commentLikeStatus: commentLikeStatus.likeStatus,
         userId: request.body.userId,
-      })
+      }),
     );
 
     if (!result.isCommentFound) {
@@ -87,13 +87,13 @@ export class PublicComments {
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteComment(
     @Req() request: Request,
-    @Param() params: ValidId
+    @Param() params: ValidId,
   ): Promise<boolean> {
     const result = await this.commandBus.execute<unknown, DeleteCommentResult>(
       new DeleteCommentCommand({
         userId: request.body.userId,
         commentId: params.id,
-      })
+      }),
     );
     if (result.isForbidden) {
       throw new ForbiddenException();
@@ -111,14 +111,14 @@ export class PublicComments {
   async updateComment(
     @Req() request: Request,
     @Param() params: ValidId,
-    @Body() commentInputModel: CommentInputModelType
+    @Body() commentInputModel: CommentInputModelType,
   ): Promise<boolean> {
     const result = await this.commandBus.execute<unknown, UpdateCommentResult>(
       new UpdateCommentCommand({
         commentId: params.id,
         userId: request.body.userId,
         content: commentInputModel.content,
-      })
+      }),
     );
     if (result.isForbidden) {
       throw new ForbiddenException();

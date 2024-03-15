@@ -53,9 +53,7 @@ describe("Delete blog use case", () => {
   it("Should return 404 error", async () => {
     const blogId = uuidv4();
 
-    jest
-      .spyOn(blogsRepo, "findBlogById")
-      .mockImplementation(async () => null);
+    jest.spyOn(blogsRepo, "findBlogById").mockImplementation(async () => null);
 
     const result = await deleteBlogUseCase.execute({
       deleteBlogDTO: {
