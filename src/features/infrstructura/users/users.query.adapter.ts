@@ -71,7 +71,7 @@ export class UsersQueryRepo {
       .where('"login" ILIKE :searchLoginTerm', {
         searchLoginTerm: `%${searchLoginTerm}%`,
       })
-      .andWhere('"email" ILIKE :searchEmailTerm', {
+      .orWhere('"email" ILIKE :searchEmailTerm', {
         searchEmailTerm: `%${searchEmailTerm}%`,
       })
       .getCount();
