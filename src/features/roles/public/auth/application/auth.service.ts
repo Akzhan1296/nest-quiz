@@ -7,8 +7,6 @@ import {
   RefreshTokenPayloadDTO,
 } from "./auth.dto";
 import { emailAdapter } from "../../../../../utils/emailAdapter";
-import { UsersRepository } from "../../../../infrstructura/users/users.repository";
-import { UserViewDTO } from "../../../../infrstructura/users/models/users.models";
 import { settings } from "../../../../../settings";
 import { UsersRepo } from "../../../../infrstructura/users/users.adapter";
 import { User } from "../../../../entity/users-entity";

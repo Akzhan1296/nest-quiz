@@ -125,13 +125,8 @@ const commentsUseCases = [
       useFactory: (configService: ConfigService) => {
         const env = process.env.ENV;
         if (env === "TYPEORM") {
-          console.log(configService.get("typeorm"));
-          return configService.get("typeorm");
-        }
-
-        if (env === "TYPEORM-TESTING") {
-          console.log(configService.get("typeormTesting"));
-          return configService.get("typeormTesting");
+          console.log(configService.get("typeorm2"));
+          return configService.get("typeorm2");
         }
 
         if (env === "TESTING") {

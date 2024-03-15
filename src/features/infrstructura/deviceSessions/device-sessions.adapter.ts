@@ -54,10 +54,11 @@ export class DeviceSessionRepo {
   async deleteAllAuthMetaDataExceptCurrent(deleteDevices: DeleteAllDevicesDTO) {
     const { deviceId, userId } = deleteDevices;
 
-    return this.deviceSessionRepository
+    return await this.deviceSessionRepository
       .createQueryBuilder()
       .delete()
       .where("userId = :userId", { userId })
-      .andWhere("deviceId != :deviceId", { deviceId });
+      .andWhere("deviceId != :deviceId", { deviceId })
+      .execute();
   }
 }

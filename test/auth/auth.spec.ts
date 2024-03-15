@@ -36,7 +36,7 @@ describe("Auth", () => {
     await deleteDataController.deleteTestData(mockRequest, mockResponse);
   });
 
-  it.skip("Should get user info", async () => {
+  it("Should get user info", async () => {
     // adding user by SA
     await request(app.getHttpServer())
       .post("/sa/users")
@@ -51,6 +51,7 @@ describe("Auth", () => {
     //auth user
     const result = await request(app.getHttpServer())
       .post("/auth/login")
+      .set("user-agent", `deviceName${new Date()}`)
       .send({
         loginOrEmail: "login123",
         password: "password",

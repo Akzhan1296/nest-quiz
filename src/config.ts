@@ -1,21 +1,11 @@
 export default () => ({
-  typeorm: {
+  typeorm2: {
     type: "postgres", 
     host: "127.0.0.1",
     port: 5432,
     username: "postgres",
     password: "postgres ",
-    database: "typeorm",
-    autoLoadEntities: true,
-    synchronize: true,
-  },
-  typeormTesting: {
-    type: "postgres", 
-    host: "127.0.0.1",
-    port: 5432,
-    username: "postgres",
-    password: "postgres ",
-    database: "typeorm-testing",
+    database: "typeorm2",
     autoLoadEntities: true,
     synchronize: true,
   },
