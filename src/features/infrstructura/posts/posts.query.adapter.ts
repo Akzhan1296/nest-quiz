@@ -12,26 +12,34 @@ export class PostsQueryRepo {
   ) {}
 
   async getPostByPostId(postId: string): Promise<PostViewModel | null> {
-    const resultView: null | PostViewModel = null;
+    let resultView: null | PostViewModel = null;
 
     const builder = await this.postsRepository
-      .createQueryBuilder()
+      .createQueryBuilder("p")
+      .select()
+      .leftJoinAndSelect("p.blog", "b", `"p"."blogId" = "b"."id"`)
       .where({ id: postId })
       .getOne();
 
-    // const { name, createdAt, description, id, isMembership, websiteUrl } =
-    //   builder;
+    const { title, createdAt, shortDescription, id, content, blogId, blog } = builder;
 
-    // if (builder) {
-    //   resultView = {
-    //     name,
-    //     id,
-    //     websiteUrl,
-    //     createdAt,
-    //     description,
-    //     isMembership,
-    //   };
-    // }
+    if (builder) {
+      resultView = {
+        id,
+        title,
+        shortDescription,
+        content,
+        blogId,
+        blogName: blog.name,
+        createdAt,
+        extendedLikesInfo: {
+          likesCount: 0,
+          dislikesCount: 0,
+          myStatus: "none",
+          newestLikes: [],
+        },
+      };
+    }
 
     return resultView;
   }
