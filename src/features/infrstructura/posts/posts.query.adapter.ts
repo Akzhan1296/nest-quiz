@@ -47,10 +47,9 @@ export class PostsQueryRepo {
       .where({ id: postId })
       .getOne();
 
-    const { title, createdAt, shortDescription, id, content, blogId, blog } =
-      builder;
-
     if (builder) {
+      const { title, createdAt, shortDescription, id, content, blogId, blog } =
+        builder;
       resultView = {
         id,
         title,
