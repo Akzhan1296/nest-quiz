@@ -71,8 +71,13 @@ export class PostsQueryRepo {
   }
 
   async getPostsByBlogId(
-    pageParams: PageSizeQueryModel
+    pageParams: PageSizeQueryModel,
+    userId: string | null,
   ): Promise<PaginationViewModel<PostViewModel>> {
+
+    //for future task
+    console.log(userId)
+
     const { sortBy, sortDirection, skip, pageSize, blogId } = pageParams;
 
     const builder = await this.postsRepository
