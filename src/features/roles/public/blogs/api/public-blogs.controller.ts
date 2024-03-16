@@ -24,7 +24,7 @@ import { PostsQueryRepo } from "../../../../infrstructura/posts/posts.query.adap
 @Controller("blogs")
 export class PublicBlogs {
   constructor(
-    private postQuerysRepo: PostsQueryRepo,
+    private postQueryRepo: PostsQueryRepo,
     private blogsQueryRepo: BlogsQueryRepo
   ) {}
 
@@ -47,13 +47,13 @@ export class PublicBlogs {
     if (!blog) {
       throw new NotFoundException("posts by blogId not found");
     }
-    return await this.postQuerysRepo.getPostsByBlogId(
+    return await this.postQueryRepo.getPostsByBlogId(
       {
         ...pageSize,
         skip: pageSize.skip,
         blogId: params.id,
-      } as PageSizeQueryModel
-      // request.body.userId,
+      } as PageSizeQueryModel,
+      request.body.userId
     );
   }
 

@@ -42,7 +42,6 @@ import {
   ResultUpdatePostDTO,
 } from "../application/sa.posts.dto";
 import { CreatePostBySACommand } from "../application/use-cases/posts/sa.create-post.use-case";
-import { PostsQueryRepository } from "../../../../infrstructura/posts/posts.query.repository";
 import { UpdatePostBySACommand } from "../application/use-cases/posts/sa.update-post.use-case";
 import { DeletePostBySACommand } from "../application/use-cases/posts/sa.delete-post.use-case";
 import { UserIdGuard } from "../../../../../guards/userId.guard";
@@ -54,7 +53,6 @@ import { PostsQueryRepo } from "../../../../infrstructura/posts/posts.query.adap
 export class SABlogsController {
   constructor(
     private commandBus: CommandBus,
-    private postQuerysRepository: PostsQueryRepository,
     private postQueryRepo: PostsQueryRepo,
     private blogsQueryRepo: BlogsQueryRepo
   ) {}
@@ -140,7 +138,7 @@ export class SABlogsController {
     if (!blog) {
       throw new NotFoundException("posts by blogid not found");
     }
-    return await this.postQuerysRepository.getPostsByBlogId(
+    return await this.postQueryRepo.getPostsByBlogId(
       {
         ...pageSize,
         skip: pageSize.skip,
