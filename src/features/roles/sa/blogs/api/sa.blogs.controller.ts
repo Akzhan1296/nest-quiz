@@ -170,7 +170,8 @@ export class SABlogsController {
 
     if (result.isPostCreated) {
       const postViewModel = this.postQueryRepo.getPostByPostId(
-        result.createdPostId
+        result.createdPostId,
+        null
       );
       return postViewModel;
     }

@@ -20,22 +20,24 @@ import { AuthGuard } from "../../../../../guards/auth.guard";
 import {
   CommentsQueryType,
   CreateCommentInputModel,
-  PostLikeStatus,
+  // PostLikeStatus,
 } from "./input.models";
 import { CommandBus } from "@nestjs/cqrs";
 import { CreateCommentCommand } from "../../comments/application/use-cases/create-comment-use-case";
 import { Request } from "express";
-import { CommentsQueryRepository } from "../../../../infrstructura/comments/comments.query.repository";
-import { HandlePostLikesCommand } from "../application/use-cases/handle-post-like-use-case";
+// import { CommentsQueryRepository } from "../../../../infrstructura/comments/comments.query.repository";
+// import { HandlePostLikesCommand } from "../application/use-cases/handle-post-like-use-case";
 import { UserIdGuard } from "../../../../../guards/userId.guard";
 import { CommentViewModel } from "../../../../infrstructura/comments/models/comments.models";
+import { PostsQueryRepo } from "../../../../infrstructura/posts/posts.query.adapter";
 
 @Controller("posts")
 export class PublicPosts {
   constructor(
     private postQuerysRepository: PostsQueryRepository,
-    private commentsQueryRepository: CommentsQueryRepository,
+    // private commentsQueryRepository: CommentsQueryRepository,
     private commandBus: CommandBus,
+    private postQueryRepo: PostsQueryRepo
   ) {}
 
   @Get("")
@@ -43,11 +45,11 @@ export class PublicPosts {
   @HttpCode(HttpStatus.OK)
   async getPosts(
     @Req() request: Request,
-    @Query() pageSize: BlogsQueryType,
+    @Query() pageSize: BlogsQueryType
   ): Promise<PaginationViewModel<PostViewModel>> {
-    return await this.postQuerysRepository.getPosts(
+    return await this.postQueryRepo.getPosts(
       pageSize,
-      request.body.userId,
+      request.body.userId
     );
   }
 
@@ -56,9 +58,9 @@ export class PublicPosts {
   @UseGuards(UserIdGuard)
   @HttpCode(HttpStatus.OK)
   async getPostById(@Req() request: Request, @Param() params: ValidId) {
-    const post = await this.postQuerysRepository.getPostByPostId(
+    const post = await this.postQueryRepo.getPostByPostId(
       params.id,
-      request.body.userId,
+      request.body.userId
     );
     if (!post) {
       throw new NotFoundException("post by id not found");
@@ -73,24 +75,26 @@ export class PublicPosts {
   async getCommentsPostById(
     @Req() request: Request,
     @Query() pageSize: CommentsQueryType,
-    @Param() params: ValidId,
+    @Param() params: ValidId
   ) {
     const post = await this.postQuerysRepository.getPostByPostId(
       params.id,
-      request.body.userId,
+      request.body.userId
     );
 
     if (!post) {
       throw new NotFoundException("comment by id not found");
     }
 
-    const comments = await this.commentsQueryRepository.getCommentsByPostId(
-      params.id,
-      request.body.userId,
-      pageSize,
-    );
+    // const comments = await this.commentsQueryRepository.getCommentsByPostId(
+    //   params.id,
+    //   request.body.userId,
+    //   pageSize,
+    // );
 
-    return comments;
+    // return comments;
+
+    return [];
   }
 
   // like-status
@@ -98,23 +102,22 @@ export class PublicPosts {
   @Put(":id/like-status")
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
-  async postStatus(
-    @Req() request: Request,
-    @Param() params: ValidId,
-    @Body() postLikeStatus: PostLikeStatus,
-  ) {
-    const result = await this.commandBus.execute(
-      new HandlePostLikesCommand({
-        postId: params.id,
-        postLikeStatus: postLikeStatus.likeStatus,
-        userId: request.body.userId,
-        userLogin: request.body.userLogin,
-      }),
-    );
+  async postStatus() // @Req() request: Request,
+  // @Param() params: ValidId,
+  // @Body() postLikeStatus: PostLikeStatus
+  {
+    // const result = await this.commandBus.execute(
+    //   new HandlePostLikesCommand({
+    //     postId: params.id,
+    //     postLikeStatus: postLikeStatus.likeStatus,
+    //     userId: request.body.userId,
+    //     userLogin: request.body.userLogin,
+    //   })
+    // );
 
-    if (!result.isPostFound) {
-      throw new NotFoundException();
-    }
+    // if (!result.isPostFound) {
+    //   throw new NotFoundException();
+    // }
     return;
   }
 
@@ -125,7 +128,7 @@ export class PublicPosts {
   async createCommentForSelectedPost(
     @Req() request: Request,
     @Param() params: ValidId,
-    @Body() commentInputModel: CreateCommentInputModel,
+    @Body() commentInputModel: CreateCommentInputModel
   ): Promise<CommentViewModel> {
     const result = await this.commandBus.execute(
       new CreateCommentCommand({
@@ -133,20 +136,20 @@ export class PublicPosts {
         userLogin: request.body.userLogin,
         postId: params.id,
         content: commentInputModel.content,
-      }),
+      })
     );
 
     if (!result.isPostFound) {
       throw new NotFoundException("Post by this id not found");
     }
 
-    if (result.isCommentCreated) {
-      const commentViewModel = this.commentsQueryRepository.getCommentById(
-        result.commentId,
-        request.body.userId,
-      );
-      return commentViewModel;
-    }
+    // if (result.isCommentCreated) {
+    //   const commentViewModel = this.commentsQueryRepository.getCommentById(
+    //     result.commentId,
+    //     request.body.userId
+    //   );
+    //   return commentViewModel;
+    // }
     return;
   }
 }
