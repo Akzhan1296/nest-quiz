@@ -35,7 +35,7 @@ describe("Delete blog use case", () => {
       .mockImplementation(async () => ({ id: blogId }) as Blog);
 
     jest
-      .spyOn(blogsRepo, "deleteBlogById")
+      .spyOn(blogsRepo, "deleteBlog")
       .mockImplementation(async () => ({ raw: "" }) as DeleteResult);
 
     const result = await deleteBlogUseCase.execute({

@@ -16,16 +16,16 @@ import {
   ValidId,
 } from "../../../../../common/types";
 import { PostViewModel } from "../../../../infrstructura/posts/posts.models";
-import { PostsQueryRepository } from "../../../../infrstructura/posts/posts.query.repository";
 import { UserIdGuard } from "../../../../../guards/userId.guard";
 import { Request } from "express";
 import { BlogsQueryRepo } from "../../../../infrstructura/blogs/blogs.query.adapter";
+import { PostsQueryRepo } from "../../../../infrstructura/posts/posts.query.adapter";
 
 @Controller("blogs")
 export class PublicBlogs {
   constructor(
-    private postQuerysRepository: PostsQueryRepository,
-    private blogsQueryRepo: BlogsQueryRepo,
+    private postQuerysRepo: PostsQueryRepo,
+    private blogsQueryRepo: BlogsQueryRepo
   ) {}
 
   @Get("")
@@ -41,19 +41,19 @@ export class PublicBlogs {
   async getBlogPostsgetBlogById(
     @Req() request: Request,
     @Query() pageSize: BlogsQueryType,
-    @Param() params: ValidId,
+    @Param() params: ValidId
   ): Promise<PaginationViewModel<PostViewModel>> {
     const blog = await this.blogsQueryRepo.getBlogById(params.id);
     if (!blog) {
       throw new NotFoundException("posts by blogId not found");
     }
-    return await this.postQuerysRepository.getPostsByBlogId(
+    return await this.postQuerysRepo.getPostsByBlogId(
       {
         ...pageSize,
         skip: pageSize.skip,
         blogId: params.id,
-      } as PageSizeQueryModel,
-      request.body.userId,
+      } as PageSizeQueryModel
+      // request.body.userId,
     );
   }
 

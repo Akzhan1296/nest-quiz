@@ -47,6 +47,7 @@ import { UpdatePostBySACommand } from "../application/use-cases/posts/sa.update-
 import { DeletePostBySACommand } from "../application/use-cases/posts/sa.delete-post.use-case";
 import { UserIdGuard } from "../../../../../guards/userId.guard";
 import { BlogsQueryRepo } from "../../../../infrstructura/blogs/blogs.query.adapter";
+import { PostsQueryRepo } from "../../../../infrstructura/posts/posts.query.adapter";
 
 @UseGuards(AuthBasicGuard)
 @Controller("sa/blogs")
@@ -54,14 +55,15 @@ export class SABlogsController {
   constructor(
     private commandBus: CommandBus,
     private postQuerysRepository: PostsQueryRepository,
-    private blogsQueryRepo: BlogsQueryRepo,
+    private postQueryRepo: PostsQueryRepo,
+    private blogsQueryRepo: BlogsQueryRepo
   ) {}
 
   // get blogs
   @Get()
   @HttpCode(HttpStatus.OK)
   async getBlogs(
-    @Query() pageSize: BlogsQueryType,
+    @Query() pageSize: BlogsQueryType
   ): Promise<PaginationViewModel<BlogViewModel>> {
     return await this.blogsQueryRepo.getBlogs(pageSize);
   }
@@ -70,7 +72,7 @@ export class SABlogsController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async createBlog(
-    @Body() blogInputModel: CreateBlogInputModelType,
+    @Body() blogInputModel: CreateBlogInputModelType
   ): Promise<BlogViewModel> {
     const { createdBlogId } = await this.commandBus.execute<
       unknown,
@@ -80,7 +82,7 @@ export class SABlogsController {
         name: blogInputModel.name,
         description: blogInputModel.description,
         websiteUrl: blogInputModel.websiteUrl,
-      }),
+      })
     );
 
     return this.blogsQueryRepo.getBlogById(createdBlogId);
@@ -92,7 +94,7 @@ export class SABlogsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateBlog(
     @Param() params: ValidId,
-    @Body() blogInputModel: CreateBlogInputModelType,
+    @Body() blogInputModel: CreateBlogInputModelType
   ): Promise<boolean> {
     const result = await this.commandBus.execute<unknown, UpdateBlogResultDTO>(
       new UpdateBlogBySACommand({
@@ -100,7 +102,7 @@ export class SABlogsController {
         description: blogInputModel.description,
         name: blogInputModel.name,
         websiteUrl: blogInputModel.websiteUrl,
-      }),
+      })
     );
 
     if (!result.isBlogFound) throw new NotFoundException();
@@ -115,7 +117,7 @@ export class SABlogsController {
     const result = await this.commandBus.execute<unknown, DeleteBlogResultDTO>(
       new DeleteBlogBySACommand({
         blogId: params.id,
-      }),
+      })
     );
 
     if (!result.isBlogFound) throw new NotFoundException();
@@ -132,7 +134,7 @@ export class SABlogsController {
   async getBlogPosts(
     @Req() request: Request,
     @Query() pageSize: BlogsQueryType,
-    @Param() params: ValidId,
+    @Param() params: ValidId
   ): Promise<PaginationViewModel<PostViewModel>> {
     const blog = await this.blogsQueryRepo.getBlogById(params.id);
     if (!blog) {
@@ -144,7 +146,7 @@ export class SABlogsController {
         skip: pageSize.skip,
         blogId: params.id,
       } as PageSizeQueryModel,
-      request.body.userId,
+      request.body.userId
     );
   }
 
@@ -153,7 +155,7 @@ export class SABlogsController {
   @HttpCode(HttpStatus.CREATED)
   async createPostByBlogId(
     @Param() params: ValidId,
-    @Body() postInputModel: CreatePostInputType,
+    @Body() postInputModel: CreatePostInputType
   ): Promise<PostViewModel> {
     const result = await this.commandBus.execute<unknown, ResultCreatePostDTO>(
       new CreatePostBySACommand({
@@ -161,18 +163,20 @@ export class SABlogsController {
         title: postInputModel.title,
         shortDescription: postInputModel.shortDescription,
         content: postInputModel.content,
-      }),
+      })
     );
 
     if (!result.isBlogFound) throw new NotFoundException();
 
     if (result.isPostCreated) {
-      const postViewModel = this.postQuerysRepository.getPostByPostId(
+      const postViewModel = this.postQueryRepo.getPostByPostId(
         result.createdPostId,
-        null,
+        null
       );
       return postViewModel;
     }
+
+    return null;
   }
 
   // update post by blog id
@@ -180,7 +184,7 @@ export class SABlogsController {
   @Put(":blogId/posts/:postId")
   async updatePostByBlogId(
     @Param() params: { blogId: string; postId: string },
-    @Body() postInputModel: CreatePostInputType,
+    @Body() postInputModel: CreatePostInputType
   ) {
     const result = await this.commandBus.execute<unknown, ResultUpdatePostDTO>(
       new UpdatePostBySACommand({
@@ -189,7 +193,7 @@ export class SABlogsController {
         title: postInputModel.title,
         shortDescription: postInputModel.shortDescription,
         content: postInputModel.content,
-      }),
+      })
     );
 
     if (!result.isBlogFound) throw new NotFoundException();
@@ -202,13 +206,13 @@ export class SABlogsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(":blogId/posts/:postId")
   async deletePostByBlogId(
-    @Param() params: { blogId: string; postId: string },
+    @Param() params: { blogId: string; postId: string }
   ) {
     const result = await this.commandBus.execute<unknown, ResultDeletePostDTO>(
       new DeletePostBySACommand({
         blogId: params.blogId,
         postId: params.postId,
-      }),
+      })
     );
     if (!result.isBlogFound) throw new NotFoundException();
     if (!result.isPostFound) throw new NotFoundException();
