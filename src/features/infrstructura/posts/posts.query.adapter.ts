@@ -72,11 +72,10 @@ export class PostsQueryRepo {
 
   async getPostsByBlogId(
     pageParams: PageSizeQueryModel,
-    userId: string | null,
+    userId: string | null
   ): Promise<PaginationViewModel<PostViewModel>> {
-
     //for future task
-    console.log(userId)
+    console.log(userId);
 
     const { sortBy, sortDirection, skip, pageSize, blogId } = pageParams;
 
@@ -124,24 +123,55 @@ export class PostsQueryRepo {
 
     const { sortBy, sortDirection, skip, pageSize } = pageParams;
 
+    const fieldEntityMapping = {
+      id: "p",
+      title: "p",
+      shortDescription: "p",
+      content: "p",
+      createdAt: "p",
+      blogId: "p",
+      blogName: "b",
+      websiteUrl: "b",
+      description: "b",
+      isMembership: "b",
+    };
+
+    const sortByField = sortBy === "blogName" ? "name" : sortBy;
+
     const builder = await this.postsRepository
       .createQueryBuilder("p")
-      .select()
-      .leftJoinAndSelect("p.blog", "b", `"p"."blogId" = "b"."id"`)
+      .select(["p.*", "b.name"])
+      .leftJoin("p.blog", "b", `"p"."blogId" = "b"."id"`)
       .orderBy(
-        `p.${sortBy}`,
+        `${fieldEntityMapping[sortBy]}.${sortByField}`,
         `${sortDirection.toUpperCase()}` as "ASC" | "DESC"
       )
       .skip(skip)
       .take(pageSize)
-      .getMany();
+      .getRawMany();
+
+    const mappedPosts = builder.map((r) => ({
+      id: r.id,
+      title: r.title,
+      shortDescription: r.shortDescription,
+      content: r.content,
+      blogId: r.blogId,
+      blogName: r.b_name,
+      createdAt: r.createdAt,
+      extendedLikesInfo: {
+        likesCount: 0,
+        dislikesCount: 0,
+        myStatus: "None",
+        newestLikes: [],
+      },
+    }));
 
     const count = await this.postsRepository
       .createQueryBuilder("p")
-      .select()
-      .leftJoinAndSelect("p.blog", "b", `"p"."blogId" = "b"."id"`)
+      .select(["p.*", "b.name"])
+      .leftJoin("p.blog", "b", `"p"."blogId" = "b"."id"`)
       .orderBy(
-        `p.${sortBy}`,
+        `${fieldEntityMapping[sortBy]}.${sortByField}`,
         `${sortDirection.toUpperCase()}` as "ASC" | "DESC"
       )
       .skip(skip)
@@ -153,7 +183,7 @@ export class PostsQueryRepo {
         ...pageParams,
         totalCount: +count,
       },
-      this.getMappedPostItems(builder)
+      mappedPosts
     );
   }
 }
