@@ -31,6 +31,7 @@ export class PostsQueryRepo {
     }));
   }
 
+  // one post
   async getPostByPostId(
     postId: string,
     userId: string | null
@@ -93,16 +94,9 @@ export class PostsQueryRepo {
       .getMany();
 
     const count = await this.postsRepository
-      .createQueryBuilder("p")
+      .createQueryBuilder()
       .select()
-      .leftJoinAndSelect("p.blog", "b", `"p"."blogId" = "b"."id"`)
       .where({ blogId })
-      .orderBy(
-        `p.${sortBy}`,
-        `${sortDirection.toUpperCase()}` as "ASC" | "DESC"
-      )
-      .skip(skip)
-      .take(pageSize)
       .getCount();
 
     return Paginated.transformPagination<PostViewModel>(
@@ -146,9 +140,10 @@ export class PostsQueryRepo {
         `${fieldEntityMapping[sortBy]}.${sortByField}`,
         `${sortDirection.toUpperCase()}` as "ASC" | "DESC"
       )
-      .skip(skip)
-      .take(pageSize)
+      .offset(skip)
+      .limit(pageSize)
       .getRawMany();
+
 
     const mappedPosts = builder.map((r) => ({
       id: r.id,
@@ -168,14 +163,6 @@ export class PostsQueryRepo {
 
     const count = await this.postsRepository
       .createQueryBuilder("p")
-      .select(["p.*", "b.name"])
-      .leftJoin("p.blog", "b", `"p"."blogId" = "b"."id"`)
-      .orderBy(
-        `${fieldEntityMapping[sortBy]}.${sortByField}`,
-        `${sortDirection.toUpperCase()}` as "ASC" | "DESC"
-      )
-      .skip(skip)
-      .take(pageSize)
       .getCount();
 
     return Paginated.transformPagination<PostViewModel>(
