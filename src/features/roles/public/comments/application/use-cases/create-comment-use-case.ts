@@ -1,7 +1,8 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { CreateCommentDTO, CreateCommentResult } from "../comments.dto";
-import { PostsRepository } from "../../../../../infrstructura/posts/posts.repository";
-import { CommentsRepository } from "../../../../../infrstructura/comments/comments.repository";
+import { PostsRepo } from "../../../../../infrstructura/posts/posts.adapter";
+import { Comment } from "../../../../../entity/comments-entity";
+import { CommentsRepo } from "../../../../../infrstructura/comments/comments.adapter";
 
 export class CreateCommentCommand {
   constructor(public createCommentDTO: CreateCommentDTO) {}
@@ -12,8 +13,8 @@ export class CreateCommentUseCase
   implements ICommandHandler<CreateCommentCommand>
 {
   constructor(
-    private postsRepository: PostsRepository,
-    private commentsRepository: CommentsRepository,
+    private postsRepo: PostsRepo,
+    private commentsRepo: CommentsRepo
   ) {}
 
   async execute(command: CreateCommentCommand): Promise<CreateCommentResult> {
@@ -25,22 +26,22 @@ export class CreateCommentUseCase
 
     const { userLogin, userId, content, postId } = command.createCommentDTO;
 
-    const postData = await this.postsRepository.findPostById(postId);
+    const postData = await this.postsRepo.findPostById(postId);
 
     if (!postData) return result;
     result.isPostFound = true;
 
-    try {
-      const commentId = await this.commentsRepository.createCommentForPost({
-        createdAt: new Date(),
-        userLogin,
-        userId,
-        content,
-        postId,
-      });
+    const newComment = new Comment();
+    newComment.createdAt = new Date();
+    newComment.userLogin = userLogin;
+    newComment.userId = userId;
+    newComment.content = content;
+    newComment.postId = postId;
 
+    try {
+      const savedComment = await this.commentsRepo.saveComment(newComment);
       result.isCommentCreated = true;
-      result.commentId = commentId;
+      result.commentId = savedComment.id;
     } catch (err) {
       throw new Error(`Something went wrong on comment creating ${err}`);
     }
