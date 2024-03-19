@@ -25,15 +25,11 @@ export class DeleteAllTestingData {
   async deleteIpsTableData() {
     await this.dataSource.query(`DELETE FROM public."ips"`);
   }
-  // async deletePostsTableData() {
-  //   await this.dataSource.query(`DELETE FROM public."Posts"`);
-  // }
-  // async deleteBlogsTableData() {
-  //   await this.dataSource.query(`DELETE FROM public."Blogs"`);
-  // }
-  // async deleteCommentsTableData() {
-  //   await this.dataSource.query(`DELETE FROM public."Comments"`);
-  // }
+
+
+  async deleteCommentsTableData() {
+    await this.dataSource.query(`DELETE FROM public."comment"`);
+  }
   // async deleteCommentLikesTableData() {
   //   await this.dataSource.query(`DELETE FROM public."CommentLikesStatuses"`);
   // }
@@ -60,7 +56,7 @@ export class DeleteDataController {
     await this.deleteRepository.deleteIpsTableData();
 
     // await this.deleteRepository.deleteCommentLikesTableData();
-    // await this.deleteRepository.deleteCommentsTableData();
+    await this.deleteRepository.deleteCommentsTableData();
     // await this.deleteRepository.deletePostsLikesTableData();
     await this.deleteRepository.deletePostsTableData();
     await this.deleteRepository.deleteBlogsTableData();

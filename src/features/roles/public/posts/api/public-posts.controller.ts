@@ -15,7 +15,6 @@ import {
 import { BlogsQueryType } from "../../../sa/blogs/api/sa.blogs.models";
 import { PaginationViewModel, ValidId } from "../../../../../common/types";
 import { PostViewModel } from "../../../../infrstructura/posts/posts.models";
-import { PostsQueryRepository } from "../../../../infrstructura/posts/posts.query.repository";
 import { AuthGuard } from "../../../../../guards/auth.guard";
 import {
   CommentsQueryType,
@@ -30,12 +29,13 @@ import { Request } from "express";
 import { UserIdGuard } from "../../../../../guards/userId.guard";
 import { CommentViewModel } from "../../../../infrstructura/comments/models/comments.models";
 import { PostsQueryRepo } from "../../../../infrstructura/posts/posts.query.adapter";
+import { CommentsQueryRepo } from "../../../../infrstructura/comments/comments.query.adapter";
 
 @Controller("posts")
 export class PublicPosts {
   constructor(
-    private postQuerysRepository: PostsQueryRepository,
-    // private commentsQueryRepository: CommentsQueryRepository,
+    private postQuerysRepo: PostsQueryRepo,
+    private commentsQueryRepo: CommentsQueryRepo,
     private commandBus: CommandBus,
     private postQueryRepo: PostsQueryRepo
   ) {}
@@ -47,10 +47,7 @@ export class PublicPosts {
     @Req() request: Request,
     @Query() pageSize: BlogsQueryType
   ): Promise<PaginationViewModel<PostViewModel>> {
-    return await this.postQueryRepo.getPosts(
-      pageSize,
-      request.body.userId
-    );
+    return await this.postQueryRepo.getPosts(pageSize, request.body.userId);
   }
 
   // postId
@@ -68,6 +65,7 @@ export class PublicPosts {
     return post;
   }
 
+  // get post comments
   // postId
   @Get(":id/comments")
   @UseGuards(UserIdGuard)
@@ -77,7 +75,7 @@ export class PublicPosts {
     @Query() pageSize: CommentsQueryType,
     @Param() params: ValidId
   ) {
-    const post = await this.postQuerysRepository.getPostByPostId(
+    const post = await this.postQuerysRepo.getPostByPostId(
       params.id,
       request.body.userId
     );
@@ -86,15 +84,13 @@ export class PublicPosts {
       throw new NotFoundException("comment by id not found");
     }
 
-    // const comments = await this.commentsQueryRepository.getCommentsByPostId(
-    //   params.id,
-    //   request.body.userId,
-    //   pageSize,
-    // );
+    const comments = await this.commentsQueryRepo.getCommentsByPostId(
+      params.id,
+      request.body.userId,
+      pageSize
+    );
 
-    // return comments;
-
-    return [];
+    return comments;
   }
 
   // like-status
@@ -102,10 +98,8 @@ export class PublicPosts {
   @Put(":id/like-status")
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
-  async postStatus() // @Req() request: Request,
-  // @Param() params: ValidId,
-  // @Body() postLikeStatus: PostLikeStatus
-  {
+  async postStatus() {
+    // @Body() postLikeStatus: PostLikeStatus // @Param() params: ValidId, // @Req() request: Request,
     // const result = await this.commandBus.execute(
     //   new HandlePostLikesCommand({
     //     postId: params.id,
@@ -121,7 +115,7 @@ export class PublicPosts {
     return;
   }
 
-  // comments
+  // create comment
   @Post(":id/comments")
   @UseGuards(AuthGuard)
   @HttpCode(201)
@@ -143,13 +137,12 @@ export class PublicPosts {
       throw new NotFoundException("Post by this id not found");
     }
 
-    // if (result.isCommentCreated) {
-    //   const commentViewModel = this.commentsQueryRepository.getCommentById(
-    //     result.commentId,
-    //     request.body.userId
-    //   );
-    //   return commentViewModel;
-    // }
+    if (result.isCommentCreated) {
+      return this.commentsQueryRepo.getCommentById(
+        result.commentId,
+        request.body.userId
+      );
+    }
     return;
   }
 }

@@ -1,15 +1,17 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { AppModule } from "../../../../../../app.module";
-import { PostsRepository } from "../../../../../infrstructura/posts/posts.repository";
-import { CommentsRepository } from "../../../../../infrstructura/comments/comments.repository";
 import { CreateCommentUseCase } from "./create-comment-use-case";
-import { OnlyPostDataView } from "../../../../../infrstructura/posts/posts.models";
 import { v4 as uuidv4 } from "uuid";
+import { CommentsRepo } from "../../../../../infrstructura/comments/comments.adapter";
+import { PostsRepo } from "../../../../../infrstructura/posts/posts.adapter";
+import { Comment } from "../../../../../entity/comments-entity";
+import { Post } from "../../../../../entity/posts-entity";
+
 
 describe("CreateCommentUseCase", () => {
   let app: TestingModule;
-  let postsRepository: PostsRepository;
-  let commentsRepository: CommentsRepository;
+  let postsRepo: PostsRepo;
+  let commentsRepo: CommentsRepo;
   let createCommentUseCase: CreateCommentUseCase;
 
   beforeEach(async () => {
@@ -18,15 +20,15 @@ describe("CreateCommentUseCase", () => {
     }).compile();
     await app.init();
 
-    postsRepository = app.get<PostsRepository>(PostsRepository);
-    commentsRepository = app.get<CommentsRepository>(CommentsRepository);
+    postsRepo = app.get<PostsRepo>(PostsRepo);
+    commentsRepo = app.get<CommentsRepo>(CommentsRepo);
     createCommentUseCase = app.get<CreateCommentUseCase>(CreateCommentUseCase);
   });
 
   it("Should be defined", () => {
     expect(app).toBeDefined();
-    expect(postsRepository).toBeDefined();
-    expect(commentsRepository).toBeDefined();
+    expect(postsRepo).toBeDefined();
+    expect(commentsRepo).toBeDefined();
     expect(createCommentUseCase).toBeDefined();
   });
 
@@ -34,12 +36,12 @@ describe("CreateCommentUseCase", () => {
     const commentId = uuidv4();
 
     jest
-      .spyOn(postsRepository, "findPostById")
-      .mockImplementation(async () => ({}) as OnlyPostDataView);
+      .spyOn(postsRepo, "findPostById")
+      .mockImplementation(async () => ({}) as Post);
 
     jest
-      .spyOn(commentsRepository, "createCommentForPost")
-      .mockImplementation(() => commentId);
+      .spyOn(commentsRepo, "saveComment")
+      .mockImplementation(async () => ({ id: commentId }) as Comment);
 
     const result = await createCommentUseCase.execute({
       createCommentDTO: {
@@ -58,9 +60,7 @@ describe("CreateCommentUseCase", () => {
   });
 
   it("Should NOT create comment, if post did NOT found", async () => {
-    jest
-      .spyOn(postsRepository, "findPostById")
-      .mockImplementation(async () => null);
+    jest.spyOn(postsRepo, "findPostById").mockImplementation(async () => null);
 
     const result = await createCommentUseCase.execute({
       createCommentDTO: {
