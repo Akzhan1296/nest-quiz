@@ -30,18 +30,18 @@ export class DeleteCommentUseCase
       return result;
     }
 
-    // const isAnyCommentLikesData =
-    //   await this.commentsRepository.isAnyCommentLikesData(commentId);
+    const isAnyCommentLikesData =
+      await this.commentsRepo.isAnyCommentLikesData(commentId);
 
-    // if (isAnyCommentLikesData) {
-    //   try {
-    //     await this.commentsRepository.deleteCommentLikeEntities(commentId);
-    //   } catch (err) {
-    //     throw new Error(
-    //       `Something went wrong with deleting comments likes entity ${err}`,
-    //     );
-    //   }
-    // }
+    if (isAnyCommentLikesData) {
+      try {
+        await this.commentsRepo.deleteCommentLikeEntities(commentId);
+      } catch (err) {
+        throw new Error(
+          `Something went wrong with deleting comments likes entity ${err}`,
+        );
+      }
+    }
 
     try {
       const commentDeleteResult =
