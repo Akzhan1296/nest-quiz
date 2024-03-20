@@ -5,12 +5,15 @@ import { Comment } from "../../entity/comments-entity";
 import { CommentViewModel } from "./models/comments.models";
 import { PageSizeQueryModel } from "../../../common/types";
 import { Paginated } from "../../../common/paginated";
+import { CommentLike } from "../../entity/comment-likes-entity";
 
 @Injectable()
 export class CommentsQueryRepo {
   constructor(
     @InjectRepository(Comment)
-    private commentsRepository: Repository<Comment>
+    private commentsRepository: Repository<Comment>, 
+    @InjectRepository(CommentLike)
+    private commentLikeRepository: Repository<CommentLike>
   ) {}
 
   async getCommentsByPostId(
@@ -22,9 +25,31 @@ export class CommentsQueryRepo {
 
     const result = await this.commentsRepository
       .createQueryBuilder("c")
-      .select(["c.*"])
+      .select("c.*")
+      .addSelect(subQuery => {
+        return subQuery
+          .select("cls.likeStatus")
+          .from(CommentLike, "cls")
+          .where("cls.userId = :userId")
+          .andWhere("cls.commentId = c.id")
+      }, "userStatus")
+      .addSelect(subQuery => {
+        return subQuery
+          .select("COUNT(*)")
+          .from(CommentLike, "cls")
+          .where("cls.likeStatus = 'Like'")
+          .andWhere("cls.commentId = c.id")
+      }, "likesCount")
+      .addSelect(subQuery => {
+        return subQuery
+          .select("COUNT(*)")
+          .from(CommentLike, "cls")
+          .where("cls.likeStatus = 'Dislike'")
+          .andWhere("cls.commentId = c.id")
+      }, "dislikesCount")
       .where("c.postId = :postId")
       .setParameter("postId", postId)
+      .setParameter("userId", userId)
       .orderBy(
         `c.${sortBy}`,
         `${sortDirection.toUpperCase()}` as "ASC" | "DESC"
@@ -49,9 +74,9 @@ export class CommentsQueryRepo {
       },
       createdAt: comment.createdAt,
       likesInfo: {
-        likesCount: 0,
-        dislikesCount: 0,
-        myStatus: "None",
+        likesCount: +comment.likesCount,
+        dislikesCount: +comment.dislikesCount,
+        myStatus: comment.userStatus === null ? "None" : comment.userStatus,
       },
     }));
 
@@ -68,39 +93,31 @@ export class CommentsQueryRepo {
     commentId: string,
     userId: string | null
   ): Promise<CommentViewModel> {
+
     const comment = await this.commentsRepository
       .createQueryBuilder("c")
-      .select([
-        "c.*",
-
-        // (() => {
-        //   const subQuery = commentLikesStatusRepository
-        //     .createQueryBuilder("cls")
-        //     .select("cls.LikeStatus")
-        //     .where("cls.UserId = :userId")
-        //     .andWhere("cls.CommentId = :commentId")
-        //     .getSql();
-        //   return `(${subQuery}) as UserStatus`;
-        // })(),
-        // (() => {
-        //   const subQuery = commentLikesStatusRepository
-        //     .createQueryBuilder("cls")
-        //     .select("COUNT(*)")
-        //     .where("cls.LikeStatus = 'Like'")
-        //     .andWhere("cls.CommentId = :commentId")
-        //     .getSql();
-        //   return `(${subQuery}) as LikesCount`;
-        // })(),
-        // (() => {
-        //   const subQuery = commentLikesStatusRepository
-        //     .createQueryBuilder("cls")
-        //     .select("COUNT(*)")
-        //     .where("cls.LikeStatus = 'Dislike'")
-        //     .andWhere("cls.CommentId = :commentId")
-        //     .getSql();
-        //   return `(${subQuery}) as DislikesCount`;
-        // })(),
-      ])
+      .select("c.*")
+      .addSelect(subQuery => {
+        return subQuery
+          .select("cls.likeStatus")
+          .from(CommentLike, "cls")
+          .where("cls.userId = :userId")
+          .andWhere("cls.commentId = :commentId")
+      }, "userStatus")
+      .addSelect(subQuery => {
+        return subQuery
+          .select("COUNT(*)")
+          .from(CommentLike, "cls")
+          .where("cls.likeStatus = 'Like'")
+          .andWhere("cls.commentId = :commentId")
+      }, "likesCount")
+      .addSelect(subQuery => {
+        return subQuery
+          .select("COUNT(*)")
+          .from(CommentLike, "cls")
+          .where("cls.likeStatus = 'Dislike'")
+          .andWhere("cls.commentId = :commentId")
+      }, "dislikesCount")
       .where("c.id = :commentId")
       .setParameter("commentId", commentId)
       .setParameter("userId", userId)
@@ -119,9 +136,9 @@ export class CommentsQueryRepo {
       },
       createdAt: comment.createdAt,
       likesInfo: {
-        likesCount: 0,
-        dislikesCount: 0,
-        myStatus: "None",
+        likesCount: +comment.likesCount,
+        dislikesCount: +comment.dislikesCount,
+        myStatus: comment.userStatus === null ? "None" : comment.userStatus,
       },
     };
   }
