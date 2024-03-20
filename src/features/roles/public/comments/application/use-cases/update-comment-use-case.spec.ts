@@ -1,13 +1,13 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { CommentsRepository } from "../../../../../infrstructura/comments/comments.repository";
 import { AppModule } from "../../../../../../app.module";
 import { v4 as uuidv4 } from "uuid";
-import { CommentDataView } from "../../../../../infrstructura/comments/models/comments.models";
 import { UpdateCommentUseCase } from "./update-comment-use-case";
+import { CommentsRepo } from "../../../../../infrstructura/comments/comments.adapter";
+import { Comment } from "../../../../../entity/comments-entity";
 
 describe("UpdateCommentUseCase", () => {
   let app: TestingModule;
-  let commentsRepository: CommentsRepository;
+  let commentsRepo: CommentsRepo;
   let updateCommentUseCase: UpdateCommentUseCase;
 
   beforeEach(async () => {
@@ -16,13 +16,13 @@ describe("UpdateCommentUseCase", () => {
     }).compile();
     await app.init();
 
-    commentsRepository = app.get<CommentsRepository>(CommentsRepository);
+    commentsRepo = app.get<CommentsRepo>(CommentsRepo);
     updateCommentUseCase = app.get<UpdateCommentUseCase>(UpdateCommentUseCase);
   });
 
   it("Should be defined", () => {
     expect(app).toBeDefined();
-    expect(commentsRepository).toBeDefined();
+    expect(commentsRepo).toBeDefined();
     expect(updateCommentUseCase).toBeDefined();
   });
 
@@ -30,12 +30,12 @@ describe("UpdateCommentUseCase", () => {
     const userId = uuidv4();
 
     jest
-      .spyOn(commentsRepository, "getCommentEntityById")
-      .mockImplementation(async () => ({ userId }) as CommentDataView);
+      .spyOn(commentsRepo, "findCommentById")
+      .mockImplementation(async () => ({ userId }) as Comment);
 
     jest
-      .spyOn(commentsRepository, "updateCommentById")
-      .mockImplementation(async () => true);
+      .spyOn(commentsRepo, "saveComment")
+      .mockImplementation(async () => ({}) as Comment);
 
     const result = await updateCommentUseCase.execute({
       updateCommentDTO: {
@@ -53,9 +53,9 @@ describe("UpdateCommentUseCase", () => {
   });
   it("Should return 403 error", async () => {
     jest
-      .spyOn(commentsRepository, "getCommentEntityById")
+      .spyOn(commentsRepo, "findCommentById")
       .mockImplementation(
-        async () => ({ userId: uuidv4() }) as CommentDataView,
+        async () => ({ userId: uuidv4() }) as Comment
       );
 
     const result = await updateCommentUseCase.execute({
@@ -74,7 +74,7 @@ describe("UpdateCommentUseCase", () => {
   });
   it("Should return 404 error", async () => {
     jest
-      .spyOn(commentsRepository, "getCommentEntityById")
+      .spyOn(commentsRepo, "findCommentById")
       .mockImplementation(async () => null);
 
     const result = await updateCommentUseCase.execute({
