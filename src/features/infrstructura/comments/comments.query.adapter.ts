@@ -106,6 +106,10 @@ export class CommentsQueryRepo {
       .setParameter("userId", userId)
       .getRawOne();
 
+    if (!comment) {
+      return null;
+    }
+
     return {
       id: comment.id,
       content: comment.content,
