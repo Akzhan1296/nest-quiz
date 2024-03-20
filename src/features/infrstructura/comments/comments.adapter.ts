@@ -22,6 +22,14 @@ export class CommentsRepo {
     return this.commentLikeRepository.findOne({ where: { userId, commentId } });
   }
 
+  async isAnyCommentLikesData(commentId: string) {
+    return this.commentLikeRepository.find({ where: { commentId } });
+  }
+
+  async deleteCommentLikeEntities(commentId: string) {
+    return this.commentLikeRepository.delete({ commentId });
+  }
+
   async saveComment(comment: Comment): Promise<Comment> {
     return this.commentsRepository.save(comment);
   }

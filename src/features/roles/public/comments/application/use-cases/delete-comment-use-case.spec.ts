@@ -38,9 +38,9 @@ describe("DeleteCommentUseCase", () => {
       .spyOn(commentsRepo, "deleteComment")
       .mockImplementation(async () => ({ affected: 1 }) as DeleteResult);
 
-    // jest
-    //   .spyOn(commentsRepo, "isAnyCommentLikesData")
-    //   .mockImplementation(async () => false);
+    jest
+      .spyOn(commentsRepo, "isAnyCommentLikesData")
+      .mockImplementation(async () => null);
 
     const result = await deleteCommentUseCase.execute({
       deleteCommentDTO: {
