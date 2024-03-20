@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { DeleteCommentDTO, DeleteCommentResult } from "../comments.dto";
-import { CommentsRepository } from "../../../../../infrstructura/comments/comments.repository";
+import { CommentsRepo } from "../../../../../infrstructura/comments/comments.adapter";
 
 export class DeleteCommentCommand {
   constructor(public deleteCommentDTO: DeleteCommentDTO) {}
@@ -10,7 +10,7 @@ export class DeleteCommentCommand {
 export class DeleteCommentUseCase
   implements ICommandHandler<DeleteCommentCommand>
 {
-  constructor(private commentsRepository: CommentsRepository) {}
+  constructor(private commentsRepo: CommentsRepo) {}
 
   async execute(command: DeleteCommentCommand) {
     const { commentId, userId } = command.deleteCommentDTO;
@@ -21,8 +21,7 @@ export class DeleteCommentUseCase
       isForbidden: false,
     };
 
-    const commentData =
-      await this.commentsRepository.getCommentEntityById(commentId);
+    const commentData = await this.commentsRepo.findCommentById(commentId);
     if (!commentData) return result;
     result.isCommentFound = true;
 
@@ -31,27 +30,27 @@ export class DeleteCommentUseCase
       return result;
     }
 
-    const isAnyCommentLikesData =
-      await this.commentsRepository.isAnyCommentLikesData(commentId);
+    // const isAnyCommentLikesData =
+    //   await this.commentsRepository.isAnyCommentLikesData(commentId);
 
-    if (isAnyCommentLikesData) {
-      try {
-        await this.commentsRepository.deleteCommentLikeEntities(commentId);
-      } catch (err) {
-        throw new Error(
-          `Something went wrong with deleting comments likes entity ${err}`,
-        );
-      }
-    }
+    // if (isAnyCommentLikesData) {
+    //   try {
+    //     await this.commentsRepository.deleteCommentLikeEntities(commentId);
+    //   } catch (err) {
+    //     throw new Error(
+    //       `Something went wrong with deleting comments likes entity ${err}`,
+    //     );
+    //   }
+    // }
 
     try {
-      const isCommentDeleted =
-        await this.commentsRepository.deleteCommentById(commentId);
+      const commentDeleteResult =
+        await this.commentsRepo.deleteComment(commentData);
 
-      result.isCommentDeleted = isCommentDeleted;
+      result.isCommentDeleted = !!commentDeleteResult.affected;
     } catch (err) {
       throw new Error(
-        `Something went wrong with deleting comment entity ${err}`,
+        `Something went wrong with deleting comment entity ${err}`
       );
     }
 

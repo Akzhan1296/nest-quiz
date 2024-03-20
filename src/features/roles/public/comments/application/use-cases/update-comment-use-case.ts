@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { UpdateCommentDTO, UpdateCommentResult } from "../comments.dto";
-import { CommentsRepository } from "../../../../../infrstructura/comments/comments.repository";
+import { CommentsRepo } from "../../../../../infrstructura/comments/comments.adapter";
 
 export class UpdateCommentCommand {
   constructor(public updateCommentDTO: UpdateCommentDTO) {}
@@ -10,7 +10,7 @@ export class UpdateCommentCommand {
 export class UpdateCommentUseCase
   implements ICommandHandler<UpdateCommentCommand>
 {
-  constructor(private commentsRepository: CommentsRepository) {}
+  constructor(private commentsRepo: CommentsRepo) {}
 
   async execute(command: UpdateCommentCommand) {
     const { commentId, userId, content } = command.updateCommentDTO;
@@ -21,8 +21,7 @@ export class UpdateCommentUseCase
       isForbidden: false,
     };
 
-    const commentData =
-      await this.commentsRepository.getCommentEntityById(commentId);
+    const commentData = await this.commentsRepo.findCommentById(commentId);
     if (!commentData) return result;
     result.isCommentFound = true;
 
@@ -32,11 +31,9 @@ export class UpdateCommentUseCase
     }
 
     try {
-      const isUpdated = await this.commentsRepository.updateCommentById({
-        commentId,
-        content,
-      });
-      result.isCommentUpdated = isUpdated;
+      commentData.content = content;
+      await this.commentsRepo.saveComment(commentData);
+      result.isCommentUpdated = true;
     } catch (err) {
       throw new Error(`Something went wrong with updating comment ${err}`);
     }

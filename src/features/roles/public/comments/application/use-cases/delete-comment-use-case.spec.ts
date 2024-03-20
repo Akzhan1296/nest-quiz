@@ -1,13 +1,14 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { CommentsRepository } from "../../../../../infrstructura/comments/comments.repository";
 import { AppModule } from "../../../../../../app.module";
 import { DeleteCommentUseCase } from "./delete-comment-use-case";
 import { v4 as uuidv4 } from "uuid";
-import { CommentDataView } from "../../../../../infrstructura/comments/models/comments.models";
+import { CommentsRepo } from "../../../../../infrstructura/comments/comments.adapter";
+import { Comment } from "../../../../../entity/comments-entity";
+import { DeleteResult } from "typeorm";
 
 describe("DeleteCommentUseCase", () => {
   let app: TestingModule;
-  let commentsRepository: CommentsRepository;
+  let commentsRepo: CommentsRepo;
   let deleteCommentUseCase: DeleteCommentUseCase;
 
   beforeEach(async () => {
@@ -16,13 +17,13 @@ describe("DeleteCommentUseCase", () => {
     }).compile();
     await app.init();
 
-    commentsRepository = app.get<CommentsRepository>(CommentsRepository);
+    commentsRepo = app.get<CommentsRepo>(CommentsRepo);
     deleteCommentUseCase = app.get<DeleteCommentUseCase>(DeleteCommentUseCase);
   });
 
   it("Should be defined", () => {
     expect(app).toBeDefined();
-    expect(commentsRepository).toBeDefined();
+    expect(commentsRepo).toBeDefined();
     expect(deleteCommentUseCase).toBeDefined();
   });
 
@@ -30,16 +31,16 @@ describe("DeleteCommentUseCase", () => {
     const userId = uuidv4();
 
     jest
-      .spyOn(commentsRepository, "getCommentEntityById")
-      .mockImplementation(async () => ({ userId }) as CommentDataView);
+      .spyOn(commentsRepo, "findCommentById")
+      .mockImplementation(async () => ({ userId }) as Comment);
 
     jest
-      .spyOn(commentsRepository, "deleteCommentById")
-      .mockImplementation(async () => true);
+      .spyOn(commentsRepo, "deleteComment")
+      .mockImplementation(async () => ({ affected: 1 }) as DeleteResult);
 
-    jest
-      .spyOn(commentsRepository, "isAnyCommentLikesData")
-      .mockImplementation(async () => false);
+    // jest
+    //   .spyOn(commentsRepo, "isAnyCommentLikesData")
+    //   .mockImplementation(async () => false);
 
     const result = await deleteCommentUseCase.execute({
       deleteCommentDTO: {
@@ -56,9 +57,9 @@ describe("DeleteCommentUseCase", () => {
   });
   it("Should return 403 error", async () => {
     jest
-      .spyOn(commentsRepository, "getCommentEntityById")
+      .spyOn(commentsRepo, "findCommentById")
       .mockImplementation(
-        async () => ({ userId: uuidv4() }) as CommentDataView,
+        async () => ({ userId: uuidv4() }) as Comment
       );
 
     const result = await deleteCommentUseCase.execute({
@@ -76,7 +77,7 @@ describe("DeleteCommentUseCase", () => {
   });
   it("Should return 404 error", async () => {
     jest
-      .spyOn(commentsRepository, "getCommentEntityById")
+      .spyOn(commentsRepo, "findCommentById")
       .mockImplementation(async () => null);
 
     const result = await deleteCommentUseCase.execute({
