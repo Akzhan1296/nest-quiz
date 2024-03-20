@@ -1,12 +1,13 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { AppModule } from "../../../../../../app.module";
-import { CommentsRepository } from "../../../../../infrstructura/comments/comments.repository";
 import { LikeStatusCommentUseCase } from "./like-status-comment-use-case";
-import { CommentDataView } from "../../../../../infrstructura/comments/models/comments.models";
+import { CommentsRepo } from "../../../../../infrstructura/comments/comments.adapter";
+import { Comment } from "../../../../../entity/comments-entity";
+import { CommentLike } from "../../../../../entity/comment-likes-entity";
 
 describe("LikeStatusCommentUseCase", () => {
   let app: TestingModule;
-  let commentsRepository: CommentsRepository;
+  let commentsRepo: CommentsRepo;
   let likeStatusCommentuseCase: LikeStatusCommentUseCase;
 
   beforeEach(async () => {
@@ -14,21 +15,21 @@ describe("LikeStatusCommentUseCase", () => {
       imports: [AppModule],
     }).compile();
     await app.init();
-    commentsRepository = app.get<CommentsRepository>(CommentsRepository);
+    commentsRepo = app.get<CommentsRepo>(CommentsRepo);
     likeStatusCommentuseCase = app.get<LikeStatusCommentUseCase>(
-      LikeStatusCommentUseCase,
+      LikeStatusCommentUseCase
     );
   });
 
   it("Should be defined", () => {
     expect(app).toBeDefined();
-    expect(commentsRepository).toBeDefined();
+    expect(commentsRepo).toBeDefined();
     expect(likeStatusCommentuseCase).toBeDefined();
   });
 
   it("Should NOT create comment like entity, if comment not found", async () => {
     jest
-      .spyOn(commentsRepository, "getCommentEntityById")
+      .spyOn(commentsRepo, "findCommentById")
       .mockImplementation(async () => null);
 
     const result = await likeStatusCommentuseCase.execute({
@@ -46,18 +47,18 @@ describe("LikeStatusCommentUseCase", () => {
     });
   });
 
-  it("Should CREATE comment like entity, if comment found and comment entity not found", async () => {
+  it("Should CREATE comment like entity, if comment found and comment entity NOT found", async () => {
     jest
-      .spyOn(commentsRepository, "getCommentEntityById")
-      .mockImplementation(async () => ({}) as CommentDataView);
+      .spyOn(commentsRepo, "findCommentById")
+      .mockImplementation(async () => ({}) as Comment);
 
     jest
-      .spyOn(commentsRepository, "getCommentLikeData")
+      .spyOn(commentsRepo, "findCommentLikeData")
       .mockImplementation(async () => null);
 
     jest
-      .spyOn(commentsRepository, "createCommentLikeEntity")
-      .mockImplementation(async () => "");
+      .spyOn(commentsRepo, "saveCommentLike")
+      .mockImplementation(async () => ({}) as CommentLike);
 
     const result = await likeStatusCommentuseCase.execute({
       likeCommentDto: {
@@ -76,16 +77,16 @@ describe("LikeStatusCommentUseCase", () => {
 
   it("Should UPDATE comment like entity, if comment found and comment entity found", async () => {
     jest
-      .spyOn(commentsRepository, "getCommentEntityById")
-      .mockImplementation(async () => ({}) as CommentDataView);
+      .spyOn(commentsRepo, "findCommentById")
+      .mockImplementation(async () => ({}) as Comment);
 
     jest
-      .spyOn(commentsRepository, "getCommentLikeData")
-      .mockImplementation(async () => "123");
+      .spyOn(commentsRepo, "findCommentLikeData")
+      .mockImplementation(async () => ({}) as CommentLike);
 
     jest
-      .spyOn(commentsRepository, "updateCommentLikeEntity")
-      .mockImplementation(async () => true);
+      .spyOn(commentsRepo, "saveCommentLike")
+      .mockImplementation(async () =>  ({}) as CommentLike);
 
     const result = await likeStatusCommentuseCase.execute({
       likeCommentDto: {

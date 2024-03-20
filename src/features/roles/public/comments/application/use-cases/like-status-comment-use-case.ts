@@ -1,6 +1,7 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { HandleCommentLikeResult, HandleLikeCommentDTO } from "../comments.dto";
-import { CommentsRepository } from "../../../../../infrstructura/comments/comments.repository";
+import { CommentsRepo } from "../../../../../infrstructura/comments/comments.adapter";
+import { CommentLike } from "../../../../../entity/comment-likes-entity";
 
 export class HandleCommentsLikesCommand {
   constructor(public likeCommentDto: HandleLikeCommentDTO) {}
@@ -10,7 +11,9 @@ export class HandleCommentsLikesCommand {
 export class LikeStatusCommentUseCase
   implements ICommandHandler<HandleCommentsLikesCommand>
 {
-  constructor(private commentsRepository: CommentsRepository) {}
+  constructor(
+    private commentsRepo: CommentsRepo
+  ) {}
 
   async execute(command: HandleCommentsLikesCommand) {
     const { commentId, userId, commentLikeStatus } = command.likeCommentDto;
@@ -22,30 +25,29 @@ export class LikeStatusCommentUseCase
     };
 
     // if no comment return not found
-    const commentData =
-      await this.commentsRepository.getCommentEntityById(commentId);
+    const commentData = await this.commentsRepo.findCommentById(commentId);
     if (!commentData) {
       return result;
     }
     result.isCommentFound = true;
 
     // check comment like entity, do we have it for current user ?
-    const commentLikeEntityId =
-      await this.commentsRepository.getCommentLikeData({
-        userId,
-        commentId,
-      });
+    const commentLikeEntity = await this.commentsRepo.findCommentLikeData({
+      userId,
+      commentId,
+    });
 
     // if we don't have for current user, any comment like entity, create it
-    if (!commentLikeEntityId) {
+    if (!commentLikeEntity) {
       try {
-        await this.commentsRepository.createCommentLikeEntity({
-          commentId: commentId,
-          userId: userId,
-          likeStatus: commentLikeStatus,
-          postId: commentData.postId,
-          createdAt: new Date(),
-        });
+        const newComment = new CommentLike();
+        newComment.commentId = commentId;
+        newComment.userId = userId;
+        newComment.likeStatus = commentLikeStatus;
+        newComment.postId = commentData.postId;
+        newComment.createdAt = new Date();
+
+        await this.commentsRepo.saveCommentLike(newComment);
 
         result.isLikeStatusCreated = true;
       } catch (err) {
@@ -54,13 +56,10 @@ export class LikeStatusCommentUseCase
     } else {
       try {
         // if we have for current user comment like entity, just update like status
-        const isUpdated = await this.commentsRepository.updateCommentLikeEntity(
-          {
-            likeEntityId: commentLikeEntityId,
-            likeStatus: commentLikeStatus,
-          },
-        );
-        result.isLikeStatusUpdated = isUpdated;
+        commentLikeEntity.likeStatus = commentLikeStatus;
+        await this.commentsRepo.saveCommentLike(commentLikeEntity);
+
+        result.isLikeStatusUpdated = true;
       } catch (err) {
         throw new Error(`Something went product with like handle ${err}`);
       }
