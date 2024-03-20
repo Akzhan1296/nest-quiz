@@ -19,6 +19,7 @@ import { AuthGuard } from "../../../../../guards/auth.guard";
 import {
   CommentsQueryType,
   CreateCommentInputModel,
+  PostLikeStatus,
   // PostLikeStatus,
 } from "./input.models";
 import { CommandBus } from "@nestjs/cqrs";
@@ -30,6 +31,7 @@ import { UserIdGuard } from "../../../../../guards/userId.guard";
 import { CommentViewModel } from "../../../../infrstructura/comments/models/comments.models";
 import { PostsQueryRepo } from "../../../../infrstructura/posts/posts.query.adapter";
 import { CommentsQueryRepo } from "../../../../infrstructura/comments/comments.query.adapter";
+import { HandlePostLikesCommand } from "../application/use-cases/handle-post-like-use-case";
 
 @Controller("posts")
 export class PublicPosts {
@@ -98,20 +100,23 @@ export class PublicPosts {
   @Put(":id/like-status")
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
-  async postStatus() {
-    // @Body() postLikeStatus: PostLikeStatus // @Param() params: ValidId, // @Req() request: Request,
-    // const result = await this.commandBus.execute(
-    //   new HandlePostLikesCommand({
-    //     postId: params.id,
-    //     postLikeStatus: postLikeStatus.likeStatus,
-    //     userId: request.body.userId,
-    //     userLogin: request.body.userLogin,
-    //   })
-    // );
+  async postStatus(
+    @Req() request: Request,
+    @Param() params: ValidId,
+    @Body() postLikeStatus: PostLikeStatus
+  ) {
+    const result = await this.commandBus.execute(
+      new HandlePostLikesCommand({
+        postId: params.id,
+        postLikeStatus: postLikeStatus.likeStatus,
+        userId: request.body.userId,
+        userLogin: request.body.userLogin,
+      })
+    );
 
-    // if (!result.isPostFound) {
-    //   throw new NotFoundException();
-    // }
+    if (!result.isPostFound) {
+      throw new NotFoundException();
+    }
     return;
   }
 

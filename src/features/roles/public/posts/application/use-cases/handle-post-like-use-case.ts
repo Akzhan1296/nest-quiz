@@ -1,6 +1,8 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { HandlePostCommentDTO, HandlePostLikeResult } from "../posts.dto";
 import { PostsRepository } from "../../../../../infrstructura/posts/posts.repository";
+import { PostsRepo } from "../../../../../infrstructura/posts/posts.adapter";
+import { PostLike } from "../../../../../entity/post-likes-entity";
 
 export class HandlePostLikesCommand {
   constructor(public likePostDto: HandlePostCommentDTO) {}
@@ -10,7 +12,7 @@ export class HandlePostLikesCommand {
 export class LikeStatusPostUseCase
   implements ICommandHandler<HandlePostLikesCommand>
 {
-  constructor(private postsRepository: PostsRepository) {}
+  constructor(private postsRepo: PostsRepo) {}
 
   async execute(command: HandlePostLikesCommand) {
     const { postId, userId, postLikeStatus, userLogin } = command.likePostDto;
@@ -22,28 +24,28 @@ export class LikeStatusPostUseCase
     };
 
     // if no post return not found
-    const postData = await this.postsRepository.findPostById(postId);
+    const postData = await this.postsRepo.findPostById(postId);
     if (!postData) {
       return result;
     }
     result.isPostFound = true;
 
     // check comment like entity, do we have it for current user ?
-    const postLikeEntityId = await this.postsRepository.getPostLikeData({
+    const postLikeEntity = await this.postsRepo.findPostLikeData({
       userId,
       postId,
     });
 
     // if we don't have for current user, any comment like entity, create it
-    if (!postLikeEntityId) {
+    if (!postLikeEntity) {
       try {
-        await this.postsRepository.createPostLikeData({
-          userId: userId,
-          likeStatus: postLikeStatus,
-          postId: postData.id,
-          createdAt: new Date(),
-          userLogin: userLogin,
-        });
+        const postLike = new PostLike();
+        postLike.postId = postId;
+        postLike.userId = userId;
+        postLike.likeStatus = postLikeStatus;
+        postLike.userLogin = userLogin;
+        postLike.createdAt = new Date();
+        await this.postsRepo.savePostLike(postLike);
 
         result.isLikeStatusCreated = true;
       } catch (err) {
@@ -52,11 +54,10 @@ export class LikeStatusPostUseCase
     } else {
       try {
         // if we have for current user post like entity, just update like status
-        const isUpdated = await this.postsRepository.updatePostLikeEntity({
-          postLikeEntityId,
-          postLikeStatus,
-        });
-        result.isLikeStatusUpdated = isUpdated;
+        postLikeEntity.likeStatus = postLikeStatus;
+        await this.postsRepo.savePostLike(postLikeEntity);
+
+        result.isLikeStatusUpdated = true;
       } catch (err) {
         throw new Error(`Something went product with like handle ${err}`);
       }
