@@ -28,7 +28,7 @@ export class PostsQueryRepo {
           likesCount: r.likesCount,
           dislikesCount: r.dislikesCount,
           myStatus: r.userLikeStatus ? r.userLikeStatus : "None",
-          newestLikes: r.newestLikeCreatedAt.length
+          newestLikes: r.newestLikeCreatedAt !== null
             ? r.newestLikeCreatedAt.map((like) => ({
                 ...like,
                 addedAt: like.createdAt.toISOString(),
@@ -120,7 +120,12 @@ export class PostsQueryRepo {
           likesCount: +likesCount,
           dislikesCount: +dislikesCount,
           myStatus: userLikeStatus ? userLikeStatus : "None",
-          newestLikes: newestLikeCreatedAt,
+          newestLikes: newestLikeCreatedAt !== null
+          ? newestLikeCreatedAt.map((like) => ({
+              ...like,
+              addedAt: like.createdAt.toISOString(),
+            }))
+          : [],
         },
       };
     }
