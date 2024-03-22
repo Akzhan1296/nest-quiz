@@ -190,8 +190,8 @@ export class PostsQueryRepo {
         `p.${sortBy}`,
         `${sortDirection.toUpperCase()}` as "ASC" | "DESC"
       )
-      .skip(skip)
-      .take(pageSize)
+      .offset(skip)
+      .limit(pageSize)
       .setParameter("userId", userId)
       .getRawMany();
 
