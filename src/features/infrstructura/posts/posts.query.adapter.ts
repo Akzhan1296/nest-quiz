@@ -33,7 +33,7 @@ export class PostsQueryRepo {
                 ...like,
                 addedAt: like.createdAt.toISOString(),
               }))
-            : null,
+            : [],
         },
       };
     });
