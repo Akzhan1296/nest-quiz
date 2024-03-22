@@ -33,9 +33,9 @@ export class DeleteAllTestingData {
   async deleteCommentLikesTableData() {
     await this.dataSource.query(`DELETE FROM public."comment_like"`);
   }
-  // async deletePostsLikesTableData() {
-  //   await this.dataSource.query(`DELETE FROM public."PostsLikesStatuses"`);
-  // }
+  async deletePostsLikesTableData() {
+    await this.dataSource.query(`DELETE FROM public."post_like"`);
+  }
 
   async deletePostsTableData() {
     await this.dataSource.query(`DELETE FROM public."post"`);
@@ -57,7 +57,7 @@ export class DeleteDataController {
 
     await this.deleteRepository.deleteCommentLikesTableData();
     await this.deleteRepository.deleteCommentsTableData();
-    // await this.deleteRepository.deletePostsLikesTableData();
+    await this.deleteRepository.deletePostsLikesTableData();
     await this.deleteRepository.deletePostsTableData();
     await this.deleteRepository.deleteBlogsTableData();
     await this.deleteRepository.deleteRegistrationTableData();
