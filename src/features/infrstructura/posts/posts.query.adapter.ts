@@ -28,7 +28,12 @@ export class PostsQueryRepo {
           likesCount: r.likesCount,
           dislikesCount: r.dislikesCount,
           myStatus: r.userLikeStatus ? r.userLikeStatus : "None",
-          newestLikes: r.newestLikeCreatedAt,
+          newestLikes: r.newestLikeCreatedAt.length
+            ? r.newestLikeCreatedAt.map((like) => ({
+                ...like,
+                addedAt: like.createdAt.toISOString(),
+              }))
+            : [],
         },
       };
     });
