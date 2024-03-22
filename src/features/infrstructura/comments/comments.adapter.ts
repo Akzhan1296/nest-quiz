@@ -26,16 +26,16 @@ export class CommentsRepo {
     return this.commentLikeRepository.find({ where: { commentId } });
   }
 
+  async saveCommentLike(commentLike: CommentLike): Promise<CommentLike> {
+    return this.commentLikeRepository.save(commentLike);
+  }
+
   async deleteCommentLikeEntities(commentId: string) {
     return this.commentLikeRepository.delete({ commentId });
   }
 
   async saveComment(comment: Comment): Promise<Comment> {
     return this.commentsRepository.save(comment);
-  }
-
-  async saveCommentLike(commentLike: CommentLike): Promise<CommentLike> {
-    return this.commentLikeRepository.save(commentLike);
   }
 
   async deleteComment(comment: Comment): Promise<DeleteResult> {

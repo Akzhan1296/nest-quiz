@@ -43,6 +43,9 @@ export class PostsQueryRepository {
   (SELECT "LikeStatus"
    FROM public."PostsLikesStatuses"
    WHERE "PostId" = p."Id" AND "UserId" = $2) AS "UserLikeStatus",
+
+
+   
    (SELECT json_agg(json_build_object(
     'addedAt', "CreatedAt",
     'userId', "UserId",
@@ -56,6 +59,8 @@ FROM (
     LIMIT 3
 ) AS subquery
 ) AS "NewestLikeCreatedAt"
+
+
     FROM
       public."Posts" p
     LEFT JOIN

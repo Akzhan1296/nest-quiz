@@ -29,6 +29,18 @@ export class DeletePostBySAUseCase
     if (!blogData) return result;
     result.isBlogFound = true;
 
+    const isAnyPostLikesData = await this.postsRepo.isAnyPostLikesData(postId);
+
+    if (isAnyPostLikesData) {
+      try {
+        await this.postsRepo.deletePostLikeEntities(postId);
+      } catch (err) {
+        throw new Error(
+          `Something went wrong with deleting posts likes entity ${err}`
+        );
+      }
+    }
+
     const postData = await this.postsRepo.findPostById(postId);
     if (!postData) return result;
     result.isPostFound = true;

@@ -5,6 +5,7 @@ import { Post } from "../../entity/posts-entity";
 import { PostViewModel } from "./posts.models";
 import { PageSizeQueryModel, PaginationViewModel } from "../../../common/types";
 import { Paginated } from "../../../common/paginated";
+import { PostLike } from "../../entity/post-likes-entity";
 
 @Injectable()
 export class PostsQueryRepo {
@@ -14,21 +15,23 @@ export class PostsQueryRepo {
   ) {}
 
   private getMappedPostItems(result): PostViewModel[] {
-    return result.map((r) => ({
-      id: r.id,
-      title: r.title,
-      shortDescription: r.shortDescription,
-      content: r.content,
-      blogId: r.blogId,
-      blogName: r.blog.name,
-      createdAt: r.createdAt,
-      extendedLikesInfo: {
-        likesCount: 0,
-        dislikesCount: 0,
-        myStatus: "None",
-        newestLikes: [],
-      },
-    }));
+    return result.map((r) => {
+      return {
+        id: r.id,
+        title: r.title,
+        shortDescription: r.shortDescription,
+        content: r.content,
+        blogId: r.blogId,
+        blogName: r.b_name,
+        createdAt: r.createdAt,
+        extendedLikesInfo: {
+          likesCount: r.likesCount,
+          dislikesCount: r.dislikesCount,
+          myStatus: r.userLikeStatus ? r.userLikeStatus : "None",
+          newestLikes: r.newestLikeCreatedAt,
+        },
+      };
+    });
   }
 
   // one post
@@ -36,34 +39,83 @@ export class PostsQueryRepo {
     postId: string,
     userId: string | null
   ): Promise<PostViewModel | null> {
-    // for future tasks
-    console.log(userId);
-
     let resultView: null | PostViewModel = null;
 
     const builder = await this.postsRepository
       .createQueryBuilder("p")
-      .select()
       .leftJoinAndSelect("p.blog", "b", `"p"."blogId" = "b"."id"`)
-      .where({ id: postId })
-      .getOne();
+      .addSelect((subQuery) => {
+        return subQuery
+          .select("COUNT(*)")
+          .from(PostLike, "postLikes")
+          .where("postLikes.postId = p.id")
+          .andWhere("postLikes.likeStatus = 'Like'");
+      }, "likesCount")
+      .addSelect((subQuery) => {
+        return subQuery
+          .select("COUNT(*)")
+          .from(PostLike, "postLikes")
+          .where("postLikes.postId = p.id")
+          .andWhere("postLikes.likeStatus = 'Dislike'");
+      }, "dislikesCount")
+      .addSelect((subQuery) => {
+        return subQuery
+          .select("postLikes.likeStatus")
+          .from(PostLike, "postLikes")
+          .where("postLikes.postId = p.Id")
+          .andWhere("postLikes.userId = :userId");
+      }, "userLikeStatus")
+      .addSelect(
+        `
+        (SELECT json_agg(json_build_object(
+          'addedAt', "createdAt",
+          'userId', "userId",
+          'login', "userLogin"
+      ))
+      FROM (
+          SELECT DISTINCT ON ("userId", "createdAt") "createdAt", "userId", "userLogin"
+          FROM public."post_like"
+          WHERE "postId" = p."id" AND "likeStatus" = 'Like'
+          ORDER BY "createdAt" DESC
+          LIMIT 3
+      ) AS subquery
+      )
+    `,
+        "newestLikeCreatedAt"
+      )
+      .where("p.Id = :postId")
+      .setParameter("postId", postId)
+      .setParameter("userId", userId)
+      .getRawOne();
 
     if (builder) {
-      const { title, createdAt, shortDescription, id, content, blogId, blog } =
-        builder;
+      const {
+        p_title,
+        p_createdAt,
+        p_shortDescription,
+        p_id,
+        p_content,
+        b_id,
+        b_name,
+        userLikeStatus,
+        newestLikeCreatedAt,
+        likesCount,
+        dislikesCount,
+      } = builder;
+
       resultView = {
-        id,
-        title,
-        shortDescription,
-        content,
-        blogId,
-        blogName: blog.name,
-        createdAt,
+        id: p_id,
+        title: p_title,
+        shortDescription: p_shortDescription,
+        content: p_content,
+        blogId: b_id,
+        blogName: b_name,
+        createdAt: p_createdAt,
         extendedLikesInfo: {
-          likesCount: 0,
-          dislikesCount: 0,
-          myStatus: "None",
-          newestLikes: [],
+          likesCount: +likesCount,
+          dislikesCount: +dislikesCount,
+          myStatus: userLikeStatus ? userLikeStatus : "None",
+          newestLikes: newestLikeCreatedAt,
         },
       };
     }
@@ -75,15 +127,50 @@ export class PostsQueryRepo {
     pageParams: PageSizeQueryModel,
     userId: string | null
   ): Promise<PaginationViewModel<PostViewModel>> {
-    //for future task
-    console.log(userId);
-
     const { sortBy, sortDirection, skip, pageSize, blogId } = pageParams;
-
     const builder = await this.postsRepository
       .createQueryBuilder("p")
-      .select()
-      .leftJoinAndSelect("p.blog", "b", `"p"."blogId" = "b"."id"`)
+      .select(["p.*", "b.name"])
+      .leftJoin("p.blog", "b", `"p"."blogId" = "b"."id"`)
+      .addSelect((subQuery) => {
+        return subQuery
+          .select("COUNT(*)")
+          .from(PostLike, "postLikes")
+          .where("postLikes.postId = p.id")
+          .andWhere("postLikes.likeStatus = 'Like'");
+      }, "likesCount")
+      .addSelect((subQuery) => {
+        return subQuery
+          .select("COUNT(*)")
+          .from(PostLike, "postLikes")
+          .where("postLikes.postId = p.id")
+          .andWhere("postLikes.likeStatus = 'Dislike'");
+      }, "dislikesCount")
+      .addSelect((subQuery) => {
+        return subQuery
+          .select("postLikes.likeStatus")
+          .from(PostLike, "postLikes")
+          .where("postLikes.postId = p.Id")
+          .andWhere("postLikes.userId = :userId");
+      }, "userLikeStatus")
+      .addSelect(
+        `
+        (SELECT json_agg(json_build_object(
+          'addedAt', "createdAt",
+          'userId', "userId",
+          'login', "userLogin"
+      ))
+      FROM (
+          SELECT DISTINCT ON ("userId", "createdAt") "createdAt", "userId", "userLogin"
+          FROM public."post_like"
+          WHERE "postId" = p."id" AND "likeStatus" = 'Like'
+          ORDER BY "createdAt" DESC
+          LIMIT 3
+      ) AS subquery
+      )
+    `,
+        "newestLikeCreatedAt"
+      )
       .where({ blogId })
       .orderBy(
         `p.${sortBy}`,
@@ -91,7 +178,8 @@ export class PostsQueryRepo {
       )
       .skip(skip)
       .take(pageSize)
-      .getMany();
+      .setParameter("userId", userId)
+      .getRawMany();
 
     const count = await this.postsRepository
       .createQueryBuilder()
@@ -112,9 +200,6 @@ export class PostsQueryRepo {
     pageParams: PageSizeQueryModel,
     userId: string | null
   ): Promise<PaginationViewModel<PostViewModel>> {
-    // for future tasks
-    console.log(userId);
-
     const { sortBy, sortDirection, skip, pageSize } = pageParams;
 
     const fieldEntityMapping = {
@@ -136,41 +221,62 @@ export class PostsQueryRepo {
       .createQueryBuilder("p")
       .select(["p.*", "b.name"])
       .leftJoin("p.blog", "b", `"p"."blogId" = "b"."id"`)
+      .addSelect((subQuery) => {
+        return subQuery
+          .select("COUNT(*)")
+          .from(PostLike, "postLikes")
+          .where("postLikes.postId = p.id")
+          .andWhere("postLikes.likeStatus = 'Like'");
+      }, "likesCount")
+      .addSelect((subQuery) => {
+        return subQuery
+          .select("COUNT(*)")
+          .from(PostLike, "postLikes")
+          .where("postLikes.postId = p.id")
+          .andWhere("postLikes.likeStatus = 'Dislike'");
+      }, "dislikesCount")
+      .addSelect((subQuery) => {
+        return subQuery
+          .select("postLikes.likeStatus")
+          .from(PostLike, "postLikes")
+          .where("postLikes.postId = p.Id")
+          .andWhere("postLikes.userId = :userId");
+      }, "userLikeStatus")
+      .addSelect(
+        `
+        (SELECT json_agg(json_build_object(
+          'addedAt', "createdAt",
+          'userId', "userId",
+          'login', "userLogin"
+      ))
+      FROM (
+          SELECT DISTINCT ON ("userId", "createdAt") "createdAt", "userId", "userLogin"
+          FROM public."post_like"
+          WHERE "postId" = p."id" AND "likeStatus" = 'Like'
+          ORDER BY "createdAt" DESC
+          LIMIT 3
+      ) AS subquery
+      )
+    `,
+        "newestLikeCreatedAt"
+      )
       .orderBy(
         `${fieldEntityMapping[sortBy]}.${sortByField}`,
         `${sortDirection.toUpperCase()}` as "ASC" | "DESC"
       )
       .offset(skip)
       .limit(pageSize)
+      .setParameter("userId", userId)
       .getRawMany();
 
-
-    const mappedPosts = builder.map((r) => ({
-      id: r.id,
-      title: r.title,
-      shortDescription: r.shortDescription,
-      content: r.content,
-      blogId: r.blogId,
-      blogName: r.b_name,
-      createdAt: r.createdAt,
-      extendedLikesInfo: {
-        likesCount: 0,
-        dislikesCount: 0,
-        myStatus: "None",
-        newestLikes: [],
-      },
-    }));
-
-    const count = await this.postsRepository
-      .createQueryBuilder("p")
-      .getCount();
+    const count = await this.postsRepository.createQueryBuilder("p").getCount();
 
     return Paginated.transformPagination<PostViewModel>(
       {
         ...pageParams,
         totalCount: +count,
       },
-      mappedPosts
+      this.getMappedPostItems(builder)
     );
   }
 }
