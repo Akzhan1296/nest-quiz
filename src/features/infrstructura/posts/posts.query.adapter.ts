@@ -25,8 +25,8 @@ export class PostsQueryRepo {
         blogName: r.b_name,
         createdAt: r.createdAt,
         extendedLikesInfo: {
-          likesCount: r.likesCount,
-          dislikesCount: r.dislikesCount,
+          likesCount: +r.likesCount,
+          dislikesCount: +r.dislikesCount,
           myStatus: r.userLikeStatus ? r.userLikeStatus : "None",
           newestLikes:
             r.newestLikeCreatedAt !== null
