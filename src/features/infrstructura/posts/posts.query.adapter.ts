@@ -28,12 +28,15 @@ export class PostsQueryRepo {
           likesCount: r.likesCount,
           dislikesCount: r.dislikesCount,
           myStatus: r.userLikeStatus ? r.userLikeStatus : "None",
-          newestLikes: r.newestLikeCreatedAt !== null
-            ? r.newestLikeCreatedAt.map((like) => ({
-                ...like,
-                addedAt: like.createdAt.toISOString(),
-              }))
-            : [],
+          newestLikes:
+            r.newestLikeCreatedAt !== null
+              ? r.newestLikeCreatedAt.map((like) => {
+                  return {
+                    ...like,
+                    addedAt: new Date(like.addedAt).toISOString(),
+                  };
+                })
+              : [],
         },
       };
     });
@@ -120,12 +123,13 @@ export class PostsQueryRepo {
           likesCount: +likesCount,
           dislikesCount: +dislikesCount,
           myStatus: userLikeStatus ? userLikeStatus : "None",
-          newestLikes: newestLikeCreatedAt !== null
-          ? newestLikeCreatedAt.map((like) => ({
-              ...like,
-              addedAt: like.createdAt.toISOString(),
-            }))
-          : [],
+          newestLikes:
+            newestLikeCreatedAt !== null
+              ? newestLikeCreatedAt.map((like) => ({
+                  ...like,
+                  addedAt: new Date(like.addedAt).toISOString(),
+                }))
+              : [],
         },
       };
     }
