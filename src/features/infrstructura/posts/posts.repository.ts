@@ -7,8 +7,9 @@ import {
   SetPostLikeEntityDto,
   UpdatePostDTO,
   UpdatePostLikeEntityDto,
-} from "./posts.models";
+} from "./models/posts.models";
 
+// outdated
 export class PostsRepository {
   constructor(@InjectDataSource() protected dataSource: DataSource) {}
 

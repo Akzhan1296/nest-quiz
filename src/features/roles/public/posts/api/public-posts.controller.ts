@@ -14,19 +14,16 @@ import {
 } from "@nestjs/common";
 import { BlogsQueryType } from "../../../sa/blogs/api/sa.blogs.models";
 import { PaginationViewModel, ValidId } from "../../../../../common/types";
-import { PostViewModel } from "../../../../infrstructura/posts/posts.models";
+import { PostViewModel } from "../../../../infrstructura/posts/models/posts.models";
 import { AuthGuard } from "../../../../../guards/auth.guard";
 import {
   CommentsQueryType,
   CreateCommentInputModel,
   PostLikeStatus,
-  // PostLikeStatus,
 } from "./input.models";
 import { CommandBus } from "@nestjs/cqrs";
 import { CreateCommentCommand } from "../../comments/application/use-cases/create-comment-use-case";
 import { Request } from "express";
-// import { CommentsQueryRepository } from "../../../../infrstructura/comments/comments.query.repository";
-// import { HandlePostLikesCommand } from "../application/use-cases/handle-post-like-use-case";
 import { UserIdGuard } from "../../../../../guards/userId.guard";
 import { CommentViewModel } from "../../../../infrstructura/comments/models/comments.models";
 import { PostsQueryRepo } from "../../../../infrstructura/posts/posts.query.adapter";
@@ -34,7 +31,7 @@ import { CommentsQueryRepo } from "../../../../infrstructura/comments/comments.q
 import { HandlePostLikesCommand } from "../application/use-cases/handle-post-like-use-case";
 
 @Controller("posts")
-export class PublicPosts {
+export class PublicPostsController {
   constructor(
     private postQuerysRepo: PostsQueryRepo,
     private commentsQueryRepo: CommentsQueryRepo,

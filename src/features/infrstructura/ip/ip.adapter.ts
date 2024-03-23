@@ -27,6 +27,6 @@ export class BlockIpsRepo {
   }
 
   async dropIps() {
-    await this.dataSource.query(`DELETE FROM public."Ips"`);
+    await this.dataSource.query(`DELETE FROM public."ips"`);
   }
 }

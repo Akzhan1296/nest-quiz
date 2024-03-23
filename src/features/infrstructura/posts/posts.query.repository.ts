@@ -1,10 +1,11 @@
 import { InjectDataSource } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
-import { PostViewModel } from "./posts.models";
+import { PostViewModel } from "./models/posts.models";
 import { PageSizeQueryModel, PaginationViewModel } from "../../../common/types";
 import { transformFirstLetter } from "../../../utils/upperFirstLetter";
 import { Paginated } from "../../../common/paginated";
 
+// outdated
 export class PostsQueryRepository {
   constructor(@InjectDataSource() protected dataSource: DataSource) {}
 

@@ -1,13 +1,13 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { AppModule } from "../../../../../../app.module";
-import { DeviceSessionsRepository } from "../../../../../infrstructura/deviceSessions/device-sessions.repository";
 import { LogOutUseCase } from "./logout-use-case";
 import { UsersRepo } from "../../../../../infrstructura/users/users.adapter";
+import { DeviceSessionRepo } from "../../../../../infrstructura/deviceSessions/device-sessions.adapter";
 
 describe("Logout use case", () => {
   let app: TestingModule;
   let logOutUseCase: LogOutUseCase;
-  let deviceSessionRepository: DeviceSessionsRepository;
+  let deviceSessionRepo: DeviceSessionRepo;
   let usersRepo: UsersRepo;
 
   beforeEach(async () => {
@@ -18,15 +18,14 @@ describe("Logout use case", () => {
 
     logOutUseCase = app.get<LogOutUseCase>(LogOutUseCase);
     usersRepo = app.get<UsersRepo>(UsersRepo);
-    deviceSessionRepository = app.get<DeviceSessionsRepository>(
-      DeviceSessionsRepository,
-    );
+    deviceSessionRepo = app.get<DeviceSessionRepo>(DeviceSessionRepo);
+
   });
 
   it("Should be defined", () => {
     expect(app).toBeDefined();
     expect(logOutUseCase).toBeDefined();
-    expect(deviceSessionRepository).toBeDefined();
+    expect(deviceSessionRepo).toBeDefined();
     expect(usersRepo).toBeDefined();
   });
   it("Should not handle delete, if userData not found", async () => {});

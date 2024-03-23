@@ -24,7 +24,7 @@ import {
   PaginationViewModel,
   ValidId,
 } from "../../../../../common/types";
-import { BlogViewModel } from "../../../../infrstructura/blogs/blogs.models";
+import { BlogViewModel } from "../../../../infrstructura/blogs/models/blogs.models";
 import { CommandBus } from "@nestjs/cqrs";
 import { CreateBlogBySACommand } from "../application/use-cases/sa.create-blog.use-case";
 import {
@@ -35,7 +35,7 @@ import {
 import { AuthBasicGuard } from "../../../../../guards/authBasic.guard";
 import { UpdateBlogBySACommand } from "../application/use-cases/sa.update-blog.use-case";
 import { DeleteBlogBySACommand } from "../application/use-cases/sa.delete-blog.use-case";
-import { PostViewModel } from "../../../../infrstructura/posts/posts.models";
+import { PostViewModel } from "../../../../infrstructura/posts/models/posts.models";
 import {
   ResultCreatePostDTO,
   ResultDeletePostDTO,

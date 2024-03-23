@@ -6,17 +6,18 @@ import { UsersRepo } from "../../../../../infrstructura/users/users.adapter";
 import { User } from "../../../../../entity/users-entity";
 import { DeviceSessionRepo } from "../../../../../infrstructura/deviceSessions/device-sessions.adapter";
 import { AuthSession } from "../../../../../entity/auth-session-entity";
+import { v4 as uuidv4 } from "uuid";
 
 const getRefreshTokenDTOMock = {
-  userId: "123",
-  deviceId: "456",
+  userId: uuidv4(),
+  deviceId: uuidv4()
 };
 
 describe("Refresh token use case", () => {
   let app: TestingModule;
   let refreshTokenUseCase: UpdateUserRefreshTokenUseCase;
   let authService: AuthService;
-  let usersRepository: UsersRepo;
+  let usersRepo: UsersRepo;
   let deviceRepo: DeviceSessionRepo;
 
   beforeEach(async () => {
@@ -30,7 +31,7 @@ describe("Refresh token use case", () => {
     );
     authService = app.get<AuthService>(AuthService);
     deviceRepo = app.get<DeviceSessionRepo>(DeviceSessionRepo);
-    usersRepository = app.get<UsersRepo>(UsersRepo);
+    usersRepo = app.get<UsersRepo>(UsersRepo);
   });
 
   it("Should be defined", () => {
@@ -38,11 +39,11 @@ describe("Refresh token use case", () => {
     expect(refreshTokenUseCase).toBeDefined();
     expect(authService).toBeDefined();
     expect(deviceRepo).toBeDefined();
-    expect(usersRepository).toBeDefined();
+    expect(usersRepo).toBeDefined();
   });
   it("Should not return tokens, if userData not found", async () => {
     jest
-      .spyOn(usersRepository, "findUserById")
+      .spyOn(usersRepo, "findUserById")
       .mockImplementation(async () => null);
 
     const result = await refreshTokenUseCase.execute({
@@ -57,7 +58,7 @@ describe("Refresh token use case", () => {
     });
   });
   it("Should not return tokens, if authMetaData not found", async () => {
-    jest.spyOn(usersRepository, "findUserById").mockImplementation(
+    jest.spyOn(usersRepo, "findUserById").mockImplementation(
       async () =>
         ({
           id: "id123",
@@ -83,7 +84,7 @@ describe("Refresh token use case", () => {
     });
   });
   it("Should update auth meta data, if already have, and return tokens", async () => {
-    jest.spyOn(usersRepository, "findUserById").mockImplementation(
+    jest.spyOn(usersRepo, "findUserById").mockImplementation(
       async () =>
         ({
           id: "id123",
@@ -127,3 +128,4 @@ describe("Refresh token use case", () => {
     await app.close();
   });
 });
+

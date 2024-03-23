@@ -1,7 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { Cron, CronExpression } from "@nestjs/schedule";
-import { BlockIpsRepository } from "./ip/ip.repository";
-import { BlockIpsRepo } from "./ip/ip.adapter.repository";
+import { BlockIpsRepo } from "./ip/ip.adapter";
 import { Ips } from "../entity/ips-entity";
 
 export type IpsDataDto = {
@@ -13,7 +12,6 @@ export type IpsDataDto = {
 @Injectable()
 export class BlockIpsService {
   constructor(
-    private readonly blockIpsRepository: BlockIpsRepository,
     private readonly blockIpsRepo: BlockIpsRepo,
   ) {}
 
@@ -34,6 +32,6 @@ export class BlockIpsService {
   //scheduler
   @Cron(CronExpression.EVERY_10_MINUTES)
   handleCron() {
-    this.blockIpsRepository.dropIps();
+    this.blockIpsRepo.dropIps();
   }
 }

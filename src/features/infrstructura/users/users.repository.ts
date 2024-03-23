@@ -12,6 +12,7 @@ import {
   UserViewDTO,
 } from "./models/users.models";
 
+// outdated
 export class UsersRepository {
   constructor(@InjectDataSource() protected dataSource: DataSource) {}
 

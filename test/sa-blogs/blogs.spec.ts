@@ -232,7 +232,7 @@ describe("Blogs", () => {
     });
   });
 
-  describe.skip("Create post by blogId", () => {
+  describe("Create post by blogId", () => {
     it("Should create post successfully", async () => {
       let blogId = null;
 
@@ -348,7 +348,7 @@ describe("Blogs", () => {
     });
   });
 
-  describe.skip("Update post by blogId", () => {
+  describe("Update post by blogId", () => {
     it("Should update post successfully", async () => {
       let blogId = null;
       let postId = null;
@@ -510,7 +510,7 @@ describe("Blogs", () => {
     });
   });
 
-  describe.skip("Delete post by blog and post ids", () => {
+  describe("Delete post by blog and post ids", () => {
     it("Should delete post", async () => {
       let blogId = null;
       let postId = null;

@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Post } from "../../entity/posts-entity";
-import { PostViewModel } from "./posts.models";
+import { PostViewModel } from "./models/posts.models";
 import { PageSizeQueryModel, PaginationViewModel } from "../../../common/types";
 import { Paginated } from "../../../common/paginated";
 import { PostLike } from "../../entity/post-likes-entity";

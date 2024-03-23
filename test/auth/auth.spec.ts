@@ -21,13 +21,13 @@ import { Registration } from "../../src/features/entity/registration-entity";
 
 describe("Auth", () => {
   let app: INestApplication;
-  let usersRepository: UsersRepo;
+  let usersRepo: UsersRepo;
   let deleteDataController: DeleteDataController;
 
   beforeAll(async () => {
     app = await initTestApp();
     await app.init();
-    usersRepository = app.get<UsersRepo>(UsersRepo);
+    usersRepo = app.get<UsersRepo>(UsersRepo);
     deleteDataController = app.get<DeleteDataController>(DeleteDataController);
   });
 
@@ -110,13 +110,13 @@ describe("Auth", () => {
   describe("Registration confirmation flow", () => {
     it("Should confirm registration successfully", () => {
       jest
-        .spyOn(usersRepository, "findRegistrationDataByConfirmCode")
+        .spyOn(usersRepo, "findRegistrationDataByConfirmCode")
         .mockImplementation(
           async () => userByConfirmCodeMock as unknown as Registration,
         );
 
       jest
-        .spyOn(usersRepository, "saveRegistration")
+        .spyOn(usersRepo, "saveRegistration")
         .mockImplementation(
           async () => userByConfirmCodeMock as unknown as Registration,
         );
@@ -131,7 +131,7 @@ describe("Auth", () => {
 
     it("Should return 404 error ", () => {
       jest
-        .spyOn(usersRepository, "findRegistrationDataByConfirmCode")
+        .spyOn(usersRepo, "findRegistrationDataByConfirmCode")
         .mockImplementation(async () => null);
       return request(app.getHttpServer())
         .post("/auth/registration-confirmation")
@@ -143,7 +143,7 @@ describe("Auth", () => {
 
     it("Should return 400 error", async () => {
       jest
-        .spyOn(usersRepository, "findRegistrationDataByConfirmCode")
+        .spyOn(usersRepo, "findRegistrationDataByConfirmCode")
         .mockImplementation(
           async () =>
             ({
@@ -173,7 +173,7 @@ describe("Auth", () => {
   describe("Confirm email resending", () => {
     it("Should resend email", () => {
       jest
-        .spyOn(usersRepository, "findUserRegistrationDataByEmail")
+        .spyOn(usersRepo, "findUserRegistrationDataByEmail")
         .mockImplementation(
           async () => userByEmailMock as unknown as Registration,
         );
@@ -188,7 +188,7 @@ describe("Auth", () => {
 
     it("Should return 400 error, if no headers", () => {
       jest
-        .spyOn(usersRepository, "findUserRegistrationDataByEmail")
+        .spyOn(usersRepo, "findUserRegistrationDataByEmail")
         .mockImplementation(async () => null);
       return request(app.getHttpServer())
         .post("/auth/registration-email-resending")
@@ -200,7 +200,7 @@ describe("Auth", () => {
 
     it("Should return 400 error, if email already confirmed", () => {
       jest
-        .spyOn(usersRepository, "findUserRegistrationDataByEmail")
+        .spyOn(usersRepo, "findUserRegistrationDataByEmail")
         .mockImplementation(
           async () =>
             ({

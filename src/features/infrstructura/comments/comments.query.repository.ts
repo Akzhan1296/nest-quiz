@@ -5,6 +5,7 @@ import { PageSizeQueryModel } from "../../../common/types";
 import { transformFirstLetter } from "../../../utils/upperFirstLetter";
 import { Paginated } from "../../../common/paginated";
 
+// outdated
 export class CommentsQueryRepository {
   constructor(@InjectDataSource() protected dataSource: DataSource) {}
 

@@ -1,6 +1,7 @@
 import { InjectDataSource } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
 
+// outdated
 export class BlockIpsRepository {
   constructor(@InjectDataSource() protected dataSource: DataSource) {}
 
@@ -34,6 +35,6 @@ export class BlockIpsRepository {
     return result;
   }
   async dropIps() {
-    await this.dataSource.query(`DELETE FROM public."Ips"`);
+    await this.dataSource.query(`DELETE FROM public."ips"`);
   }
 }
