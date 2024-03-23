@@ -75,8 +75,6 @@ export class AuthController {
     response.cookie("refreshToken", result.refreshToken, {
       httpOnly: true,
       secure: true,
-      // httpOnly: false,
-      // secure: false,
     });
     return response.status(HttpStatus.OK).send({
       accessToken: result.accessToken,
@@ -97,8 +95,6 @@ export class AuthController {
     response.cookie("refreshToken", `${result.refreshToken}`, {
       httpOnly: true,
       secure: true,
-      // httpOnly: false,
-      // secure: false,
     });
     return response.status(HttpStatus.OK).send({
       accessToken: result.accessToken,

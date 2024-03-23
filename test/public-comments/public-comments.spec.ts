@@ -89,6 +89,7 @@ describe("Comments", () => {
       //auth user
       const authResult = await request(app.getHttpServer())
         .post("/auth/login")
+        .set("user-agent", `deviceName${new Date()}`)
         .send({
           loginOrEmail: "login12345",
           password: "password",
@@ -167,6 +168,7 @@ describe("Comments", () => {
       //auth user
       const authResult = await request(app.getHttpServer())
         .post("/auth/login")
+        .set("user-agent", `deviceName${new Date()}`)
         .send({
           loginOrEmail: "login12345",
           password: "password",
@@ -238,6 +240,7 @@ describe("Comments", () => {
       //auth user
       const authResult = await request(app.getHttpServer())
         .post("/auth/login")
+        .set("user-agent", `deviceName${new Date()}`)
         .send({
           loginOrEmail: "login12345",
           password: "password",
@@ -312,6 +315,7 @@ describe("Comments", () => {
       //auth user
       const authResult = await request(app.getHttpServer())
         .post("/auth/login")
+        .set("user-agent", `deviceName${new Date()}`)
         .send({
           loginOrEmail: "login12345",
           password: "password",
@@ -360,6 +364,7 @@ describe("Comments", () => {
       //auth user
       const authResult = await request(app.getHttpServer())
         .post("/auth/login")
+        .set("user-agent", `deviceName${new Date()}`)
         .send({
           loginOrEmail: "login12345",
           password: "password",
@@ -391,6 +396,7 @@ describe("Comments", () => {
       //auth user
       const authResult = await request(app.getHttpServer())
         .post("/auth/login")
+        .set("user-agent", `deviceName${new Date()}`)
         .send({
           loginOrEmail: "login12345",
           password: "password",
@@ -462,6 +468,7 @@ describe("Comments", () => {
       //auth user
       const authResult = await request(app.getHttpServer())
         .post("/auth/login")
+        .set("user-agent", `deviceName${new Date()}`)
         .send({
           loginOrEmail: "login12345",
           password: "password",
@@ -557,6 +564,7 @@ describe("Comments", () => {
       //auth user
       const authResult = await request(app.getHttpServer())
         .post("/auth/login")
+        .set("user-agent", `deviceName${new Date()}`)
         .send({
           loginOrEmail: "login12345",
           password: "password",
@@ -660,6 +668,7 @@ describe("Comments", () => {
       //auth user
       const authResult = await request(app.getHttpServer())
         .post("/auth/login")
+        .set("user-agent", `deviceName${new Date()}`)
         .send({
           loginOrEmail: "login12345",
           password: "password",
@@ -735,6 +744,7 @@ describe("Comments", () => {
       //auth user
       const authResult = await request(app.getHttpServer())
         .post("/auth/login")
+        .set("user-agent", `deviceName${new Date()}`)
         .send({
           loginOrEmail: "login12345",
           password: "password",
@@ -754,6 +764,7 @@ describe("Comments", () => {
 
       const auth2Result = await request(app.getHttpServer())
         .post("/auth/login")
+        .set("user-agent", `deviceName${new Date()}`)
         .send({
           loginOrEmail: "user2",
           password: "password",
@@ -792,6 +803,7 @@ describe("Comments", () => {
       //auth user
       const authResult = await request(app.getHttpServer())
         .post("/auth/login")
+        .set("user-agent", `deviceName${new Date()}`)
         .send({
           loginOrEmail: "login12345",
           password: "password",
@@ -868,6 +880,7 @@ describe("Comments", () => {
       //auth user
       const authResult = await request(app.getHttpServer())
         .post("/auth/login")
+        .set("user-agent", `deviceName${new Date()}`)
         .send({
           loginOrEmail: "login12345",
           password: "password",
@@ -954,6 +967,7 @@ describe("Comments", () => {
       //auth user
       const authResult = await request(app.getHttpServer())
         .post("/auth/login")
+        .set("user-agent", `deviceName${new Date()}`)
         .send({
           loginOrEmail: "login12345",
           password: "password",
@@ -973,6 +987,7 @@ describe("Comments", () => {
 
       const auth2Result = await request(app.getHttpServer())
         .post("/auth/login")
+        .set("user-agent", `deviceName${new Date()}`)
         .send({
           loginOrEmail: "user2",
           password: "password",
@@ -1012,6 +1027,7 @@ describe("Comments", () => {
       //auth user
       const authResult = await request(app.getHttpServer())
         .post("/auth/login")
+        .set("user-agent", `deviceName${new Date()}`)
         .send({
           loginOrEmail: "login12345",
           password: "password",
@@ -1085,6 +1101,7 @@ describe("Comments", () => {
       //auth user
       const authResult = await request(app.getHttpServer())
         .post("/auth/login")
+        .set("user-agent", `deviceName${new Date()}`)
         .send({
           loginOrEmail: "login12345",
           password: "password",

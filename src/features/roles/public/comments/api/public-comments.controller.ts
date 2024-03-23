@@ -33,7 +33,7 @@ import { ValidId } from "../../../../../common/types";
 import { CommentsQueryRepo } from "../../../../infrstructura/comments/comments.query.adapter";
 
 @Controller("comments")
-export class PublicComments {
+export class PublicCommentsController {
   constructor(
     private readonly commandBus: CommandBus,
     private readonly commentsQueryRepo: CommentsQueryRepo

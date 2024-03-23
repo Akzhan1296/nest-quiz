@@ -2,6 +2,7 @@ import { InjectDataSource } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
 import { DevicesViewModel } from "./models/device.models";
 
+// outdated
 export class DeviceSessionsQueryRepository {
   constructor(@InjectDataSource() protected dataSource: DataSource) {}
   async getDevicesByUserId(userId: string): Promise<DevicesViewModel[]> {

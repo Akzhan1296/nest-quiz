@@ -6,6 +6,7 @@ import {
   DeleteAllDevicesDTO,
 } from "./models/device.models";
 
+// outdated
 export class DeviceSessionsRepository {
   constructor(@InjectDataSource() protected dataSource: DataSource) {}
 

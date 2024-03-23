@@ -1,7 +1,8 @@
 import { InjectDataSource } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
-import { BlogViewModel, CreateBlogDTO, UpdateBlogDTO } from "./blogs.models";
+import { BlogViewModel, CreateBlogDTO, UpdateBlogDTO } from "./models/blogs.models";
 
+// outdated
 export class BlogsRepository {
   constructor(@InjectDataSource() protected dataSource: DataSource) {}
 

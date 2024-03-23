@@ -1,7 +1,7 @@
 import { InjectRepository } from "@nestjs/typeorm";
 import { Blog } from "../../entity/blogs-entity";
 import { Repository } from "typeorm";
-import { BlogViewModel } from "./blogs.models";
+import { BlogViewModel } from "./models/blogs.models";
 import { Paginated } from "../../../common/paginated";
 import { PageSizeQueryModel, PaginationViewModel } from "../../../common/types";
 

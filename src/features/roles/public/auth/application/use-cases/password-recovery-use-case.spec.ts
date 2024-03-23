@@ -6,7 +6,7 @@ import { Registration } from "../../../../../entity/registration-entity";
 
 describe("Password recovery use-case", () => {
   let app: TestingModule;
-  let usersRepository: UsersRepo;
+  let usersRepo: UsersRepo;
   let passwordRecoveryUseCase: PasswordRecoveryUseCase;
 
   beforeEach(async () => {
@@ -15,7 +15,7 @@ describe("Password recovery use-case", () => {
     }).compile();
     await app.init();
 
-    usersRepository = app.get<UsersRepo>(UsersRepo);
+    usersRepo = app.get<UsersRepo>(UsersRepo);
     passwordRecoveryUseCase = app.get<PasswordRecoveryUseCase>(
       PasswordRecoveryUseCase,
     );
@@ -25,11 +25,11 @@ describe("Password recovery use-case", () => {
 
   it("Should be defined", () => {
     expect(passwordRecoveryUseCase).toBeDefined();
-    expect(usersRepository).toBeDefined();
+    expect(usersRepo).toBeDefined();
   });
   it("Should not send recovery code, if user not found", async () => {
     jest
-      .spyOn(usersRepository, "findUserRegistrationDataByEmail")
+      .spyOn(usersRepo, "findUserRegistrationDataByEmail")
       .mockImplementation(async () => null);
 
     const result = await passwordRecoveryUseCase.execute({
@@ -44,11 +44,11 @@ describe("Password recovery use-case", () => {
 
   it("Should update and send recovery code, if user found", async () => {
     jest
-      .spyOn(usersRepository, "findUserRegistrationDataByEmail")
+      .spyOn(usersRepo, "findUserRegistrationDataByEmail")
       .mockImplementation(async () => ({}) as unknown as Registration);
 
     jest
-      .spyOn(usersRepository, "saveRegistration")
+      .spyOn(usersRepo, "saveRegistration")
       .mockImplementation(async () => ({}) as unknown as Registration);
 
     const result = await passwordRecoveryUseCase.execute({

@@ -1,7 +1,6 @@
 import { Injectable, CanActivate, ExecutionContext } from "@nestjs/common";
 import { Request } from "express";
 import { JwtService } from "@nestjs/jwt";
-// import { JwtPayloadDTO } from '../features/jwt/application/dto/jwt.dto';
 import { settings } from "../settings";
 
 @Injectable()

@@ -5,6 +5,7 @@ import { PageSizeQueryModel, PaginationViewModel } from "../../../common/types";
 import { Paginated } from "../../../common/paginated";
 import { transformFirstLetter } from "../../../utils/upperFirstLetter";
 
+// outdated
 export class UsersQueryRepository {
   constructor(@InjectDataSource() protected dataSource: DataSource) {}
 

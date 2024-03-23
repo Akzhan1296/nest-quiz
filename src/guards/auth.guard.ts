@@ -5,9 +5,7 @@ import {
   UnauthorizedException,
 } from "@nestjs/common";
 import { Request } from "express";
-// import { UsersQueryRepository } from '../features/users/infrastructure/repository/users.query.repository';
 import { JwtService } from "@nestjs/jwt";
-// import { JwtPayloadDTO } from '../features/jwt/application/dto/jwt.dto';
 import { settings } from "../settings";
 import { UsersRepo } from "../features/infrstructura/users/users.adapter";
 

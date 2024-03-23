@@ -9,6 +9,7 @@ import {
   UpdateCommentType,
 } from "./models/comments.models";
 
+// outdated
 export class CommentsRepository {
   constructor(@InjectDataSource() protected dataSource: DataSource) {}
 
