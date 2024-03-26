@@ -22,14 +22,13 @@ This is my pet project where I used NestJS + TypeORM + Postgressql + unit tests 
 | Lesson 21       | 27.02.2024 - 15.03.2024               |
 | Lesson 22       | 15.03.2024 - 18.03.2024               |
 | Lesson 23       | 18.03.2024 - 22.03.2024               |
-| Lesson 24       | 22.03.2024 - ...                      |
-| Refactor and    | 14.02.2024 - ...                      |
+| Lesson 24       | 22.03.2024 - 24.03.2024               |
+| Lesson 25       | ...                                   |
+| Refactor and    | 14.02.2024 - 24.03.2024               |
 | adding tests    |                                       |     
 
 
-
-
-
+<!-- 
 
 ## TO-DOs
 | TO-DO #                 | Description                                    |
@@ -46,7 +45,7 @@ This is my pet project where I used NestJS + TypeORM + Postgressql + unit tests 
 |                         | 2.1 comment like with different users          |
 |                         | 2.2 comment change statuses                    |
 | 3. Delete post like     |                                                | 
-| entity                  |                                                |
+| entity                  | 3.1                                            | -->
 
 
 
