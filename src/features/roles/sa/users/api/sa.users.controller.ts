@@ -23,7 +23,7 @@ import { UsersQueryRepo } from "../../../../infrstructura/users/users.query.adap
 
 @Controller("sa/users")
 @UseGuards(AuthBasicGuard)
-export class UsersController {
+export class SAUsersController {
   constructor(
     private readonly commandBus: CommandBus,
     private readonly usersQueryRepo: UsersQueryRepo,

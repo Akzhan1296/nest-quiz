@@ -1,7 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { CommandBus } from "@nestjs/cqrs";
 import { AppModule } from "../../../../../app.module";
-import { UsersController } from "./sa.users.controller";
+import { SAUsersController } from "./sa.users.controller";
 import { AddUserInputModel } from "./sa.users.models";
 import { CreateUserCommand } from "../application/use-cases/create-user-use-case";
 import { v4 as uuidv4 } from "uuid";
@@ -15,7 +15,7 @@ const createUserMock: AddUserInputModel = {
 };
 
 describe("UsersController", () => {
-  let usersController: UsersController;
+  let usersController: SAUsersController;
   let commandBus: CommandBus;
   let app: TestingModule;
 
@@ -25,7 +25,7 @@ describe("UsersController", () => {
     }).compile();
     await app.init();
 
-    usersController = app.get<UsersController>(UsersController);
+    usersController = app.get<SAUsersController>(SAUsersController);
     commandBus = app.get<CommandBus>(CommandBus);
   });
 
