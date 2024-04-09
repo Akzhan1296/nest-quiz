@@ -7,12 +7,13 @@ import configuration from "./config";
 //controllers
 import { AppController } from "./app.controller";
 import { AuthController } from "./features/roles/public/auth/api/auth.controller";
-import { UsersController } from "./features/roles/sa/users/api/sa.users.controller";
 import { DevicesController } from "./features/roles/public/devices/api/device.controller";
-import { SABlogsController } from "./features/roles/sa/blogs/api/sa.blogs.controller";
 import { PublicPostsController } from "./features/roles/public/posts/api/public-posts.controller";
 import { PublicBlogsController } from "./features/roles/public/blogs/api/public-blogs.controller";
 import { PublicCommentsController } from "./features/roles/public/comments/api/public-comments.controller";
+import { SAUsersController } from "./features/roles/sa/users/api/sa.users.controller";
+import { SABlogsController } from "./features/roles/sa/blogs/api/sa.blogs.controller";
+
 
 //service
 import { AppService } from "./app.service";
@@ -74,6 +75,7 @@ import { PostsRepo } from "./features/infrstructura/posts/posts.adapter";
 import { PostsQueryRepo } from "./features/infrstructura/posts/posts.query.adapter";
 import { CommentsRepo } from "./features/infrstructura/comments/comments.adapter";
 import { CommentsQueryRepo } from "./features/infrstructura/comments/comments.query.adapter";
+import { SAQuizQuestionsController } from "./features/roles/sa/quiz-questions/api/sa.quiz-questions.controller";
 
 const userUseCases = [CreateUserUseCase, DeleteUserUseCase];
 const authUseCases = [
@@ -150,13 +152,14 @@ const commentsUseCases = [
   controllers: [
     AppController,
     AuthController,
-    UsersController,
     DevicesController,
     DeleteDataController,
-    SABlogsController,
     PublicBlogsController,
     PublicPostsController,
     PublicCommentsController,
+    SAUsersController,
+    SABlogsController,
+    SAQuizQuestionsController,
   ],
   providers: [
     JwtService,
