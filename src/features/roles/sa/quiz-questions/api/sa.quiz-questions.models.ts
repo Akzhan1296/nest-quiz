@@ -5,6 +5,8 @@ export class CreateQuizQuestionInputModel {
   @MinLength(10)
   @MaxLength(500)
   body: string;
+
+  correctAnswers: string[];
 }
 
 export class QuizQuestionsQueryType extends PageSizeDTO {

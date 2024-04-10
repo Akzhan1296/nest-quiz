@@ -3,6 +3,8 @@ import {
   CreateQuizQuestionDTO,
   ResultCreateQuizQuestionDTO,
 } from "../quiz.dto";
+import { QuizQuestionRepo } from "../../../../../infrastructura/quiz/quiz.adapter";
+import { QuizQuestion } from "../../../../../entity/quiz-questions-entity";
 
 export class CrateQuizQuestionBySACommand {
   constructor(public createQuizQuestionDTO: CreateQuizQuestionDTO) {}
@@ -12,12 +14,12 @@ export class CrateQuizQuestionBySACommand {
 export class CreateQuizQuestionBySAUseCase
   implements ICommandHandler<CrateQuizQuestionBySACommand>
 {
-  constructor(private readonly quizQuestionsRepo: QuizQuestionsRepo) {}
+  constructor(private readonly quizQuestionsRepo: QuizQuestionRepo) {}
 
   async execute(
     command: CrateQuizQuestionBySACommand
   ): Promise<ResultCreateQuizQuestionDTO> {
-    const { question, correctAnswers } = command.createQuizQuestionDTO;
+    const { body, correctAnswers } = command.createQuizQuestionDTO;
 
     const result: ResultCreateQuizQuestionDTO = {
       isQuizQuestionCreated: false,
@@ -26,10 +28,11 @@ export class CreateQuizQuestionBySAUseCase
 
     try {
       const newQuizQuestion = new QuizQuestion();
-      newQuizQuestion.question = question;
+      newQuizQuestion.body = body;
       newQuizQuestion.correctAnswers = correctAnswers;
       newQuizQuestion.createdAt = new Date();
-
+      newQuizQuestion.updatedAt = null;
+      
       const savedQuizQuestion =
         await this.quizQuestionsRepo.saveQuizQuestion(newQuizQuestion);
 

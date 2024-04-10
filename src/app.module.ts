@@ -51,6 +51,8 @@ import { LikeStatusCommentUseCase } from "./features/roles/public/comments/appli
 import { DeleteCommentUseCase } from "./features/roles/public/comments/application/use-cases/delete-comment-use-case";
 import { UpdateCommentUseCase } from "./features/roles/public/comments/application/use-cases/update-comment-use-case";
 import { LikeStatusPostUseCase } from "./features/roles/public/posts/application/use-cases/handle-post-like-use-case";
+import { CreateQuizQuestionBySAUseCase } from "./features/roles/sa/quiz-questions/application/use-cases/sa.create-question.use-case";
+import { DeleteQuizQuestionUseCase } from "./features/roles/sa/quiz-questions/application/use-cases/sa.delete-question.use-case";
 
 // entity
 import { User } from "./features/entity/users-entity";
@@ -62,6 +64,7 @@ import { Comment } from "./features/entity/comments-entity";
 import { Blog } from "./features/entity/blogs-entity";
 import { CommentLike } from "./features/entity/comment-likes-entity";
 import { PostLike } from "./features/entity/post-likes-entity";
+import { QuizQuestion } from "./features/entity/quiz-questions-entity";
 
 // repository
 import { BlogsRepo } from "./features/infrastructura/blogs/blogs.adapter";
@@ -111,6 +114,8 @@ const commentsUseCases = [
   UpdateCommentUseCase,
 ];
 
+const quizQuestionsUseCases = [CreateQuizQuestionBySAUseCase, DeleteQuizQuestionUseCase];
+
 @Module({
   imports: [
     CqrsModule,
@@ -148,6 +153,7 @@ const commentsUseCases = [
       Blog,
       CommentLike,
       PostLike,
+      QuizQuestion,
     ]),
   ],
   controllers: [
@@ -188,6 +194,7 @@ const commentsUseCases = [
     ...saPostsUseCases,
     ...commentsUseCases,
     ...publicPostsUseCases,
+    ...quizQuestionsUseCases,
   ],
 })
 export class AppModule {}

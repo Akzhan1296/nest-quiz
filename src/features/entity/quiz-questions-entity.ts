@@ -8,11 +8,8 @@ export class QuizQuestion {
   @Column()
   body: string;
 
-  @Column()
+  @Column("text", { array: true, default: [] })
   correctAnswers: string[];
-
-  @Column()
-  answer: string;
 
   @Column({ default: false })
   published: boolean;
@@ -20,7 +17,9 @@ export class QuizQuestion {
   @Column()
   createdAt: Date;
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   updatedAt: Date;
 
   // @ManyToOne(() => Quiz, (q) => q.questions)

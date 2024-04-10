@@ -2,6 +2,9 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
 import { QuizQuestion } from "../../entity/quiz-questions-entity";
+import { Injectable } from "@nestjs/common";
+
+@Injectable()
 export class QuizQuestionQueryRepo {
   constructor(
     @InjectRepository(QuizQuestion)

@@ -3,7 +3,14 @@ export type ResultCreateQuizQuestionDTO = {
   createdQuizQuestionId: string | null;
 };
 
+export type DeleteQuestionResultDTO = {
+  isQuestionDeleted: boolean;
+  isQuestionFound: boolean;
+};
+
 export type CreateQuizQuestionDTO = {
-  question: string;
+  body: string;
   correctAnswers: string[];
 };
+
+export type DeleteQuizQuestionDTO = { questionId: string };
