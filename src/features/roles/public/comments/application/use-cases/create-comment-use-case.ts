@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { CreateCommentDTO, CreateCommentResult } from "../comments.dto";
-import { PostsRepo } from "../../../../../infrstructura/posts/posts.adapter";
+import { PostsRepo } from "../../../../../infrastructura/posts/posts.adapter";
 import { Comment } from "../../../../../entity/comments-entity";
-import { CommentsRepo } from "../../../../../infrstructura/comments/comments.adapter";
+import { CommentsRepo } from "../../../../../infrastructura/comments/comments.adapter";
 
 export class CreateCommentCommand {
   constructor(public createCommentDTO: CreateCommentDTO) {}

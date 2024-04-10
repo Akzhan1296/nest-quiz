@@ -13,12 +13,12 @@ import {
 import { CommandBus } from "@nestjs/cqrs";
 import { Request } from "express";
 import { RefreshTokenGuard } from "../../../../../guards/refreshToken.guard";
-import { DevicesViewModel } from "../../../../infrstructura/deviceSessions/models/device.models";
+import { DevicesViewModel } from "../../../../infrastructura/deviceSessions/models/device.models";
 import { DeleteCurrentDeviceCommand } from "../application/use-cases/delete-current-device-use-case";
 import { DeleteDeviceResultDTO } from "../application/devices.dto";
 import { DeleteDevicesExceptCurrentCommand } from "../application/use-cases/delete-all-devices-use-case";
 import { ValidId } from "../../../../../common/types";
-import { DeviceSessionQueryRepo } from "../../../../infrstructura/deviceSessions/device-sessions.query.adapter";
+import { DeviceSessionQueryRepo } from "../../../../infrastructura/deviceSessions/device-sessions.query.adapter";
 
 @Controller("security/devices")
 export class DevicesController {

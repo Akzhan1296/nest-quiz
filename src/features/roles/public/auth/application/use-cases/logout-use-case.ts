@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { LogOutDTO, LogOutResultDTO } from "../auth.dto";
-import { UsersRepo } from "../../../../../infrstructura/users/users.adapter";
-import { DeviceSessionRepo } from "../../../../../infrstructura/deviceSessions/device-sessions.adapter";
+import { UsersRepo } from "../../../../../infrastructura/users/users.adapter";
+import { DeviceSessionRepo } from "../../../../../infrastructura/deviceSessions/device-sessions.adapter";
 
 export class LogOutCommand {
   constructor(public logOutDTO: LogOutDTO) {}

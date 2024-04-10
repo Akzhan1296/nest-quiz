@@ -2,9 +2,9 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { AppModule } from "../../../../../../app.module";
 import { UpdateUserRefreshTokenUseCase } from "./refresh-token-use-case";
 import { AuthService } from "../auth.service";
-import { UsersRepo } from "../../../../../infrstructura/users/users.adapter";
+import { UsersRepo } from "../../../../../infrastructura/users/users.adapter";
 import { User } from "../../../../../entity/users-entity";
-import { DeviceSessionRepo } from "../../../../../infrstructura/deviceSessions/device-sessions.adapter";
+import { DeviceSessionRepo } from "../../../../../infrastructura/deviceSessions/device-sessions.adapter";
 import { AuthSession } from "../../../../../entity/auth-session-entity";
 import { v4 as uuidv4 } from "uuid";
 

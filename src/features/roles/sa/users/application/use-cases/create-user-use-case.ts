@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { CreateUserDTO } from "../users.dto";
 import { generateHash } from "../../../../../../utils/passwordHash";
-import { CreatedUserViewModel } from "../../../../../infrstructura/users/models/users.models";
-import { UsersRepo } from "../../../../../infrstructura/users/users.adapter";
+import { CreatedUserViewModel } from "../../../../../infrastructura/users/models/users.models";
+import { UsersRepo } from "../../../../../infrastructura/users/users.adapter";
 import { User } from "../../../../../entity/users-entity";
 
 export class CreateUserCommand {

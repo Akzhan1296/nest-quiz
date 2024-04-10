@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { CreateBlogDTO, ResultCreateBlogDTO } from "../sa.blogs.dto";
-import { BlogsRepo } from "../../../../../infrstructura/blogs/blogs.adapter";
+import { BlogsRepo } from "../../../../../infrastructura/blogs/blogs.adapter";
 import { Blog } from "../../../../../entity/blogs-entity";
 
 export class CreateBlogBySACommand {

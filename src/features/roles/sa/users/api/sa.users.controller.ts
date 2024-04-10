@@ -14,12 +14,12 @@ import {
 import { CommandBus } from "@nestjs/cqrs";
 import { CreateUserCommand } from "../application/use-cases/create-user-use-case";
 import { AddUserInputModel, UsersQueryType } from "./sa.users.models";
-import { CreatedUserViewModel } from "../../../../infrstructura/users/models/users.models";
+import { CreatedUserViewModel } from "../../../../infrastructura/users/models/users.models";
 import { DeleteUserCommand } from "../application/use-cases/delete-user-use-case";
 import { DeleteUserResultDTO } from "../application/users.dto";
 import { PaginationViewModel, ValidId } from "../../../../../common/types";
 import { AuthBasicGuard } from "../../../../../guards/authBasic.guard";
-import { UsersQueryRepo } from "../../../../infrstructura/users/users.query.adapter";
+import { UsersQueryRepo } from "../../../../infrastructura/users/users.query.adapter";
 
 @Controller("sa/users")
 @UseGuards(AuthBasicGuard)

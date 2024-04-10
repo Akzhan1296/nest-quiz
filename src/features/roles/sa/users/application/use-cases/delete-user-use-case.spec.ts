@@ -1,7 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { AppModule } from "../../../../../../app.module";
 import { DeleteUserUseCase } from "./delete-user-use-case";
-import { UsersRepo } from "../../../../../infrstructura/users/users.adapter";
+import { UsersRepo } from "../../../../../infrastructura/users/users.adapter";
 import { User } from "../../../../../entity/users-entity";
 import { Registration } from "../../../../../entity/registration-entity";
 

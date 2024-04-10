@@ -1,7 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { AppModule } from "../../../../../../app.module";
 import { LikeStatusCommentUseCase } from "./like-status-comment-use-case";
-import { CommentsRepo } from "../../../../../infrstructura/comments/comments.adapter";
+import { CommentsRepo } from "../../../../../infrastructura/comments/comments.adapter";
 import { Comment } from "../../../../../entity/comments-entity";
 import { CommentLike } from "../../../../../entity/comment-likes-entity";
 

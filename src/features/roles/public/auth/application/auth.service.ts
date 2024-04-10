@@ -8,7 +8,7 @@ import {
 } from "./auth.dto";
 import { emailAdapter } from "../../../../../utils/emailAdapter";
 import { settings } from "../../../../../settings";
-import { UsersRepo } from "../../../../infrstructura/users/users.adapter";
+import { UsersRepo } from "../../../../infrastructura/users/users.adapter";
 import { User } from "../../../../entity/users-entity";
 
 @Injectable()

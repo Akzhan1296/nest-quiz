@@ -2,7 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { AppModule } from "../../../../../../app.module";
 import { UpdateBlogBySAUseCase } from "./sa.update-blog.use-case";
 import { v4 as uuidv4 } from "uuid";
-import { BlogsRepo } from "../../../../../infrstructura/blogs/blogs.adapter";
+import { BlogsRepo } from "../../../../../infrastructura/blogs/blogs.adapter";
 import { Blog } from "../../../../../entity/blogs-entity";
 
 describe("Update blog use case", () => {

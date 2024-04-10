@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { DeleteBlogResultDTO } from "../sa.blogs.dto";
-import { BlogsRepo } from "../../../../../infrstructura/blogs/blogs.adapter";
+import { BlogsRepo } from "../../../../../infrastructura/blogs/blogs.adapter";
 
 export class DeleteBlogBySACommand {
   constructor(

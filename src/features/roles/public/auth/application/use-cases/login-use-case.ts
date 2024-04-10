@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { AuthDTO, AutoResultDTO } from "../auth.dto";
 import { AuthService } from "../auth.service";
 import { v4 as uuidv4 } from "uuid";
-import { DeviceSessionRepo } from "../../../../../infrstructura/deviceSessions/device-sessions.adapter";
+import { DeviceSessionRepo } from "../../../../../infrastructura/deviceSessions/device-sessions.adapter";
 import { AuthSession } from "../../../../../entity/auth-session-entity";
 
 export class LoginCommand {

@@ -41,8 +41,8 @@ import { AuthGuard } from "../../../../../guards/auth.guard";
 import { PasswordRecoveryCommand } from "../application/use-cases/password-recovery-use-case";
 import { NewPasswordCommand } from "../application/use-cases/new-password-use-case";
 // import { BlockIpGuard } from "../../../../../guards/ip.guard";
-import { UsersQueryRepo } from "../../../../infrstructura/users/users.query.adapter";
-import { UserQueryViewDTO } from "../../../../infrstructura/users/models/users.models";
+import { UsersQueryRepo } from "../../../../infrastructura/users/users.query.adapter";
+import { UserQueryViewDTO } from "../../../../infrastructura/users/models/users.models";
 
 @Controller("auth")
 export class AuthController {

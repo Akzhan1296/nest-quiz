@@ -3,7 +3,7 @@ import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { AuthService } from "../auth.service";
 import { v4 as uuidv4 } from "uuid";
 import { RecoveryPasswordResultDTO } from "../auth.dto";
-import { UsersRepo } from "../../../../../infrstructura/users/users.adapter";
+import { UsersRepo } from "../../../../../infrastructura/users/users.adapter";
 
 export class PasswordRecoveryCommand {
   constructor(public email: string) {}

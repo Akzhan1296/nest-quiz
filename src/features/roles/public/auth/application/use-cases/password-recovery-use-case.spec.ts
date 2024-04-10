@@ -1,7 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { AppModule } from "../../../../../../app.module";
 import { PasswordRecoveryUseCase } from "./password-recovery-use-case";
-import { UsersRepo } from "../../../../../infrstructura/users/users.adapter";
+import { UsersRepo } from "../../../../../infrastructura/users/users.adapter";
 import { Registration } from "../../../../../entity/registration-entity";
 
 describe("Password recovery use-case", () => {

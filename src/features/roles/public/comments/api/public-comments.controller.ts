@@ -20,7 +20,7 @@ import { AuthGuard } from "../../../../../guards/auth.guard";
 import { CommandBus } from "@nestjs/cqrs";
 import { Request } from "express";
 import { HandleCommentsLikesCommand } from "../application/use-cases/like-status-comment-use-case";
-import { CommentViewModel } from "../../../../infrstructura/comments/models/comments.models";
+import { CommentViewModel } from "../../../../infrastructura/comments/models/comments.models";
 import { UserIdGuard } from "../../../../../guards/userId.guard";
 import {
   DeleteCommentResult,
@@ -30,7 +30,7 @@ import {
 import { DeleteCommentCommand } from "../application/use-cases/delete-comment-use-case";
 import { UpdateCommentCommand } from "../application/use-cases/update-comment-use-case";
 import { ValidId } from "../../../../../common/types";
-import { CommentsQueryRepo } from "../../../../infrstructura/comments/comments.query.adapter";
+import { CommentsQueryRepo } from "../../../../infrastructura/comments/comments.query.adapter";
 
 @Controller("comments")
 export class PublicCommentsController {

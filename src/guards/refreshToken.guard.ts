@@ -7,7 +7,7 @@ import {
 import { JwtService } from "@nestjs/jwt";
 import { Request } from "express";
 import { settings } from "../settings";
-import { DeviceSessionRepo } from "../features/infrstructura/deviceSessions/device-sessions.adapter";
+import { DeviceSessionRepo } from "../features/infrastructura/deviceSessions/device-sessions.adapter";
 
 @Injectable()
 export class RefreshTokenGuard implements CanActivate {

@@ -3,7 +3,7 @@ import {
   RegistrationConfirmationDTO,
   RegistrationConfirmationResultDTO,
 } from "../auth.dto";
-import { UsersRepo } from "../../../../../infrstructura/users/users.adapter";
+import { UsersRepo } from "../../../../../infrastructura/users/users.adapter";
 
 export class RegistrationConfirmationCommand {
   constructor(public confirmCode: RegistrationConfirmationDTO) {}

@@ -2,7 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { AppModule } from "../../../../../../app.module";
 import { v4 as uuidv4 } from "uuid";
 import { UpdateCommentUseCase } from "./update-comment-use-case";
-import { CommentsRepo } from "../../../../../infrstructura/comments/comments.adapter";
+import { CommentsRepo } from "../../../../../infrastructura/comments/comments.adapter";
 import { Comment } from "../../../../../entity/comments-entity";
 
 describe("UpdateCommentUseCase", () => {

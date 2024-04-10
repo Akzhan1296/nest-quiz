@@ -3,7 +3,7 @@ import { AppModule } from "../../../../../../app.module";
 import { RegistrationConfirmationUseCase } from "./registration-confirmation-use-case";
 import { add } from "date-fns";
 import { v4 as uuidv4 } from "uuid";
-import { UsersRepo } from "../../../../../infrstructura/users/users.adapter";
+import { UsersRepo } from "../../../../../infrastructura/users/users.adapter";
 import { Registration } from "../../../../../entity/registration-entity";
 
 const userByConfirmCodeMock = {

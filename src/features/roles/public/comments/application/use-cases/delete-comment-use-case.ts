@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { DeleteCommentDTO, DeleteCommentResult } from "../comments.dto";
-import { CommentsRepo } from "../../../../../infrstructura/comments/comments.adapter";
+import { CommentsRepo } from "../../../../../infrastructura/comments/comments.adapter";
 
 export class DeleteCommentCommand {
   constructor(public deleteCommentDTO: DeleteCommentDTO) {}

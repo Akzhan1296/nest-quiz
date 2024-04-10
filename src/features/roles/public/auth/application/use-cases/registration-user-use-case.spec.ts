@@ -3,7 +3,7 @@ import { CommandBus } from "@nestjs/cqrs";
 import { AppModule } from "../../../../../../app.module";
 import { AuthService } from "../auth.service";
 import { RegistrationUserUseCase } from "./registration-user-use-case";
-import { UsersRepo } from "../../../../../infrstructura/users/users.adapter";
+import { UsersRepo } from "../../../../../infrastructura/users/users.adapter";
 import { User } from "../../../../../entity/users-entity";
 
 const userViewMock = {

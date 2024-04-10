@@ -15,11 +15,11 @@ import {
   PaginationViewModel,
   ValidId,
 } from "../../../../../common/types";
-import { PostViewModel } from "../../../../infrstructura/posts/models/posts.models";
+import { PostViewModel } from "../../../../infrastructura/posts/models/posts.models";
 import { UserIdGuard } from "../../../../../guards/userId.guard";
 import { Request } from "express";
-import { BlogsQueryRepo } from "../../../../infrstructura/blogs/blogs.query.adapter";
-import { PostsQueryRepo } from "../../../../infrstructura/posts/posts.query.adapter";
+import { BlogsQueryRepo } from "../../../../infrastructura/blogs/blogs.query.adapter";
+import { PostsQueryRepo } from "../../../../infrastructura/posts/posts.query.adapter";
 
 @Controller("blogs")
 export class PublicBlogsController {
