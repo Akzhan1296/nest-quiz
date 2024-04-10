@@ -1,8 +1,8 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { AppModule } from "../../../../../../app.module";
 import { LogOutUseCase } from "./logout-use-case";
-import { UsersRepo } from "../../../../../infrstructura/users/users.adapter";
-import { DeviceSessionRepo } from "../../../../../infrstructura/deviceSessions/device-sessions.adapter";
+import { UsersRepo } from "../../../../../infrastructura/users/users.adapter";
+import { DeviceSessionRepo } from "../../../../../infrastructura/deviceSessions/device-sessions.adapter";
 
 describe("Logout use case", () => {
   let app: TestingModule;

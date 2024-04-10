@@ -24,7 +24,7 @@ import {
   PaginationViewModel,
   ValidId,
 } from "../../../../../common/types";
-import { BlogViewModel } from "../../../../infrstructura/blogs/models/blogs.models";
+import { BlogViewModel } from "../../../../infrastructura/blogs/models/blogs.models";
 import { CommandBus } from "@nestjs/cqrs";
 import { CreateBlogBySACommand } from "../application/use-cases/sa.create-blog.use-case";
 import {
@@ -35,7 +35,7 @@ import {
 import { AuthBasicGuard } from "../../../../../guards/authBasic.guard";
 import { UpdateBlogBySACommand } from "../application/use-cases/sa.update-blog.use-case";
 import { DeleteBlogBySACommand } from "../application/use-cases/sa.delete-blog.use-case";
-import { PostViewModel } from "../../../../infrstructura/posts/models/posts.models";
+import { PostViewModel } from "../../../../infrastructura/posts/models/posts.models";
 import {
   ResultCreatePostDTO,
   ResultDeletePostDTO,
@@ -45,8 +45,8 @@ import { CreatePostBySACommand } from "../application/use-cases/posts/sa.create-
 import { UpdatePostBySACommand } from "../application/use-cases/posts/sa.update-post.use-case";
 import { DeletePostBySACommand } from "../application/use-cases/posts/sa.delete-post.use-case";
 import { UserIdGuard } from "../../../../../guards/userId.guard";
-import { BlogsQueryRepo } from "../../../../infrstructura/blogs/blogs.query.adapter";
-import { PostsQueryRepo } from "../../../../infrstructura/posts/posts.query.adapter";
+import { BlogsQueryRepo } from "../../../../infrastructura/blogs/blogs.query.adapter";
+import { PostsQueryRepo } from "../../../../infrastructura/posts/posts.query.adapter";
 
 @UseGuards(AuthBasicGuard)
 @Controller("sa/blogs")

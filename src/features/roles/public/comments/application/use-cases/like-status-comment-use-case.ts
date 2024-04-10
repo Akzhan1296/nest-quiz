@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { HandleCommentLikeResult, HandleLikeCommentDTO } from "../comments.dto";
-import { CommentsRepo } from "../../../../../infrstructura/comments/comments.adapter";
+import { CommentsRepo } from "../../../../../infrastructura/comments/comments.adapter";
 import { CommentLike } from "../../../../../entity/comment-likes-entity";
 
 export class HandleCommentsLikesCommand {

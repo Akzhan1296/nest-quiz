@@ -2,7 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { AppModule } from "../../../../../../app.module";
 import { add } from "date-fns";
 import { EmailResendingUseCase } from "./registration-email-resendings-use-case";
-import { UsersRepo } from "../../../../../infrstructura/users/users.adapter";
+import { UsersRepo } from "../../../../../infrastructura/users/users.adapter";
 import { Registration } from "../../../../../entity/registration-entity";
 import { v4 as uuidv4 } from "uuid";
 

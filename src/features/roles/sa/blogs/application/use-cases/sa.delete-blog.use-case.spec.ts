@@ -2,7 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { AppModule } from "../../../../../../app.module";
 import { v4 as uuidv4 } from "uuid";
 import { DeleteBlogBySAUseCase } from "./sa.delete-blog.use-case";
-import { BlogsRepo } from "../../../../../infrstructura/blogs/blogs.adapter";
+import { BlogsRepo } from "../../../../../infrastructura/blogs/blogs.adapter";
 import { Blog } from "../../../../../entity/blogs-entity";
 import { DeleteResult } from "typeorm";
 

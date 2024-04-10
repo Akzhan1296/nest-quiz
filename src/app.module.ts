@@ -13,19 +13,19 @@ import { PublicBlogsController } from "./features/roles/public/blogs/api/public-
 import { PublicCommentsController } from "./features/roles/public/comments/api/public-comments.controller";
 import { SAUsersController } from "./features/roles/sa/users/api/sa.users.controller";
 import { SABlogsController } from "./features/roles/sa/blogs/api/sa.blogs.controller";
-
+import { SAQuizQuestionsController } from "./features/roles/sa/quiz-questions/api/sa.quiz-questions.controller";
 
 //service
 import { AppService } from "./app.service";
 import { AuthService } from "./features/roles/public/auth/application/auth.service";
 import { JwtService } from "@nestjs/jwt";
-import { BlockIpsService } from "./features/infrstructura/ip-retriction.service";
+import { BlockIpsService } from "./features/infrastructura/ip-retriction.service";
 
-//repository
+//deleting-all-data
 import {
   DeleteAllTestingData,
   DeleteDataController,
-} from "./features/infrstructura/deleting-all-data";
+} from "./features/infrastructura/deleting-all-data";
 
 //useCases
 import { RegistrationUserUseCase } from "./features/roles/public/auth/application/use-cases/registration-user-use-case";
@@ -51,6 +51,8 @@ import { LikeStatusCommentUseCase } from "./features/roles/public/comments/appli
 import { DeleteCommentUseCase } from "./features/roles/public/comments/application/use-cases/delete-comment-use-case";
 import { UpdateCommentUseCase } from "./features/roles/public/comments/application/use-cases/update-comment-use-case";
 import { LikeStatusPostUseCase } from "./features/roles/public/posts/application/use-cases/handle-post-like-use-case";
+import { CreateQuizQuestionBySAUseCase } from "./features/roles/sa/quiz-questions/application/use-cases/sa.create-question.use-case";
+import { DeleteQuizQuestionUseCase } from "./features/roles/sa/quiz-questions/application/use-cases/sa.delete-question.use-case";
 
 // entity
 import { User } from "./features/entity/users-entity";
@@ -62,20 +64,22 @@ import { Comment } from "./features/entity/comments-entity";
 import { Blog } from "./features/entity/blogs-entity";
 import { CommentLike } from "./features/entity/comment-likes-entity";
 import { PostLike } from "./features/entity/post-likes-entity";
+import { QuizQuestion } from "./features/entity/quiz-questions-entity";
 
 // repository
-import { BlogsRepo } from "./features/infrstructura/blogs/blogs.adapter";
-import { BlogsQueryRepo } from "./features/infrstructura/blogs/blogs.query.adapter";
-import { UsersRepo } from "./features/infrstructura/users/users.adapter";
-import { UsersQueryRepo } from "./features/infrstructura/users/users.query.adapter";
-import { DeviceSessionRepo } from "./features/infrstructura/deviceSessions/device-sessions.adapter";
-import { DeviceSessionQueryRepo } from "./features/infrstructura/deviceSessions/device-sessions.query.adapter";
-import { BlockIpsRepo } from "./features/infrstructura/ip/ip.adapter";
-import { PostsRepo } from "./features/infrstructura/posts/posts.adapter";
-import { PostsQueryRepo } from "./features/infrstructura/posts/posts.query.adapter";
-import { CommentsRepo } from "./features/infrstructura/comments/comments.adapter";
-import { CommentsQueryRepo } from "./features/infrstructura/comments/comments.query.adapter";
-import { SAQuizQuestionsController } from "./features/roles/sa/quiz-questions/api/sa.quiz-questions.controller";
+import { BlogsRepo } from "./features/infrastructura/blogs/blogs.adapter";
+import { BlogsQueryRepo } from "./features/infrastructura/blogs/blogs.query.adapter";
+import { UsersRepo } from "./features/infrastructura/users/users.adapter";
+import { UsersQueryRepo } from "./features/infrastructura/users/users.query.adapter";
+import { DeviceSessionRepo } from "./features/infrastructura/deviceSessions/device-sessions.adapter";
+import { DeviceSessionQueryRepo } from "./features/infrastructura/deviceSessions/device-sessions.query.adapter";
+import { BlockIpsRepo } from "./features/infrastructura/ip/ip.adapter";
+import { PostsRepo } from "./features/infrastructura/posts/posts.adapter";
+import { PostsQueryRepo } from "./features/infrastructura/posts/posts.query.adapter";
+import { CommentsRepo } from "./features/infrastructura/comments/comments.adapter";
+import { CommentsQueryRepo } from "./features/infrastructura/comments/comments.query.adapter";
+import { QuizQuestionQueryRepo } from "./features/infrastructura/quiz/quiz.query.adapter";
+import { QuizQuestionRepo } from "./features/infrastructura/quiz/quiz.adapter";
 
 const userUseCases = [CreateUserUseCase, DeleteUserUseCase];
 const authUseCases = [
@@ -109,6 +113,8 @@ const commentsUseCases = [
   DeleteCommentUseCase,
   UpdateCommentUseCase,
 ];
+
+const quizQuestionsUseCases = [CreateQuizQuestionBySAUseCase, DeleteQuizQuestionUseCase];
 
 @Module({
   imports: [
@@ -147,6 +153,7 @@ const commentsUseCases = [
       Blog,
       CommentLike,
       PostLike,
+      QuizQuestion,
     ]),
   ],
   controllers: [
@@ -178,6 +185,8 @@ const commentsUseCases = [
     PostsQueryRepo,
     CommentsRepo,
     CommentsQueryRepo,
+    QuizQuestionRepo,
+    QuizQuestionQueryRepo,
     ...userUseCases,
     ...authUseCases,
     ...deviceUseCases,
@@ -185,6 +194,7 @@ const commentsUseCases = [
     ...saPostsUseCases,
     ...commentsUseCases,
     ...publicPostsUseCases,
+    ...quizQuestionsUseCases,
   ],
 })
 export class AppModule {}

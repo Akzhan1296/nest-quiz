@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { DeleteDeviceDTO } from "../devices.dto";
-import { DeviceSessionRepo } from "../../../../../infrstructura/deviceSessions/device-sessions.adapter";
+import { DeviceSessionRepo } from "../../../../../infrastructura/deviceSessions/device-sessions.adapter";
 
 export class DeleteDevicesExceptCurrentCommand {
   constructor(public deleteDeviceDTO: DeleteDeviceDTO) {}

@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { UpdateCommentDTO, UpdateCommentResult } from "../comments.dto";
-import { CommentsRepo } from "../../../../../infrstructura/comments/comments.adapter";
+import { CommentsRepo } from "../../../../../infrastructura/comments/comments.adapter";
 
 export class UpdateCommentCommand {
   constructor(public updateCommentDTO: UpdateCommentDTO) {}

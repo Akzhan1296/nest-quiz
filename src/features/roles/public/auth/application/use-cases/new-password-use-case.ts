@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { NewPasswordDTO, NewPasswordResultDTO } from "../auth.dto";
 import { generateHash } from "../../../../../../utils/passwordHash";
-import { UsersRepo } from "../../../../../infrstructura/users/users.adapter";
+import { UsersRepo } from "../../../../../infrastructura/users/users.adapter";
 
 export class NewPasswordCommand {
   constructor(public newPasswordDTO: NewPasswordDTO) {}

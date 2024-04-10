@@ -6,8 +6,8 @@ import {
   HttpStatus,
 } from "@nestjs/common";
 import { Request } from "express";
-import { BlockIpsService } from "../features/infrstructura/ip-retriction.service";
-import { BlockIpsRepo } from "../features/infrstructura/ip/ip.adapter";
+import { BlockIpsService } from "../features/infrastructura/ip-retriction.service";
+import { BlockIpsRepo } from "../features/infrastructura/ip/ip.adapter";
 
 @Injectable()
 export class BlockIpGuard implements CanActivate {

@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { HandlePostCommentDTO, HandlePostLikeResult } from "../posts.dto";
-import { PostsRepo } from "../../../../../infrstructura/posts/posts.adapter";
+import { PostsRepo } from "../../../../../infrastructura/posts/posts.adapter";
 import { PostLike } from "../../../../../entity/post-likes-entity";
 
 export class HandlePostLikesCommand {

@@ -4,8 +4,8 @@ import { AuthService } from "../auth.service";
 
 import { LoginUseCase } from "./login-use-case";
 import bcrypt from "bcrypt";
-import { DeviceSessionRepo } from "../../../../../infrstructura/deviceSessions/device-sessions.adapter";
-import { UsersRepo } from "../../../../../infrstructura/users/users.adapter";
+import { DeviceSessionRepo } from "../../../../../infrastructura/deviceSessions/device-sessions.adapter";
+import { UsersRepo } from "../../../../../infrastructura/users/users.adapter";
 import { AuthSession } from "../../../../../entity/auth-session-entity";
 import { User } from "../../../../../entity/users-entity";
 

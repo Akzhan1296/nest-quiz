@@ -2,8 +2,8 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { AppModule } from "../../../../../../../app.module";
 import { v4 as uuidv4 } from "uuid";
 import { DeletePostBySAUseCase } from "./sa.delete-post.use-case";
-import { BlogsRepo } from "../../../../../../infrstructura/blogs/blogs.adapter";
-import { PostsRepo } from "../../../../../../infrstructura/posts/posts.adapter";
+import { BlogsRepo } from "../../../../../../infrastructura/blogs/blogs.adapter";
+import { PostsRepo } from "../../../../../../infrastructura/posts/posts.adapter";
 import { DeleteResult } from "typeorm";
 
 describe("Delete post use case", () => {

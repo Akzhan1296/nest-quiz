@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { CreatePostDTO, ResultCreatePostDTO } from "../../sa.posts.dto";
-import { PostsRepo } from "../../../../../../infrstructura/posts/posts.adapter";
-import { BlogsRepo } from "../../../../../../infrstructura/blogs/blogs.adapter";
+import { PostsRepo } from "../../../../../../infrastructura/posts/posts.adapter";
+import { BlogsRepo } from "../../../../../../infrastructura/blogs/blogs.adapter";
 import { Post } from "../../../../../../entity/posts-entity";
 
 export class CreatePostBySACommand {

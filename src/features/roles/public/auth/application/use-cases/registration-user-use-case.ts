@@ -9,7 +9,7 @@ import { RegistrationUserResultDTO, RegistrationUserDTO } from "../auth.dto";
 import { CreateUserCommand } from "../../../../sa/users/application/use-cases/create-user-use-case";
 
 //repo
-import { UsersRepo } from "../../../../../infrstructura/users/users.adapter";
+import { UsersRepo } from "../../../../../infrastructura/users/users.adapter";
 import { Registration } from "../../../../../entity/registration-entity";
 
 export class RegistrationUserCommand {

@@ -2,8 +2,8 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { AppModule } from "../../../../../../app.module";
 import { CreateCommentUseCase } from "./create-comment-use-case";
 import { v4 as uuidv4 } from "uuid";
-import { CommentsRepo } from "../../../../../infrstructura/comments/comments.adapter";
-import { PostsRepo } from "../../../../../infrstructura/posts/posts.adapter";
+import { CommentsRepo } from "../../../../../infrastructura/comments/comments.adapter";
+import { PostsRepo } from "../../../../../infrastructura/posts/posts.adapter";
 import { Comment } from "../../../../../entity/comments-entity";
 import { Post } from "../../../../../entity/posts-entity";
 
